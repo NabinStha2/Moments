@@ -1,0 +1,77 @@
+part of 'posts_bloc.dart';
+
+abstract class PostsState extends Equatable {
+  const PostsState();
+
+  @override
+  List<Object> get props => [];
+}
+
+class PostsInitial extends PostsState {}
+
+class PostLoading extends PostsState {}
+
+class PostDeleteLoading extends PostsState {}
+
+class PostUpdateLoading extends PostsState {}
+
+class GetPostLoaded extends PostsState {
+  final List<PostModel>? postModel;
+  final List<PostModel>? allPostModel;
+  final int? pages;
+  const GetPostLoaded({
+    required this.postModel,
+    this.allPostModel,
+    this.pages = 1,
+  });
+  // @override
+  // List<Object> get props => [postModel!, pages!];
+}
+
+class GetSinglePostLoaded extends PostsState {
+  final PostModel? postModel;
+  const GetSinglePostLoaded({
+    required this.postModel,
+  });
+  @override
+  List<Object> get props => [postModel!];
+}
+
+class GetAllPostLoaded extends PostsState {
+  final List<PostModel>? postModel;
+  const GetAllPostLoaded({
+    required this.postModel,
+  });
+  // @override
+  // List<Object> get props => [postModel!, pages!];
+}
+
+class CommentLoaded extends PostsState {}
+
+class PostDeleted extends PostsState {}
+
+class PostLiked extends PostsState {}
+
+class PostCreated extends PostsState {}
+
+class PostUpdated extends PostsState {}
+
+class CreatorPostsLoaded extends PostsState {
+  final List<PostModel>? postModel;
+  const CreatorPostsLoaded({
+    required this.postModel,
+  });
+  @override
+  List<Object> get props => [postModel!];
+}
+
+class CreatorPostError extends PostsState {}
+
+class PostError extends PostsState {
+  final String? error;
+  const PostError({
+    required this.error,
+  });
+  @override
+  List<Object> get props => [error!];
+}
