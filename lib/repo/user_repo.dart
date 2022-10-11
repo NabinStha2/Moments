@@ -1,163 +1,131 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
-import 'package:moment/models/chat_model.dart';
-import 'package:moment/models/user_model.dart';
-import 'package:native_notify/native_notify.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:moment/development/console.dart';
+import 'package:moment/models/message_model/message_model.dart';
+import 'package:moment/models/user_model/individual_user_model.dart';
+import 'package:moment/models/user_model/users_model.dart';
+import 'package:moment/services/api_config.dart';
+import 'package:moment/services/base_client.dart';
+import 'package:moment/services/one_signal_services.dart';
+import 'package:moment/widgets/custom_dialog_widget.dart';
 
 class UserRepo {
-  final String baseUrl = "momentsapps.herokuapp.com";
-  // final String baseUrl = "192.168.1.78:3000";
-
-  Future<UserModel?> login(data) async {
+  login({required Map<String, dynamic> data, required BuildContext ctx}) async {
     try {
-      inspect(data);
-      var deviceState = await OneSignal.shared.getDeviceState();
+      var deviceId = await OneSignalNotificationService.getDeviceId();
+      Map body = {
+        "email": data["email"],
+        "password": data["password"],
+        "oneSignalUserId": deviceId,
+      };
 
-      // print(data.runtimeType);
-      if (deviceState != null) {
-        if (deviceState.userId != null) {
-          inspect(deviceState.userId);
-          final uri = Uri.https(baseUrl, "/user/login");
-          // final uri = Uri.http(baseUrl, "/user/login");
-          final response = await http.post(
-            uri,
-            headers: {
-              HttpHeaders.contentTypeHeader: "application/json ; charset=utf-8",
-            },
-            body: json.encode(<String, dynamic>{
-              "oneSignalUserId": deviceState.userId,
-              "email": data["email"],
-              "password": data["password"],
-            }),
-          );
-          print(response.body);
-          if (response.statusCode == 200) {
-            var resData = json.decode(response.body);
-            print(resData["userProfile"]["_id"]);
-            // NativeNotify.registerIndieID(resData["userProfile"]["_id"]);
-            OneSignal.shared
-                .setExternalUserId(resData["userProfile"]["_id"])
-                .then((results) {
-              print("Results: $results");
-            }).catchError((error) {
-              print("Error : $error.toString()");
-            });
-          }
-
-          return UserModel.fromJson(response.body);
-        }
-      }
+      final response = await BaseClient().post(ApiConfig.userBaseUrl, "/user/login", body, isTokenHeader: false);
+      return individualUserModelFromJson(response);
     } catch (err) {
-      print(err);
+      consolelog("Login Error: $err");
+      Navigator.pop(ctx);
+      CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
+      rethrow;
     }
   }
 
-  Future<UserModel?> register(data) async {
+  register({required Map data, required BuildContext ctx}) async {
     try {
-      final uri = Uri.https(baseUrl, "/user/signup");
-      // final uri = Uri.http(baseUrl, "/user/signup");
-      final response = await http.post(
-        uri,
-        headers: {
-          HttpHeaders.contentTypeHeader: "application/json ; charset=utf-8",
-        },
-        body: json.encode(<String, dynamic>{
-          "firstName": data["firstName"],
-          "lastName": data["lastName"],
-          "email": data["email"],
-          "password": data["password"],
-          "confirmPassword": data["confirmPassword"],
-        }),
+      Map body = {
+        "firstName": data["firstName"],
+        "lastName": data["lastName"],
+        "email": data["email"],
+        "password": data["password"],
+        "confirmPassword": data["confirmPassword"],
+      };
+
+      final response = await BaseClient().post(ApiConfig.userBaseUrl, "/user/signup", body, isTokenHeader: false);
+      return individualUserModelFromJson(response);
+    } catch (err) {
+      Navigator.pop(ctx);
+      consolelog("Register Error: $err");
+      CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
+      rethrow;
+    }
+  }
+
+  logout({id, oneSignalUserId, required BuildContext ctx}) async {
+    try {
+      Map body = {"oneSignalUserId": oneSignalUserId};
+      await BaseClient().patch(ApiConfig.userBaseUrl, "/user/logout/$id", body, isTokenHeader: false);
+    } catch (err) {
+      Navigator.pop(ctx);
+      consolelog("Logout Error: $err");
+      CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
+      rethrow;
+    }
+  }
+
+  uploadImage(image, id) async {
+    try {
+      final response = await BaseClient().postWithImage(
+        ApiConfig.userBaseUrl,
+        "/user/image/$id",
+        isBody: false,
+        file: image,
+        imageKey: "image",
+        method: "PATCH",
       );
-
-      // print(response.body);
-
-      return UserModel.fromJson(response.body);
+      return individualUserModelFromJson(response);
     } catch (err) {
-      print(err);
+      consolelog("ERROR: $err");
+      rethrow;
     }
   }
 
-  Future<UserModel?> logout({id, oneSignalUserId}) async {
+  uploadMsgImage(image, id, text) async {
     try {
-      final uri = Uri.https(baseUrl, "/user/logout/$id");
-      // final uri = Uri.http(baseUrl, "/user/logout/$id");
-      final response = await http.patch(
-        uri,
-        headers: {
-          HttpHeaders.contentTypeHeader: "application/json ; charset=utf-8",
-        },
-        body:
-            json.encode(<String, dynamic>{"oneSignalUserId": oneSignalUserId}),
+      final response = await BaseClient().postWithImage(
+        ApiConfig.userBaseUrl,
+        "/user/msgImage/$id",
+        payloadObj: {"text": text},
+        file: image,
+        imageKey: "image",
+        method: "PATCH",
       );
-
-      print(response.body);
-
-      // return UserModel.fromJson(response.body);
+      // consolelog(response);
+      return messageModelFromJson(response);
     } catch (err) {
-      print(err);
+      consolelog("ERROR: $err");
+      rethrow;
     }
   }
 
-  Future<UserModel?> uploadImage(image, id) async {
+  addUser({userId, friend, userImageUrl, activityName, activityUserId}) async {
     try {
-      final uri = Uri.https(baseUrl, "/user/image/$id");
-
-      print("user image uploading...");
-      // final uri = Uri.http(baseUrl, "/user/image/$id");
-      var res = http.MultipartRequest(
-        "PATCH",
-        uri,
+      Map body = {
+        "friend": friend,
+        "userImageUrl": userImageUrl,
+        "creatorId": activityUserId,
+        "activityName": activityName,
+      };
+      final response = await BaseClient().patch(
+        ApiConfig.userBaseUrl,
+        "/user/addUser/$userId",
+        body,
       );
-
-      res.files.add(await http.MultipartFile.fromPath("image", image.path));
-      res.headers.addAll({"Content-Type": "multipart/form-data"});
-
-      http.Response response = await http.Response.fromStream(await res.send());
-      inspect(response);
-
-      // print(response.body);
-
-      return UserModel.fromJson(response.body);
+      // consoleinspect(response);
+      return individualUserModelFromJson(response);
     } catch (err) {
-      inspect(err);
+      consolelog("ERROR: $err");
+      rethrow;
     }
   }
 
-  Future<UserModel?> addUser(
-      {userId, friend, userImageUrl, activityName, activityUserId}) async {
+  editUser(id, name, about) async {
     try {
-      final uri = Uri.https(baseUrl, "/user/addUser/$userId");
-      // final uri = Uri.http(baseUrl, "/user/addUser/$userId");
-      final response = await http.patch(
-        uri,
-        headers: {
-          HttpHeaders.contentTypeHeader: "application/json ; charset=utf-8",
-        },
-        body: json.encode(<String, dynamic>{
-          "friend": friend,
-          "userImageUrl": userImageUrl,
-          "creatorId": activityUserId,
-          "activityName": activityName,
-        }),
-      );
-
-      inspect(response.body);
-
-      return UserModel.fromJson(response.body);
-    } catch (err) {
-      inspect(err);
-    }
-  }
-
-  Future<UserModel?> editUser(id, name, about) async {
-    try {
-      final uri = Uri.https(baseUrl, "/user/editProfile/$id");
-      // final uri = Uri.http(baseUrl, "/user/editProfile/$id");
+      // final uri = Uri.https(ApiConfig.userBaseUrl, "/user/editProfile/$id");
+      final uri = Uri.http(ApiConfig.userBaseUrl, "/user/editProfile/$id");
       final response = await http.patch(
         uri,
         headers: {
@@ -168,69 +136,43 @@ class UserRepo {
           "about": about,
         }),
       );
-
-      debugPrint(response.body);
-
-      return UserModel.fromJson(response.body);
     } catch (err) {
       inspect(err);
     }
   }
 
-  Future<UserModel?> getUserById(id) async {
+  getUserById({String? id, required BuildContext ctx}) async {
     try {
-      final uri = Uri.https(baseUrl, "/user/getUser/$id");
-      // final uri = Uri.http(baseUrl, "/user/getUser/$id");
-      final response = await http.get(
-        uri,
-      );
-      // debugPrint(response.body);
-
-      return UserModel.fromJson(response.body);
+      var response = await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUser/$id");
+      return individualUserModelFromJson(response);
     } catch (err) {
-      inspect(err);
+      consolelog("GetUserFriends Error: $err");
+      CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
+      rethrow;
     }
   }
 
-  Future<List<ChatModel>?> getUserFriends(id) async {
+  getUserFriends({String? id, required BuildContext ctx}) async {
     try {
-      log("user id getUserFriends: $id");
-      final uri = Uri.https(
-      baseUrl, "/user/getUserFriends/$id");
-      // final uri = Uri.http(baseUrl, "/user/getUserFriends/$id");
-      final response = await http.get(
-        uri,
-      );
-      // log(response.body);
-      final Map user = json.decode(response.body);
-
-      return (user["users"] as List)
-          .map((user) => ChatModel.fromMap(user))
-          .toList();
+      var response = await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUserFriends/$id");
+      var userModel = userModelFromJson(response);
+      return userModel;
     } catch (err) {
-      inspect(err);
-      print("hahha");
+      consolelog("GetUserFriends Error: $err");
+      CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
+      rethrow;
     }
   }
 
-  Future<List<ChatModel>?> getAllUsers() async {
+  getAllUsers({required BuildContext ctx}) async {
     try {
-      final uri = Uri.https(baseUrl, "/user/getUsers");
-      // final uri = Uri.http(baseUrl, "/user/getUsers");
-      final response = await http.get(
-        uri,
-      );
-
-      // print(response.body);
-      final Map user = json.decode(response.body);
-
-      // ignore: avoid_print
-      // print(chatList.length);
-      return (user["users"] as List)
-          .map((user) => ChatModel.fromMap(user))
-          .toList();
+      var response = await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUsers");
+      var userModel = userModelFromJson(response);
+      return userModel;
     } catch (err) {
-      inspect(err);
+      consolelog("GetAllUser Error: $err");
+      CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
+      rethrow;
     }
   }
 }

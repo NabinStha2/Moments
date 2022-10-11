@@ -1,0 +1,201 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:moment/bloc/authBloc/auth_bloc.dart';
+import 'package:moment/models/user_model/users_model.dart';
+import 'package:moment/screens/chat/cmponents/chatting_details.dart';
+import 'package:moment/utils/storage_services.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:simple_tooltip/simple_tooltip.dart';
+
+class ChatBody extends StatefulWidget {
+  const ChatBody({Key? key}) : super(key: key);
+
+  @override
+  State<ChatBody> createState() => _ChatBodyState();
+}
+
+class _ChatBodyState extends State<ChatBody> {
+  bool showTooltip = true;
+  bool emptyFriendsList = false;
+  String selectedSound = "landras_dream";
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (StorageServices.authStorageValues.isNotEmpty == true && StorageServices.authStorageValues != {}) {
+        BlocProvider.of<AuthBloc>(context).add(GetUserFriends(
+          context: context,
+          id: StorageServices.authStorageValues["id"],
+        ));
+        BlocProvider.of<AuthBloc>(context).add(
+          GetAllUser(context: context),
+        );
+
+        Timer.run(() {
+          Future.delayed(const Duration(seconds: 3), () {
+            setState(() {
+              showTooltip = false;
+            });
+          });
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is AuthLoaded) {
+          return state.userFriends?.data != null && state.userFriends?.data?.isNotEmpty == true
+              ? Container(
+                  alignment: Alignment.center,
+                  child: ListView.separated(
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          state.userFriends?.data?[index] != null
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return ChattingDetails(
+                                        chatDetail: state.userFriends?.data?[index] ?? UserData(),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : null;
+                        },
+                        splashColor: Colors.grey[400],
+                        child: ListTile(
+                          title: Text(state.userFriends?.data?[index].name ?? ""),
+                          subtitle: Row(
+                            children: [
+                              const Icon(
+                                Icons.keyboard_arrow_right_rounded,
+                                size: 17.0,
+                              ),
+                              const SizedBox(
+                                width: 5.0,
+                              ),
+                              Text(state.userFriends?.data?[index].email ?? ""),
+                            ],
+                          ),
+                          trailing: SimpleTooltip(
+                            tooltipTap: () {
+                              // consolelog("Tooltip tap");
+                            },
+                            content: const Text(
+                              "Invite a Friend to come Online",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 10,
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                            animationDuration: const Duration(milliseconds: 700),
+                            show: index == 0 && showTooltip,
+                            hideOnTooltipTap: true,
+                            ballonPadding: const EdgeInsets.all(1),
+                            arrowLength: 10,
+                            arrowBaseWidth: 8,
+                            borderWidth: 1,
+                            borderColor: Colors.grey,
+                            tooltipDirection: TooltipDirection.left,
+                            child: IconButton(
+                              icon: const Icon(Icons.online_prediction),
+                              onPressed: () async {
+                                // inspect(state.userFriends?.data?[index].oneSignalUserId);
+
+                                var notification = OSCreateNotification(
+                                  playerIds: List<String>.from(state.userFriends?.data?[index].oneSignalUserId?.map((e) => e) ?? []),
+                                  content: "${StorageServices.authStorageValues["name"]} has invited to you to come online.",
+                                  heading: "Moments",
+                                  bigPicture: state.userFriends?.data?[index].image?.imageUrl,
+                                );
+
+                                await OneSignal.shared.postNotification(notification);
+                              },
+                            ),
+                          ),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(50.0),
+                            child: state.userFriends?.data?[index].image?.imageUrl != ""
+                                ? Image.network(
+                                    state.userFriends?.data?[index].image?.imageUrl ?? "",
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.center,
+                                    height: 50,
+                                    width: 50,
+                                    filterQuality: FilterQuality.high,
+                                    isAntiAlias: true,
+                                  )
+                                : Image.network(
+                                    "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
+                                    fit: BoxFit.cover,
+                                    height: 50.0,
+                                    width: 50,
+                                    alignment: Alignment.center,
+                                    isAntiAlias: true,
+                                    filterQuality: FilterQuality.high,
+                                  ),
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return const Divider(
+                        color: Colors.grey,
+                        height: 1.0,
+                        endIndent: 15.0,
+                        indent: 80.0,
+                        thickness: 0.3,
+                      );
+                    },
+                    itemCount: state.userFriends?.data?.length ?? 0,
+                  ),
+                )
+              : const Center(
+                  child: Text("No chat. Start a new..."),
+                );
+        }
+        if (state is AuthError) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () {
+                  BlocProvider.of<AuthBloc>(context).add(GetUserFriends(
+                    context: context,
+                    id: StorageServices.authStorageValues["id"],
+                  ));
+                },
+                icon: const Icon(Icons.refresh),
+              ),
+              const SizedBox(height: 15),
+              // Text(state.error!, textAlign: TextAlign.center),
+            ],
+          );
+        }
+        if (StorageServices.authStorageValues.isEmpty) {
+          return const Center(
+            child: Text("First Login!"),
+          );
+        } else {
+          return const Center(
+            child: SpinKitCircle(
+              color: Colors.blue,
+              size: 40.0,
+            ),
+          );
+        }
+      },
+    );
+  }
+}

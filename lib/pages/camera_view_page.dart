@@ -2,6 +2,9 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/bloc/authBloc/auth_bloc.dart';
+import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
 
 class CameraViewPage extends StatelessWidget {
   final String path;
@@ -88,21 +91,34 @@ class CameraViewPage extends StatelessWidget {
                       color: Colors.white,
                       fontSize: 17,
                     ),
-                    suffixIcon: InkWell(
-                      onTap: () {
-                        log("Send Image");
-                        sendFile!(path, _controller.text, "image");
-                      },
-                      child: CircleAvatar(
-                        radius: 27,
-                        backgroundColor: Colors.tealAccent[700],
-                        child: const Icon(
-                          Icons.check,
-                          color: Colors.white,
-                          size: 27,
+                    suffixIcon: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+                      if (state is UploadMsgImageLoading) {
+                        return Container(
+                          width: 30.0,
+                          alignment: Alignment.center,
+                          height: 30.0,
+                          child: const Center(
+                            widthFactor: 27.0,
+                            child: CustomCircularProgressIndicatorWidget(),
+                          ),
+                        );
+                      }
+                      return InkWell(
+                        onTap: () {
+                          log("Send Image");
+                          sendFile!(path, _controller.text, "image");
+                        },
+                        child: CircleAvatar(
+                          radius: 27,
+                          backgroundColor: Colors.tealAccent[700],
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 27,
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                   ),
                 ),
               ),

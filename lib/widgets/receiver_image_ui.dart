@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:moment/widgets/image_details.dart';
+import 'package:moment/widgets/custom_image_details_widget.dart';
 import 'package:moment/widgets/video_details.dart';
 
 class ReceiverImageUi extends StatelessWidget {
@@ -55,7 +55,7 @@ class ReceiverImageUi extends StatelessWidget {
                   : Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ImageDetails(
+                        builder: (context) => CustomImageDetails(
                           imageUrl: fileUrl,
                         ),
                       ),

@@ -1,35 +1,29 @@
-import 'dart:developer';
-
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:moment/bloc/activity_bloc.dart';
-import 'package:moment/bloc/auth_bloc.dart';
-import 'package:moment/bloc/internet_bloc.dart';
-import 'package:moment/bloc/posts_bloc.dart';
-import 'package:moment/blocObserver/bloc_observer.dart';
-import 'package:moment/screens/home_screen.dart';
+import 'package:moment/bloc/homeBloc/home_bloc.dart';
+import 'package:moment/config/routes/route_generator.dart';
+import 'package:moment/config/routes/routes_path.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:flutter_native_splash/flutter_native_splash.dart';
+
+import 'package:moment/bloc/activityBloc/activity_bloc.dart';
+import 'package:moment/bloc/authBloc/auth_bloc.dart';
+import 'package:moment/bloc/internetBloc/internet_bloc.dart';
+import 'package:moment/bloc/postsBloc/posts_bloc.dart';
+import 'package:moment/blocObserver/bloc_observer.dart';
+import 'package:moment/screens/main/main_screen.dart';
+import 'package:moment/utils/storage_services.dart';
 
 const appId = "ea8b2f5a8acd452e88b5028f95ab55dd";
-const String baseUrl = "momentsapps.herokuapp.com";
-const String socketUrl = "https://momentsapps.herokuapp.com";
-// const String baseUrl = "192.168.1.78:3000";
-// const String socketUrl = "http://192.168.1.78:3000";
+const String socketUrl = "http://192.168.1.15:5000";
 IO.Socket? socket;
 
-final storage = new FlutterSecureStorage();
-final accountNameController =
-    TextEditingController(text: 'flutter_secure_storage_service');
-// OSDeviceState? deviceState;
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 List<CameraDescription>? cameras;
 
 void main() async {
@@ -38,6 +32,8 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  StorageServices.initStorage();
 
   await Firebase.initializeApp();
 
@@ -50,36 +46,37 @@ void main() async {
         .build(),
   );
 
-  // OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
-
   await OneSignal.shared.setAppId("c6055b6a-d6d7-4ecf-99f9-6d7e38e884ae");
-  OneSignal.shared
-      .setSubscriptionObserver((OSSubscriptionStateChanges changes) {
-    print("SUBSCRIPTION STATE CHANGED: ${changes.jsonRepresentation()}");
+  OneSignal.shared.setSubscriptionObserver((OSSubscriptionStateChanges changes) {
+    if (kDebugMode) {
+      print("SUBSCRIPTION STATE CHANGED: ${changes.jsonRepresentation()}");
+    }
   });
-  // deviceState = await OneSignal.shared.getDeviceState();
-  // inspect(deviceState);
 
   Bloc.observer = MyBlocObserver();
   cameras = await availableCameras();
-
   // NativeNotify.initialize(831, 'hsgYDUjuCgmNl9GaYuCc8I', null, null);
-
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   static const String title = 'Moments';
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<HomeBloc>(
+          create: (context) => HomeBloc()
+            ..add(
+              const HomeCurrentIndexChangeEvent(index: 0),
+            ),
+        ),
         BlocProvider<PostsBloc>(
-          lazy: false,
-          create: (context) => PostsBloc()..add(GetPostsEvent()),
+          create: (context) => PostsBloc()..add(PostPageChangeEvent(pageNumber: 1, context: context)),
         ),
         BlocProvider<ActivityBloc>(
           // lazy: false,
@@ -116,10 +113,11 @@ class MyApp extends StatelessWidget {
                 fontSize: 16.0,
               ).fontFamily,
             ),
+            initialRoute: RoutesPath.mainRoute,
+            onGenerateRoute: RouteGenerator.generateRoute,
             home: child,
           );
         },
-        child: const HomeScreen(),
       ),
     );
   }

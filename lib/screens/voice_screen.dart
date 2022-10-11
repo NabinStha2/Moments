@@ -8,12 +8,15 @@ import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:moment/main.dart';
-import 'package:moment/models/chat_model.dart';
+import 'package:moment/services/api_config.dart';
 import 'package:permission_handler/permission_handler.dart';
 import "package:http/http.dart" as http;
 
+import '../models/user_model/individual_user_model.dart';
+import '../models/user_model/users_model.dart';
+
 class VoiceScreen extends StatefulWidget {
-  final ChatModel userDetail;
+  final UserData userDetail;
   const VoiceScreen({Key? key, required this.userDetail}) : super(key: key);
 
   @override
@@ -156,7 +159,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
   _joinChannel() async {
     try {
       // final uri = Uri.https(baseUrl, "/rtcToken/$channelName");
-      final uri = Uri.http(baseUrl, "/rtcToken/$channelName");
+      final uri = Uri.http(ApiConfig.baseUrl, "/rtcToken/$channelName");
       final response = await http.get(
         uri,
       );
@@ -288,7 +291,8 @@ class _VoiceScreenState extends State<VoiceScreen> {
                         width: MediaQuery.of(context).size.width,
                         height: 200,
                         child: Center(
-                          child: Image.network(widget.userDetail.imageUrl!),
+                          child: Image.network(
+                              widget.userDetail.image?.imageUrl ?? ""),
                         ),
                       ),
                       Text(

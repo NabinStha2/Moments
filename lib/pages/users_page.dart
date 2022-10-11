@@ -1,18 +1,14 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import "package:http/http.dart" as http;
-import 'package:moment/bloc/auth_bloc.dart';
-import 'package:moment/main.dart';
-import 'package:moment/models/chat_model.dart';
-import 'package:moment/models/user_model.dart';
-import 'package:moment/pages/chat_page.dart';
-import 'package:moment/pages/profile_page.dart';
+import 'package:moment/utils/storage_services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+
+import 'package:moment/bloc/authBloc/auth_bloc.dart';
+import 'package:moment/models/user_model/individual_user_model.dart';
+import 'package:moment/screens/profile/components/profile_page.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({Key? key}) : super(key: key);
@@ -22,35 +18,27 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
-  // List<ChatModel> state.allUsers! = [];
-  late Map<String, dynamic> authStorageValues;
-  UserModel? ownerDetails;
-
   @override
   void initState() {
     super.initState();
-    // ownerDetails = BlocProvider.of<AuthBloc>(context).userModel;
-    getOwnerDetails();
-
-    getAllUsers();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getOwnerDetails();
+      getAllUsers();
+    });
   }
 
-  getOwnerDetails() async {
-    authStorageValues = await storage.readAll(
-      aOptions: const AndroidOptions(),
-    );
-
-    // ignore: use_build_context_synchronously
+  getOwnerDetails() {
     BlocProvider.of<AuthBloc>(context).add(
       GetOwnerById(
-        id: authStorageValues["id"],
+        context: context,
+        id: StorageServices.authStorageValues["id"],
       ),
     );
   }
 
   getAllUsers() async {
     BlocProvider.of<AuthBloc>(context).add(
-      GetAllUser(),
+      GetAllUser(context: context),
     );
   }
 
@@ -58,9 +46,6 @@ class _UsersPageState extends State<UsersPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        BlocProvider.of<AuthBloc>(context).add(GetUserFriends(
-          id: authStorageValues["id"],
-        ));
         Navigator.of(context).pop(true);
         return true;
       },
@@ -71,9 +56,6 @@ class _UsersPageState extends State<UsersPage> {
             padding: const EdgeInsets.symmetric(vertical: 6.0),
             child: InkWell(
                 onTap: () {
-                  BlocProvider.of<AuthBloc>(context).add(GetUserFriends(
-                    id: authStorageValues["id"],
-                  ));
                   Navigator.of(context).pop(true);
                 },
                 child: const Icon(Icons.arrow_back_rounded)),
@@ -108,22 +90,19 @@ class _UsersPageState extends State<UsersPage> {
             },
             builder: (context, state) {
               if (state is AuthLoaded) {
-                if (state.ownerUser != null) {
-                  inspect(state.ownerUser);
-                }
-
-                return state.allUsers != null && state.ownerUser != null
+                return state.allUsers?.data?.isNotEmpty != null && state.ownerUser != null
                     ? ListView.separated(
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
+                              BlocProvider.of<AuthBloc>(context).clearUserDetails();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return ProfilePage(
+                                    return ProfileVisitPage(
                                       isFromSearch: false,
-                                      userId: state.allUsers![index].id!,
+                                      userId: state.allUsers?.data?[index].id ?? "",
                                     );
                                   },
                                 ),
@@ -131,7 +110,7 @@ class _UsersPageState extends State<UsersPage> {
                             },
                             splashColor: Colors.grey[400],
                             child: ListTile(
-                              title: Text(state.allUsers![index].name),
+                              title: Text(state.allUsers?.data?[index].name ?? ""),
                               subtitle: Row(
                                 children: [
                                   const Icon(
@@ -141,14 +120,14 @@ class _UsersPageState extends State<UsersPage> {
                                   const SizedBox(
                                     width: 5.0,
                                   ),
-                                  Text(state.allUsers![index].email),
+                                  Text(state.allUsers?.data?[index].email ?? ""),
                                 ],
                               ),
                               leading: ClipRRect(
                                 borderRadius: BorderRadius.circular(50.0),
-                                child: state.allUsers![index].imageUrl != ""
+                                child: state.allUsers?.data?[index].image?.imageUrl != ""
                                     ? Image.network(
-                                        state.allUsers![index].imageUrl!,
+                                        state.allUsers?.data?[index].image?.imageUrl ?? "",
                                         fit: BoxFit.cover,
                                         alignment: Alignment.center,
                                         height: 50,
@@ -169,41 +148,28 @@ class _UsersPageState extends State<UsersPage> {
                               trailing: IconButton(
                                 splashRadius: 25.0,
                                 onPressed: () async {
-                                  BlocProvider.of<AuthBloc>(context)
-                                      .add(AddUserEvent(
-                                    userId: authStorageValues["id"],
-                                    friend: state.allUsers![index].id!,
-                                    creatorId: state.allUsers![index].id!,
-                                    userImageUrl:
-                                        authStorageValues["imageUrl"] ?? "",
-                                    activityName: authStorageValues["name"],
+                                  BlocProvider.of<AuthBloc>(context).add(AddUserEvent(
+                                    context: context,
+                                    userId: StorageServices.authStorageValues["id"].toString(),
+                                    friend: state.allUsers?.data?[index].id,
+                                    creatorId: state.allUsers?.data?[index].id ?? "",
+                                    userImageUrl: StorageServices.authStorageValues["imageUrl"] ?? "",
+                                    activityName: StorageServices.authStorageValues["name"].toString(),
                                   ));
 
                                   var notification = OSCreateNotification(
-                                    playerIds: state
-                                        .allUsers![index].oneSignalUserId!
-                                        .map((e) => e.toString())
-                                        .toList(),
-                                    content: state.ownerUser!.friends!.contains(
-                                            state.allUsers![index].id!)
-                                        ? "${authStorageValues["name"]} has removed you from friend."
-                                        : "${authStorageValues["name"]} has added you to friend.",
+                                    playerIds: List<String>.from(state.allUsers?.data?[index].oneSignalUserId?.map((e) => e) ?? []),
+                                    content: state.ownerUser?.data?.friends?.contains(state.allUsers?.data?[index].id) != true
+                                        ? "${StorageServices.authStorageValues["name"]} has removed you from friend."
+                                        : "${StorageServices.authStorageValues["name"]} has added you to friend.",
                                     heading: "Moments",
-                                    bigPicture: state.allUsers![index].imageUrl,
+                                    bigPicture: state.allUsers?.data?[index].image?.imageUrl,
                                   );
 
-                                  await OneSignal.shared
-                                      .postNotification(notification);
-
-                                  log("add Success");
-                                  BlocProvider.of<AuthBloc>(context).add(
-                                    GetOwnerById(
-                                      id: authStorageValues["id"],
-                                    ),
-                                  );
+                                  await OneSignal.shared.postNotification(notification);
                                 },
-                                icon: state.ownerUser!.friends!
-                                        .contains(state.allUsers![index].id)
+                                icon: state.ownerUser?.data?.friends?.isNotEmpty == true &&
+                                        state.ownerUser?.data?.friends?.contains(state.allUsers?.data?[index].id) == true
                                     ? const Icon(
                                         Icons.delete,
                                         color: Colors.redAccent,
@@ -223,7 +189,7 @@ class _UsersPageState extends State<UsersPage> {
                             thickness: 0.3,
                           );
                         },
-                        itemCount: state.allUsers!.length,
+                        itemCount: state.allUsers?.data?.length.toInt() ?? 0,
                       )
                     : const Center(
                         child: SpinKitCircle(
@@ -239,7 +205,9 @@ class _UsersPageState extends State<UsersPage> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        BlocProvider.of<AuthBloc>(context).add(GetAllUser());
+                        BlocProvider.of<AuthBloc>(context).add(
+                          GetAllUser(context: context),
+                        );
                       },
                       icon: const Icon(Icons.refresh),
                     ),

@@ -1,0 +1,96 @@
+import 'dart:async';
+
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/bloc/authBloc/auth_bloc.dart';
+import 'package:moment/bloc/homeBloc/home_bloc.dart';
+import 'package:moment/bloc/internetBloc/internet_bloc.dart';
+import 'package:moment/utils/dynamic_link.dart';
+import 'package:moment/utils/storage_services.dart';
+import 'package:moment/widgets/custom_snackbar_widget.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
+
+class MainBody extends StatefulWidget {
+  const MainBody({super.key});
+
+  @override
+  State<MainBody> createState() => _HomeBodyState();
+}
+
+class _HomeBodyState extends State<MainBody> {
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
+  int currentIndex = 0;
+  var authBloc = AuthBloc();
+  var homeBloc = HomeBloc();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      authBloc = BlocProvider.of<AuthBloc>(context);
+      homeBloc = BlocProvider.of<HomeBloc>(context);
+      FirebaseDynamicLinkService.startDynamicService(ctx: context);
+      getStorageItem();
+      if (StorageServices.authStorageValues.isNotEmpty == true) {
+        authBloc.add(AuthInitialLoadedEvent(
+          context: context,
+          data: StorageServices.authStorageValues,
+        ));
+      }
+      final internetBloc = BlocProvider.of<InternetBloc>(context);
+      _connectivity.checkConnectivity().then((result) => internetBloc.add(GetInternetStatus(connectivityResult: result)));
+      _connectivitySubscription = _connectivity.onConnectivityChanged.listen((result) {
+        internetBloc.add(GetInternetStatus(connectivityResult: result));
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription?.cancel();
+    super.dispose();
+  }
+
+  getStorageItem() async {
+    StorageServices.setAuthStorageValues(await StorageServices.getStorage());
+    // consolelog(StorageServices.authStorageValues);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var homeBloc = BlocProvider.of<HomeBloc>(context);
+    return BlocConsumer<InternetBloc, InternetState>(
+      listener: (context, state) {
+        if (state is InternetDisconnected) {
+          CustomSnackbarWidget.showSnackbar(
+            ctx: context,
+            content: "Disconnected to Internet",
+            backgroundColor: Colors.redAccent,
+            snackBarBehavior: SnackBarBehavior.fixed,
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is InternetDisconnected) {
+          return Center(
+            child: PoppinsText(
+              "It looks as though you're offline.",
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          );
+        }
+        return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+          if (state is HomeCurrentIndexChangedState) {
+            return homeBloc.screens[state.index];
+          }
+          return homeBloc.screens[0];
+        });
+      },
+    );
+  }
+}

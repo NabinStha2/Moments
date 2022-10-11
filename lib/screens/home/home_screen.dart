@@ -1,0 +1,102 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/bloc/postsBloc/posts_bloc.dart';
+import 'package:moment/main.dart';
+import 'package:moment/screens/home/components/home_body.dart';
+import 'package:moment/widgets/custom_search_widget.dart';
+import 'package:moment/screens/home/components/widgets/navigation_post_details_widget.dart';
+import 'package:moment/widgets/custom_button_widget.dart';
+import 'package:moment/widgets/custom_snackbar_widget.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
+
+class NewsFeedScreen extends StatefulWidget {
+  const NewsFeedScreen({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<NewsFeedScreen> createState() => _NewsFeedScreenState();
+}
+
+class _NewsFeedScreenState extends State<NewsFeedScreen> {
+  final ScrollController scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    var postBloc = BlocProvider.of<PostsBloc>(context);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // scrollController.addListener(() {
+      //   if (scrollController.position.atEdge == true && scrollController.position.pixels != 0) {
+      //     if (postBloc.currentPage + 1 > BlocProvider.of<PostsBloc>(context).pages) {
+      //       CustomSnackbarWidget.showSnackbar(
+      //         ctx: context,
+      //         backgroundColor: Colors.grey,
+      //         content: "No more Posts.",
+      //         milliDuration: 400,
+      //       );
+      //     } else {
+      //       postBloc.add(PostPageChangeEvent(pageNumber: postBloc.currentPage + 1, context: context));
+      //     }
+      //   }
+      // });
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: AppBarCookieText(
+          MyApp.title,
+        ),
+        elevation: 0.0,
+        actions: [
+          CustomIconButtonWidget(
+            icon: const Icon(
+              Icons.search,
+              size: 28.0,
+            ),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.only(right: 5.0),
+            iconSize: 24.0,
+            width: 1,
+            onPressed: () async {
+              var searchSelectedPost = await showSearch(
+                context: context,
+                delegate: DataSearch(
+                  postList: BlocProvider.of<PostsBloc>(context).allPostModels,
+                ),
+              );
+              if (searchSelectedPost != null) {
+                navigateToPostDetails(context: context, post: searchSelectedPost, isFromHome: true);
+              }
+            },
+          )
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
+      floatingActionButton: CustomIconButtonWidget(
+        elevation: 0.0,
+        icon: const Icon(Icons.arrow_upward),
+        isFloatingButton: true,
+        floatingButtonContainerColor: Colors.blue,
+        onPressed: () {
+          scrollController.animateTo(
+            0.0,
+            curve: Curves.easeOut,
+            duration: const Duration(milliseconds: 300),
+          );
+        },
+      ),
+      body: HomeBody(
+        scController: scrollController,
+      ),
+    );
+  }
+}

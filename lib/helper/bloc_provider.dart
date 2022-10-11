@@ -1,0 +1,27 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/bloc/activityBloc/activity_bloc.dart';
+import 'package:moment/bloc/authBloc/auth_bloc.dart';
+import 'package:moment/bloc/internetBloc/internet_bloc.dart';
+import 'package:moment/bloc/postsBloc/posts_bloc.dart';
+
+List blocProvider = [
+  BlocProvider<PostsBloc>(
+    lazy: false,
+    create: (context) => PostsBloc()
+      ..add(GetPostsEvent(
+        context: context,
+      )),
+  ),
+  BlocProvider<ActivityBloc>(
+    // lazy: false,
+    create: (context) => ActivityBloc(),
+  ),
+  BlocProvider<AuthBloc>(
+    // lazy: false,
+    create: (context) => AuthBloc(),
+  ),
+  BlocProvider<InternetBloc>(
+    // lazy: false,
+    create: (context) => InternetBloc(),
+  ),
+];

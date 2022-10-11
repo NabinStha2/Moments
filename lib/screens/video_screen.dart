@@ -11,6 +11,7 @@ import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:moment/main.dart';
+import 'package:moment/services/api_config.dart';
 import 'package:permission_handler/permission_handler.dart';
 import "package:http/http.dart" as http;
 
@@ -156,7 +157,7 @@ class _VideoScreenState extends State<VideoScreen> {
         throw "channel name is required";
       }
       // final uri = Uri.https(baseUrl, "/rtcToken/$channelName");
-      final uri = Uri.http(baseUrl, "/rtcToken/$channelName");
+      final uri = Uri.http(ApiConfig.baseUrl, "/rtcToken/$channelName");
       final response = await http.get(
         uri,
       );
