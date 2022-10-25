@@ -19,6 +19,14 @@ class PostPageChangedLoadingState extends PostsState {}
 
 class PostPageChangedLoadedState extends PostsState {}
 
+class ShowCommentDeleteState extends PostsState {}
+
+class HideCommentDeleteState extends PostsState {}
+
+class HideFileDownloadState extends PostsState {}
+
+class ShowFileDownloadState extends PostsState {}
+
 class PostClearValueState extends PostsState {}
 
 class PostDeleteLoading extends PostsState {}

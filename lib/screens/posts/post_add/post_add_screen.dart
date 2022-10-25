@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moment/screens/post_add/components/post_add_body.dart';
+import 'package:moment/screens/posts/post_add/components/post_add_body.dart';
 
 import 'package:moment/widgets/custom_text_widget.dart';
 

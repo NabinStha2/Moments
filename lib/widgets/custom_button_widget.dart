@@ -33,7 +33,7 @@ class CustomElevatedButtonWidget extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius ?? 20.0),
           ),
-          backgroundColor: backgroundColor,
+          backgroundColor: backgroundColor ?? const Color.fromARGB(255, 26, 168, 228),
           elevation: elevation ?? 0.0,
           splashFactory: InkSplash.splashFactory,
           alignment: alignment ?? Alignment.center,

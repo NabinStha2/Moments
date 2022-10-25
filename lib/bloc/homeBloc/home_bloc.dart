@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:moment/screens/auth/auth_screen.dart';
 import 'package:moment/screens/chat/chat_screen.dart';
 import 'package:moment/screens/home/home_screen.dart';
-import 'package:moment/screens/post_add/post_add_screen.dart';
+import 'package:moment/screens/posts/post_add/post_add_screen.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/models/post_model/post_model.dart';
-import 'package:moment/screens/post_add/components/post_add_request_button.dart';
-import 'package:moment/screens/post_add/components/widgets/custom_file_choosing_widget.dart';
+import 'package:moment/screens/posts/post_add/components/widgets/post_add_request_button_widget.dart';
+import 'package:moment/screens/posts/post_add/components/widgets/custom_file_choosing_widget.dart';
 import 'package:moment/utils/global_keys.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
@@ -58,7 +58,7 @@ void customModalBottomSheetWidget(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 PoppinsText(
-                                  "Update",
+                                  title,
                                   fontSize: 30.0,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -91,7 +91,7 @@ void customModalBottomSheetWidget(
                                         isUpdate: true,
                                       ),
                                       const SizedBox(height: 20.0),
-                                      PostAddRequestButton(
+                                      PostAddRequestButtonWidget(
                                         isUpdate: true,
                                         postId: post?.id,
                                       ),

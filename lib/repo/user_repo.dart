@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
+import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
 import 'package:moment/models/message_model/message_model.dart';
 import 'package:moment/models/user_model/individual_user_model.dart';
@@ -28,7 +29,7 @@ class UserRepo {
       return individualUserModelFromJson(response);
     } catch (err) {
       consolelog("Login Error: $err");
-      Navigator.pop(ctx);
+      RouteNavigation.back(ctx);
       CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
       rethrow;
     }
@@ -47,7 +48,7 @@ class UserRepo {
       final response = await BaseClient().post(ApiConfig.userBaseUrl, "/user/signup", body, isTokenHeader: false);
       return individualUserModelFromJson(response);
     } catch (err) {
-      Navigator.pop(ctx);
+      RouteNavigation.back(ctx);
       consolelog("Register Error: $err");
       CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
       rethrow;
@@ -59,7 +60,7 @@ class UserRepo {
       Map body = {"oneSignalUserId": oneSignalUserId};
       await BaseClient().patch(ApiConfig.userBaseUrl, "/user/logout/$id", body, isTokenHeader: false);
     } catch (err) {
-      Navigator.pop(ctx);
+      RouteNavigation.back(ctx);
       consolelog("Logout Error: $err");
       CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
       rethrow;

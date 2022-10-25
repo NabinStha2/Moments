@@ -13,7 +13,7 @@ import 'package:moment/bloc/authBloc/auth_bloc.dart';
 import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/models/user_model/individual_user_model.dart';
 import 'package:moment/screens/main/main_screen.dart';
-import 'package:moment/screens/post_add/components/post_details.dart';
+import 'package:moment/screens/posts/post_details/components/post_details_body.dart';
 import 'package:moment/widgets/custom_image_details_widget.dart';
 
 class ProfileVisitPage extends StatefulWidget {
@@ -404,13 +404,13 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                         MaterialPageRoute(
                                           builder: (context) => BlocProvider.value(
                                             value: BlocProvider.of<PostsBloc>(context),
-                                            child: Postdetails(
-                                              isFromProfileVisit: true,
-                                              isFromHome: false,
-                                              isFromProfile: false,
+                                            child: PostDetailsBody(
+                                              // isFromProfileVisit: true,
+                                              // isFromHome: false,
+                                              // isFromProfile: false,
                                               postId: posts![index].id!,
-                                              isFromComment: false,
-                                              userVisitId: widget.userId,
+                                              // isFromComment: false,
+                                              // userVisitId: widget.userId,
                                             ),
                                           ),
                                         ),
@@ -451,12 +451,12 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                                       MaterialPageRoute(
                                                         builder: (context) => BlocProvider.value(
                                                           value: BlocProvider.of<PostsBloc>(context),
-                                                          child: Postdetails(
-                                                            isFromProfileVisit: true,
-                                                            isFromHome: false,
-                                                            isFromProfile: true,
+                                                          child: PostDetailsBody(
+                                                            // isFromProfileVisit: true,
+                                                            // isFromHome: false,
+                                                            // isFromProfile: true,
                                                             postId: state.postModel![index].id!,
-                                                            isFromComment: false,
+                                                            // isFromComment: false,
                                                           ),
                                                         ),
                                                       ),

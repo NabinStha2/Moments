@@ -26,6 +26,79 @@ class CustomAllShimmerWidget {
     );
   }
 
+  static Widget activityShimmerWidget({userPostsLength}) {
+    return CustomShimmerWidget(
+      widget: ListView.builder(
+        itemCount: 15,
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return CustomShimmerContainerWidget(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            widget: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const CustomShimmerContainerWidget(
+                      shape: BoxShape.circle,
+                    ),
+                    hSizedBox1,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomShimmerContainerWidget(
+                          height: 10.0,
+                          width: appWidth(context) * 0.4,
+                          borderRadius: 3,
+                        ),
+                        vSizedBox1,
+                        CustomShimmerContainerWidget(
+                          height: 10.0,
+                          width: appWidth(context) * 0.2,
+                          borderRadius: 3,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                hSizedBox1,
+                const CustomShimmerContainerWidget(
+                  height: 40,
+                  width: 50,
+                  borderRadius: 5,
+                ),
+              ],
+            ),
+          );
+          // return ListTile(
+          //   contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+          //   leading: const CustomShimmerContainerWidget(
+          //     shape: BoxShape.circle,
+          //   ),
+          //   trailing: const CustomShimmerContainerWidget(
+          //     height: 40,
+          //     width: 50,
+          //     borderRadius: 5,
+          //   ),
+          //   title: CustomShimmerContainerWidget(
+          //     height: 10.0,
+          //     width: 30,
+          //     borderRadius: 3,
+          //   ),
+          //   subtitle: CustomShimmerContainerWidget(
+          //     height: 10.0,
+          //     width: 10,
+          //     borderRadius: 3,
+          //   ),
+          // );
+        },
+      ),
+    );
+  }
+
   static Widget allPostsShimmerWidget() {
     return CustomShimmerWidget(
       widget: ListView.builder(
@@ -35,7 +108,7 @@ class CustomAllShimmerWidget {
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 14.0),
+              padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -76,20 +149,20 @@ class CustomAllShimmerWidget {
                         children: const [
                           CustomShimmerContainerWidget(
                             height: 6,
-                            width: 4,
-                            borderRadius: 3,
+                            width: 6,
+                            shape: BoxShape.circle,
                           ),
                           vSizedBox0,
                           CustomShimmerContainerWidget(
                             height: 6,
-                            width: 4,
-                            borderRadius: 3,
+                            width: 6,
+                            shape: BoxShape.circle,
                           ),
                           vSizedBox0,
                           CustomShimmerContainerWidget(
                             height: 6,
-                            width: 4,
-                            borderRadius: 3,
+                            width: 6,
+                            shape: BoxShape.circle,
                           ),
                         ],
                       ),
@@ -128,6 +201,38 @@ class CustomAllShimmerWidget {
               ),
             );
           }),
+    );
+  }
+
+  static Widget postDetailsShimmerWidget({required BuildContext context}) {
+    return CustomShimmerWidget(
+      widget: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomShimmerContainerWidget(
+              height: 500,
+              width: appWidth(context),
+            ),
+            vSizedBox1,
+            CustomShimmerContainerWidget(
+              height: 10,
+              width: appWidth(context),
+            ),
+            vSizedBox1,
+            CustomShimmerContainerWidget(
+              height: 10,
+              width: appWidth(context) * 0.3,
+            ),
+            vSizedBox1,
+            CustomShimmerContainerWidget(
+              height: 50,
+              width: appWidth(context),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

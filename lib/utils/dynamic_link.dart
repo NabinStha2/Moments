@@ -3,7 +3,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:moment/development/console.dart';
 import 'package:moment/screens/profile/components/profile_page.dart';
-import 'package:moment/screens/post_add/components/post_details.dart';
+import 'package:moment/screens/posts/post_details/components/post_details_body.dart';
 
 FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
@@ -68,7 +68,7 @@ class FirebaseDynamicLinkService {
           try {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => Postdetails(
+                builder: (context) => PostDetailsBody(
                   postId: postId,
                 ),
               ),
@@ -109,7 +109,7 @@ class FirebaseDynamicLinkService {
           try {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => Postdetails(
+                builder: (context) => PostDetailsBody(
                   postId: postId,
                 ),
               ),

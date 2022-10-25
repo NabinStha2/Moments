@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:moment/widgets/custom_modal_bottom_sheet_widget.dart';
 import 'package:moment/utils/storage_services.dart';
 import 'package:moment/widgets/custom_all_shimmer_widget.dart';
@@ -20,7 +19,7 @@ import 'package:moment/widgets/custom_text_widget.dart';
 import '../../../models/user_model/individual_user_model.dart';
 import '../../../services/one_signal_services.dart';
 import '../../../widgets/custom_image_show_dialog_widget.dart';
-import '../../post_add/components/post_details.dart';
+import '../../posts/post_details/components/post_details_body.dart';
 
 class ProfileBody extends StatefulWidget {
   const ProfileBody({
@@ -368,12 +367,12 @@ class _ProfileBodyState extends State<ProfileBody> {
                                               MaterialPageRoute(
                                                 builder: (context) => BlocProvider.value(
                                                   value: BlocProvider.of<PostsBloc>(context),
-                                                  child: Postdetails(
-                                                    isFromProfileVisit: false,
-                                                    isFromHome: false,
-                                                    isFromProfile: true,
+                                                  child: PostDetailsBody(
+                                                    // isFromProfileVisit: false,
+                                                    // isFromHome: false,
+                                                    // isFromProfile: true,
                                                     postId: posts![index].id!,
-                                                    isFromComment: false,
+                                                    // isFromComment: false,
                                                   ),
                                                 ),
                                               ),
@@ -417,12 +416,12 @@ class _ProfileBodyState extends State<ProfileBody> {
                                                             MaterialPageRoute(
                                                               builder: (context) => BlocProvider.value(
                                                                 value: BlocProvider.of<PostsBloc>(context),
-                                                                child: Postdetails(
-                                                                  isFromProfileVisit: false,
-                                                                  isFromHome: false,
-                                                                  isFromProfile: true,
+                                                                child: PostDetailsBody(
+                                                                  // isFromProfileVisit: false,
+                                                                  // isFromHome: false,
+                                                                  // isFromProfile: true,
                                                                   postId: state.postModel![index].id!,
-                                                                  isFromComment: false,
+                                                                  // isFromComment: false,
                                                                 ),
                                                               ),
                                                             ),

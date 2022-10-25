@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'package:moment/bloc/authBloc/auth_bloc.dart';
@@ -310,12 +311,9 @@ class _ChattingPageState extends State<ChattingDetails> {
                     fontSize: 18.0,
                   ),
                 ),
-                Text(
+                PoppinsText(
                   isOnline ? "online" : "offline",
-                  style: TextStyle(
-                    fontFamily: GoogleFonts.lato().fontFamily,
-                    fontSize: 14.0,
-                  ),
+                  color: isOnline ? Colors.green.shade900 : Colors.red,
                 ),
               ],
             ),

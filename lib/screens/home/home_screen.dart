@@ -6,7 +6,6 @@ import 'package:moment/screens/home/components/home_body.dart';
 import 'package:moment/widgets/custom_search_widget.dart';
 import 'package:moment/screens/home/components/widgets/navigation_post_details_widget.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
-import 'package:moment/widgets/custom_snackbar_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
 class NewsFeedScreen extends StatefulWidget {
@@ -20,27 +19,6 @@ class NewsFeedScreen extends StatefulWidget {
 
 class _NewsFeedScreenState extends State<NewsFeedScreen> {
   final ScrollController scrollController = ScrollController();
-  @override
-  void initState() {
-    super.initState();
-    var postBloc = BlocProvider.of<PostsBloc>(context);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // scrollController.addListener(() {
-      //   if (scrollController.position.atEdge == true && scrollController.position.pixels != 0) {
-      //     if (postBloc.currentPage + 1 > BlocProvider.of<PostsBloc>(context).pages) {
-      //       CustomSnackbarWidget.showSnackbar(
-      //         ctx: context,
-      //         backgroundColor: Colors.grey,
-      //         content: "No more Posts.",
-      //         milliDuration: 400,
-      //       );
-      //     } else {
-      //       postBloc.add(PostPageChangeEvent(pageNumber: postBloc.currentPage + 1, context: context));
-      //     }
-      //   }
-      // });
-    });
-  }
 
   @override
   void dispose() {
@@ -74,7 +52,7 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
                 ),
               );
               if (searchSelectedPost != null) {
-                navigateToPostDetails(context: context, post: searchSelectedPost, isFromHome: true);
+                navigateToPostDetails(context: context, postId: searchSelectedPost.id, isFromHome: true);
               }
             },
           )

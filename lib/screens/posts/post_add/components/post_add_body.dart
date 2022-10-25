@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/bloc/postsBloc/posts_bloc.dart';
-import 'package:moment/screens/post_add/components/post_add_request_button.dart';
-import 'package:moment/screens/post_add/components/widgets/custom_file_choosing_widget.dart';
+import 'package:moment/screens/posts/post_add/components/widgets/post_add_request_button_widget.dart';
+import 'package:moment/screens/posts/post_add/components/widgets/custom_file_choosing_widget.dart';
 import 'package:moment/utils/global_keys.dart';
+import 'package:moment/widgets/custom_dialog_widget.dart';
 import 'package:moment/widgets/custom_snackbar_widget.dart';
 import 'package:moment/widgets/custom_text_form_field_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
@@ -31,20 +33,11 @@ class _PostAddBodyState extends State<PostAddBody> {
     return BlocListener<PostsBloc, PostsState>(
       listener: (context, state) {
         if (state is PostCreated) {
-          CustomSnackbarWidget.showSnackbar(
-            ctx: context,
-            backgroundColor: Colors.green,
-            content: 'Post created successfully.',
-            secDuration: 2,
-          );
+          CustomSnackbarWidget.showSnackbar(ctx: context, backgroundColor: Colors.green, content: 'Post created successfully.', secDuration: 1);
         }
         if (state is PostError) {
-          CustomSnackbarWidget.showSnackbar(
-            ctx: context,
-            backgroundColor: Colors.red,
-            content: state.error,
-            secDuration: 2,
-          );
+          CustomDialogs.showCustomActionDialog(ctx: context, message: state.error);
+          // CustomSnackbarWidget.showSnackbar(ctx: context, backgroundColor: Colors.red, content: state.error, secDuration: 2);
         }
       },
       child: Center(
@@ -60,13 +53,15 @@ class _PostAddBodyState extends State<PostAddBody> {
                   fontSize: 30.0,
                   fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 15.0),
+                vSizedBox0,
+                vSizedBox1,
                 Form(
                   key: GlobalKeys.postFormKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const SizedBox(height: 10.0),
+                      vSizedBox0,
+                      vSizedBox1,
                       CustomTextFormFieldWidget(
                         controller: BlocProvider.of<PostsBloc>(context).descriptionController,
                         keyboardType: TextInputType.text,
@@ -79,10 +74,10 @@ class _PostAddBodyState extends State<PostAddBody> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 10.0),
+                      vSizedBox2,
                       const CustomFileChoosingWidget(),
-                      const SizedBox(height: 15.0),
-                      const PostAddRequestButton(
+                      vSizedBox2,
+                      const PostAddRequestButtonWidget(
                         isUpdate: false,
                       ),
                     ],

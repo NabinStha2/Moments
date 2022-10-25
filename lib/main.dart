@@ -103,6 +103,7 @@ class MyApp extends StatelessWidget {
             // darkTheme: ThemeData.dark(),
             themeMode: ThemeMode.system,
             theme: ThemeData(
+              primaryColor: const Color.fromARGB(255, 26, 168, 228),
               appBarTheme: AppBarTheme(
                   backgroundColor: const Color.fromARGB(255, 26, 168, 228),
                   titleTextStyle: TextStyle(

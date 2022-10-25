@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:moment/app/dimension/dimension.dart';
+import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
 
 import 'custom_text_widget.dart';
 
 class CustomDialogs {
   static bool isShowDialog = true;
-  static showCustomFullLoadingDialog(
-      {required BuildContext ctx, String? title}) {
+  static showCustomFullLoadingDialog({required BuildContext ctx, String? title}) {
     return showDialog(
       context: ctx,
       useSafeArea: true,
@@ -15,7 +16,7 @@ class CustomDialogs {
       builder: (_) {
         return WillPopScope(
           onWillPop: () {
-            return Future.value(true);
+            return Future.value(false);
           },
           child: Center(
             child: Column(
@@ -42,8 +43,7 @@ class CustomDialogs {
     );
   }
 
-  static showCustomActionDialog(
-      {required BuildContext ctx, String? message, String? imageUrl}) {
+  static showCustomActionDialog({required BuildContext ctx, String? message, String? imageUrl}) {
     return showDialog(
       context: ctx,
       useSafeArea: true,
@@ -63,25 +63,20 @@ class CustomDialogs {
                   children: [
                     ClipOval(
                       child: Image.network(
-                        imageUrl ??
-                            "https://uploads.sitepoint.com/wp-content/uploads/2015/12/1450973046wordpress-errors.png",
+                        imageUrl ?? "https://uploads.sitepoint.com/wp-content/uploads/2015/12/1450973046wordpress-errors.png",
                         fit: BoxFit.cover,
                       ),
                     ),
-                    const SizedBox(
-                      height: 5.0,
-                    ),
+                    vSizedBox0,
                     PoppinsText(message ?? ""),
-                    const SizedBox(
-                      height: 10.0,
-                    ),
+                    vSizedBox1,
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        primary: Colors.white,
+                        foregroundColor: Colors.white,
                         backgroundColor: Colors.blue,
                       ),
                       onPressed: () {
-                        Navigator.pop(ctx);
+                        RouteNavigation.back(ctx);
                       },
                       child: PoppinsText(
                         "Ok",

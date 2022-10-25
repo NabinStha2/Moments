@@ -9,6 +9,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moment/bloc/activityBloc/activity_bloc.dart';
+import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
 
 import 'package:moment/models/post_model/post_model.dart';
@@ -24,8 +25,11 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   final PostRepo _postRepo = PostRepo();
   final List<PostModelData> postModels = <PostModelData>[];
   final List<PostModelData> allPostModels = <PostModelData>[];
+  PostModelData? singlePostData;
   int pages = 0;
   int currentPage = 1;
+  bool showCommentDelete = false;
+  bool showFileDownload = false;
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -40,6 +44,22 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       emit(PostFileSelectingLoadingState());
       event.isUpdate == true ? updatePostSelectedFile = event.selectedFile : postSelectedFile = event.selectedFile;
       emit(PostFileSelectedState());
+    });
+    on<ShowCommentDeleteEvent>((event, emit) async {
+      showCommentDelete = true;
+      emit(ShowCommentDeleteState());
+    });
+    on<HideCommentDeleteEvent>((event, emit) async {
+      showCommentDelete = false;
+      emit(HideCommentDeleteState());
+    });
+    on<ShowFileDownloadLoadingEvent>((event, emit) async {
+      showFileDownload = true;
+      emit(ShowFileDownloadState());
+    });
+    on<HideFileDownloadLoadingEvent>((event, emit) async {
+      showFileDownload = false;
+      emit(HideFileDownloadState());
     });
     on<PostPageChangeEvent>((event, emit) async {
       emit(PostPageChangedLoadingState());
@@ -119,6 +139,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     try {
       final PostModel post = await _postRepo.getSinglePost(id: event.id);
       if (post.message == "Success" && post.data?.isNotEmpty == true) {
+        singlePostData = post.data?[0];
         emit(GetSinglePostLoaded(
           postModel: post.data?[0],
         ));
@@ -165,7 +186,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   Future _deletePost(DeletePostEvent event, Emitter<PostsState> emit) async {
     try {
       emit(PostDeleteLoading());
-
+      CustomDialogs.showCustomFullLoadingDialog(ctx: event.context, title: "Deleting...");
       final PostModel deletedPost = await _postRepo.deletePost(event.id, event.token);
       if (deletedPost.message == "Success" && deletedPost.data?.isNotEmpty == true) {
         postModels.removeAt(postModels.indexWhere((element) => element.id == deletedPost.data?[0].id));
@@ -189,7 +210,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
               creator: StorageServices.authStorageValues["id"] ?? "",
             ),
           );
-          Navigator.of(event.context).pop(true);
+          RouteNavigation.back(event.context);
         } else if (event.isFromActivity) {
           BlocProvider.of<ActivityBloc>(event.context).add(GetActivity(id: StorageServices.authStorageValues["id"] ?? ""));
         } else {
@@ -199,7 +220,9 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
           // ));
         }
       }
+      RouteNavigation.back(event.context);
     } catch (e) {
+      RouteNavigation.back(event.context);
       print("Error ---- $e");
       emit(PostError(error: e.toString()));
     }
@@ -277,9 +300,9 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
           GetPostsEvent(context: event.context),
         );
       }
-      Navigator.pop(event.context);
+      RouteNavigation.back(event.context);
     } catch (err) {
-      Navigator.pop(event.context);
+      RouteNavigation.back(event.context);
       consolelog(err);
       emit(PostError(error: err.toString()));
     }
@@ -294,21 +317,23 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     try {
       final PostModel post = await _postRepo.updatePost(event.id, event.data, event.token, isImage: event.isImage);
       if (post.data != null && post.message == "Success") {
-        postModels[postModels.indexWhere((element) => element.id == post.data?[0].id)] = post.data![0];
+        postModels[postModels.indexWhere((element) => element.id == post.data?[0].id)] = post.data?[0] ?? PostModelData();
         emit(PostUpdated());
-        emit(GetPostLoaded(postModel: postModels));
-        BlocProvider.of<PostsBloc>(event.context).add(RefreshPostsEvent());
-        BlocProvider.of<PostsBloc>(event.context).add(GetPostsEvent(context: event.context));
-
+        emit(GetPostLoaded(
+          postModel: postModels,
+          allPostModel: allPostModels,
+        ));
+        // BlocProvider.of<PostsBloc>(event.context).add(RefreshPostsEvent());
+        // BlocProvider.of<PostsBloc>(event.context).add(GetPostsEvent(context: event.context));
         BlocProvider.of<PostsBloc>(event.context).add(GetSinglePostEvent(
           context: event.context,
           id: post.data?[0].id ?? "",
         ));
-        Navigator.of(event.context).pop(true);
+        RouteNavigation.back(event.context);
       }
-      Navigator.of(event.context).pop(true);
+      RouteNavigation.back(event.context);
     } catch (err) {
-      Navigator.pop(event.context);
+      RouteNavigation.back(event.context);
       // print("Error ---- -- -- $err");
       emit(PostError(error: err.toString()));
     }

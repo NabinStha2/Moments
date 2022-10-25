@@ -15,7 +15,7 @@ class MainScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.white,
-        color: Colors.black26,
+        color: const Color.fromARGB(255, 26, 168, 228),
         // key: homeBloc.bottomNavigationKey,
         buttonBackgroundColor: Colors.white,
         height: 60.0,

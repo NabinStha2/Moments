@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/dimension/dimension.dart';
 
 import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
@@ -24,7 +25,7 @@ class CustomFileChoosingWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CustomElevatedButtonWidget(
-          width: MediaQuery.of(context).size.width / 3,
+          width: appWidth(context) / 3,
           onPressed: () async {
             FilePickerResult? result = await customFileShowDialogWidget(ctx: context, isImageOnly: false);
             if (result != null) {
@@ -50,8 +51,8 @@ class CustomFileChoosingWidget extends StatelessWidget {
                 width: MediaQuery.of(context).size.width / 2.5,
                 child: Text(
                   isUpdate == true
-                      ? BlocProvider.of<PostsBloc>(context).updatePostSelectedFile?.path.split("/").last ?? ""
-                      : BlocProvider.of<PostsBloc>(context).postSelectedFile?.path.split("/").last ?? "",
+                      ? postBloc.updatePostSelectedFile?.path.split("/").last ?? ""
+                      : postBloc.postSelectedFile?.path.split("/").last ?? "",
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),

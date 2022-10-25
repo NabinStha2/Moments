@@ -36,6 +36,24 @@ class PostPageChangeEvent extends PostsEvent {
 
 class PostClearValueEvent extends PostsEvent {}
 
+class ShowCommentDeleteEvent extends PostsEvent {
+  final bool showCommentDelete;
+  const ShowCommentDeleteEvent({
+    this.showCommentDelete = false,
+  });
+}
+
+class HideCommentDeleteEvent extends PostsEvent {}
+
+class ShowFileDownloadLoadingEvent extends PostsEvent {
+  final bool showFileDownload;
+  const ShowFileDownloadLoadingEvent({
+    this.showFileDownload = false,
+  });
+}
+
+class HideFileDownloadLoadingEvent extends PostsEvent {}
+
 class GetSinglePostEvent extends PostsEvent {
   final String id;
   final BuildContext context;

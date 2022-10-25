@@ -1,3 +1,4 @@
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -68,6 +69,47 @@ class AppBarCookieText extends StatelessWidget {
         fontWeight: fontWeight ?? FontWeight.w500,
         color: color ?? Colors.white,
         letterSpacing: letterSpacing ?? -0.2,
+      ),
+    );
+  }
+}
+
+class CustomExpandableText extends StatelessWidget {
+  final String? text;
+  final String? expandText;
+  final String? collapseText;
+  final Color? linkColor;
+  final int? maxLines;
+  final Color? color;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  const CustomExpandableText({
+    Key? key,
+    this.text,
+    this.expandText,
+    this.collapseText,
+    this.linkColor,
+    this.maxLines,
+    this.color,
+    this.fontSize,
+    this.fontWeight,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpandableText(
+      text ?? "",
+      animation: true,
+      linkEllipsis: true,
+      expanded: true,
+      expandText: expandText ?? 'show more',
+      collapseText: collapseText ?? 'show less',
+      maxLines: maxLines ?? 3,
+      linkColor: linkColor ?? Colors.grey,
+      style: TextStyle(
+        color: color ?? Colors.black54,
+        fontSize: fontSize ?? 14.0,
+        fontWeight: fontWeight ?? FontWeight.w600,
       ),
     );
   }
