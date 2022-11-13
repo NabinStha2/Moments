@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import "package:http/http.dart" as http;
@@ -30,6 +31,10 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   int currentPage = 1;
   bool showCommentDelete = false;
   bool showFileDownload = false;
+  bool showReplyComment = false;
+  int? deleteIndex;
+  String? deleteCommentId;
+  List<String>? deleteCommentActivityId;
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -47,10 +52,16 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     });
     on<ShowCommentDeleteEvent>((event, emit) async {
       showCommentDelete = true;
+      deleteCommentId = event.cmt?.commentId;
+      deleteCommentActivityId = event.cmt?.activityId;
+      deleteIndex = event.index;
       emit(ShowCommentDeleteState());
     });
     on<HideCommentDeleteEvent>((event, emit) async {
       showCommentDelete = false;
+      deleteCommentId = null;
+      deleteCommentActivityId = null;
+      deleteIndex = null;
       emit(HideCommentDeleteState());
     });
     on<ShowFileDownloadLoadingEvent>((event, emit) async {
@@ -60,6 +71,18 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     on<HideFileDownloadLoadingEvent>((event, emit) async {
       showFileDownload = false;
       emit(HideFileDownloadState());
+    });
+    on<ShowReplyCommentEvent>((event, emit) async {
+      showReplyComment = true;
+      emit(ShowReplyCommentState(
+        commentId: event.commentId,
+        replyTo: event.replyTo,
+        replyToUserId: event.replyToUserId,
+      ));
+    });
+    on<HideReplyCommentEvent>((event, emit) async {
+      showReplyComment = false;
+      emit(HideReplyCommentState());
     });
     on<PostPageChangeEvent>((event, emit) async {
       emit(PostPageChangedLoadingState());
@@ -245,6 +268,8 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       );
       if (post.message == "Success" && post.data?.isNotEmpty == true) {
         emit(CommentLoaded());
+        inspect(post.data?[0]);
+        singlePostData = post.data?[0];
         emit(GetSinglePostLoaded(
           postModel: post.data?[0],
         ));
@@ -265,6 +290,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       );
 
       if (post.message == "Success" && post.data?.isNotEmpty == true) {
+        singlePostData = post.data?[0];
         emit(GetSinglePostLoaded(
           postModel: post.data?[0],
         ));

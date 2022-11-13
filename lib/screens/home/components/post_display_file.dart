@@ -30,7 +30,7 @@ class PostDisplayFileBody extends StatelessWidget {
               ? isCachedImage == true
                   ? GestureDetector(
                       onTap: () => {navigateToPostDetails(context: context, postId: post.id)},
-                      child: CustomCachedNetworkImageWidget(imageUrl: post.file?.fileUrl ?? ""))
+                      child: CustomCachedNetworkImageWidget( imageUrl: post.file?.fileUrl ?? ""))
                   : CustomExtendedImageWidget(imageUrl: post.file?.fileUrl ?? "")
               : const CustomCachedNetworkImageWidget(
                   imageUrl:

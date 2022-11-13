@@ -5,8 +5,9 @@ import 'package:get_time_ago/get_time_ago.dart';
 import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/models/post_model/post_model.dart';
 import 'package:moment/utils/storage_services.dart';
-import 'package:moment/widgets/custom_cached_network_image_widget.dart';
 import 'package:moment/widgets/custom_modal_bottom_sheet_widget.dart';
+
+import '../../../widgets/custom_text_widget.dart';
 
 class PostHeaderBody extends StatelessWidget {
   final PostModelData post;
@@ -32,23 +33,19 @@ class PostHeaderBody extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              PoppinsText(
                 postBloc.postModels[index].name ?? "",
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
               ),
-              Text(
+              PoppinsText(
                 GetTimeAgo.parse(
                   DateTime.parse(post.createdAt.toString()),
                 ),
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
+                color: Colors.grey.shade700,
+                fontWeight: FontWeight.w400,
+                fontSize: 13,
               ),
             ],
           ),
@@ -77,13 +74,19 @@ class PostHeaderBody extends StatelessWidget {
                   ),
                   splashRadius: 20,
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: "edit",
-                      child: Text("Edit"),
+                      child: PoppinsText(
+                        "Edit",
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: "delete",
-                      child: Text("Delete"),
+                      child: PoppinsText(
+                        "Delete",
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ],
                 )

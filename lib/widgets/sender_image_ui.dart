@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:moment/widgets/custom_extended_image_widget.dart';
 import 'package:moment/widgets/custom_image_details_widget.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:moment/widgets/video_details.dart';
 
 class SenderImageUi extends StatelessWidget {
@@ -29,8 +31,7 @@ class SenderImageUi extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
-        // height: MediaQuery.of(context).size.height / 2.5,
-        width: MediaQuery.of(context).size.width / 1.75,
+        width: MediaQuery.of(context).size.width * 0.5,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
           // color: Colors.red,
@@ -61,13 +62,14 @@ class SenderImageUi extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => CustomImageDetails(
+                          isSend: true,
                           imageUrl: fileUrl,
                         ),
                       ),
                     );
             },
             child: Column(
-              mainAxisSize: MainAxisSize.max,
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ClipRRect(
@@ -77,26 +79,11 @@ class SenderImageUi extends StatelessWidget {
                     bottomLeft: Radius.elliptical(10, 15),
                   ),
                   child: Stack(children: [
-                    ExtendedImage.network(
-                      fileType == "video" ? thumbnail! : fileUrl,
-                      fit: BoxFit.cover,
-                      enableLoadState: true,
-                      filterQuality: FilterQuality.high,
-                      alignment: Alignment.center,
-                      mode: ExtendedImageMode.gesture,
-                      initGestureConfigHandler: (state) {
-                        return GestureConfig(
-                          minScale: 0.9,
-                          animationMinScale: 0.7,
-                          maxScale: 3.0,
-                          animationMaxScale: 3.5,
-                          speed: 1.0,
-                          inertialSpeed: 100.0,
-                          initialScale: 1.0,
-                          inPageView: false,
-                          initialAlignment: InitialAlignment.center,
-                        );
-                      },
+                    Hero(
+                      tag: "send",
+                      child: CustomExtendedImageWidget(
+                        imageUrl: fileType == "video" ? thumbnail ?? "" : fileUrl,
+                      ),
                     ),
                     fileType == "video"
                         ? Positioned(
@@ -127,7 +114,11 @@ class SenderImageUi extends StatelessWidget {
                 msg != ""
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(msg!),
+                        child: PoppinsText(
+                          msg!,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w400,
+                        ),
                       )
                     : Container(),
               ],

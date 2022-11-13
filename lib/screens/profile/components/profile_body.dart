@@ -1,25 +1,26 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:moment/widgets/custom_modal_bottom_sheet_widget.dart';
-import 'package:moment/utils/storage_services.dart';
-import 'package:moment/widgets/custom_all_shimmer_widget.dart';
-
+import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/bloc/authBloc/auth_bloc.dart';
 import 'package:moment/bloc/postsBloc/posts_bloc.dart';
+import 'package:moment/config/routes/route_navigation.dart';
+import 'package:moment/development/console.dart';
+import 'package:moment/screens/posts/post_details/post_details_screen.dart';
+import 'package:moment/screens/profile/components/profile_header_body.dart';
+import 'package:moment/screens/profile/components/profile_video_card.dart';
+import 'package:moment/screens/profile/components/widgets/profile_image_card.dart';
+import 'package:moment/utils/storage_services.dart';
+import 'package:moment/widgets/custom_all_shimmer_widget.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
+import 'package:moment/widgets/custom_modal_bottom_sheet_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
 import '../../../models/user_model/individual_user_model.dart';
 import '../../../services/one_signal_services.dart';
-import '../../../widgets/custom_image_show_dialog_widget.dart';
-import '../../posts/post_details/components/post_details_body.dart';
 
 class ProfileBody extends StatefulWidget {
   const ProfileBody({
@@ -41,6 +42,7 @@ class _ProfileBodyState extends State<ProfileBody> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      consolelog(StorageServices.authStorageValues);
       if (StorageServices.authStorageValues.isNotEmpty) {
         BlocProvider.of<PostsBloc>(context).add(
           GetCreatorPostsEvent(
@@ -57,7 +59,6 @@ class _ProfileBodyState extends State<ProfileBody> {
         }
       }
     });
-
     super.initState();
   }
 
@@ -94,7 +95,7 @@ class _ProfileBodyState extends State<ProfileBody> {
     return StorageServices.authStorageValues.isNotEmpty == true
         ? Scaffold(
             appBar: AppBar(
-              title: Text(StorageServices.authStorageValues["name"] ?? ""),
+              title: AppBarCookieText(StorageServices.authStorageValues["name"] ?? ""),
               actions: [
                 IconButton(
                   onPressed: () {
@@ -119,12 +120,12 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 color: Colors.black,
                                 onPressed: () {
                                   _logout();
-                                  Navigator.of(context).pop();
+                                  RouteNavigation.back(context);
                                 },
                               ),
                               onTap: () {
                                 _logout();
-                                Navigator.of(context).pop();
+                                RouteNavigation.back(context);
                               },
                             ),
                           ],
@@ -148,187 +149,16 @@ class _ProfileBodyState extends State<ProfileBody> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            customFileShowDialogWidget(isImageOnly: true, ctx: context);
-                          },
-                          child: Stack(
-                            children: [
-                              BlocBuilder<AuthBloc, AuthState>(
-                                builder: (context, state) {
-                                  if (state is UploadImageLoading) {
-                                    return const CircleAvatar(
-                                      radius: 35.0,
-                                      foregroundColor: Colors.transparent,
-                                      child: Center(
-                                        child: CustomCircularProgressIndicatorWidget(),
-                                      ),
-                                    );
-                                  } else if (state is AuthLoaded) {
-                                    var ownerUser = state.ownerUser;
-                                    return Center(
-                                      child: ownerUser?.data?.image?.imageUrl != "" && ownerUser?.data?.image?.imageUrl != null
-                                          ? CircleAvatar(
-                                              radius: 35.0,
-                                              backgroundImage: NetworkImage(
-                                                ownerUser?.data?.image?.imageUrl ?? "",
-                                              ),
-                                              onBackgroundImageError: (object, stackTrace) {
-                                                // inspect(object);
-                                                // print(object);
-                                                const Center(
-                                                  child: Text(
-                                                    "Error",
-                                                    style: TextStyle(
-                                                      color: Colors.red,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            )
-                                          : CircleAvatar(
-                                              radius: 35.0,
-                                              child: Image.network(
-                                                "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
-                                              ),
-                                            ),
-                                    );
-                                  }
-                                  return const CircleAvatar(
-                                    radius: 35.0,
-                                    foregroundColor: Colors.transparent,
-                                    child: Center(
-                                      child: CustomCircularProgressIndicatorWidget(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              Positioned(
-                                top: 30,
-                                left: 35,
-                                child: IconButton(
-                                  splashRadius: 20.0,
-                                  onPressed: () {
-                                    customFileShowDialogWidget(ctx: context, isImageOnly: true);
-                                  },
-                                  icon: const FaIcon(
-                                    FontAwesomeIcons.camera,
-                                    color: Colors.blue,
-                                    size: 20.0,
-                                    // color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 35.0,
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                StorageServices.authStorageValues["name"] != null
-                                    ? StorageServices.authStorageValues["name"]?.toUpperCase() ?? ""
-                                    : "",
-                                style: TextStyle(
-                                  fontFamily: GoogleFonts.redressed().fontFamily,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 20.0,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10.0,
-                              ),
-                              Text(
-                                StorageServices.authStorageValues["email"] ?? "",
-                                style: TextStyle(
-                                  fontFamily: GoogleFonts.balthazar().fontFamily,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 20.0,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10.0,
-                              ),
-                              Row(
-                                children: [
-                                  BlocBuilder<PostsBloc, PostsState>(
-                                    builder: (context, state) {
-                                      if (state is CreatorPostsLoaded) {
-                                        return Text(
-                                          state.postModel != null ? state.postModel?.length.toString() ?? "0" : userPostsLength.toString(),
-                                          style: TextStyle(
-                                            fontFamily: GoogleFonts.lato().fontFamily,
-                                            fontWeight: FontWeight.w100,
-                                            fontSize: 15.0,
-                                          ),
-                                        );
-                                      }
-                                      return Text(
-                                        userPostsLength.toString(),
-                                        style: TextStyle(
-                                          fontFamily: GoogleFonts.lato().fontFamily,
-                                          fontWeight: FontWeight.w100,
-                                          fontSize: 15.0,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  Text(
-                                    "  posts",
-                                    style: TextStyle(
-                                      fontFamily: GoogleFonts.lato().fontFamily,
-                                      fontWeight: FontWeight.w100,
-                                      fontSize: 15.0,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 20.0,
-                                  ),
-                                  Text(
-                                    StorageServices.authStorageValues["friends"] != null
-                                        ? StorageServices.authStorageValues["friends"]?.split(",").length.toString() ?? "0"
-                                        : "0",
-                                    style: TextStyle(
-                                      fontFamily: GoogleFonts.lato().fontFamily,
-                                      fontWeight: FontWeight.w100,
-                                      fontSize: 15.0,
-                                    ),
-                                  ),
-                                  Text(
-                                    "  friends",
-                                    style: TextStyle(
-                                      fontFamily: GoogleFonts.lato().fontFamily,
-                                      fontWeight: FontWeight.w100,
-                                      fontSize: 15.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 15.0,
-                    ),
+                    ProfileHeaderBody(userPostsLength: userPostsLength),
+                    vSizedBox0,
+                    vSizedBox1,
                     const Divider(
                       color: Colors.grey,
                       thickness: 2.0,
                     ),
-                    const SizedBox(
-                      height: 15.0,
-                    ),
-                    Expanded(
+                    vSizedBox0,
+                    vSizedBox1,
+                    Flexible(
                       flex: 2,
                       child: BlocBuilder<PostsBloc, PostsState>(
                         builder: (context, state) {
@@ -337,7 +167,6 @@ class _ProfileBodyState extends State<ProfileBody> {
                           }
                           if (state is CreatorPostsLoaded) {
                             if (state.postModel != null) {
-                              log("Creator Post Loaded");
                               userPostsLength = state.postModel!.length;
                             } else {
                               userPostsLength = 0;
@@ -346,7 +175,6 @@ class _ProfileBodyState extends State<ProfileBody> {
                             if (posts != null) {
                               posts = posts.reversed.toList();
                             }
-
                             return posts != null && posts.isNotEmpty
                                 ? GridView.builder(
                                     physics: const ClampingScrollPhysics(),
@@ -358,132 +186,42 @@ class _ProfileBodyState extends State<ProfileBody> {
                                     ),
                                     itemCount: posts.length,
                                     itemBuilder: (context, index) {
-                                      return Container(
-                                        height: 500,
-                                        alignment: Alignment.center,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) => BlocProvider.value(
-                                                  value: BlocProvider.of<PostsBloc>(context),
-                                                  child: PostDetailsBody(
-                                                    // isFromProfileVisit: false,
-                                                    // isFromHome: false,
-                                                    // isFromProfile: true,
-                                                    postId: posts![index].id!,
-                                                    // isFromComment: false,
-                                                  ),
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) => BlocProvider.value(
+                                                value: BlocProvider.of<PostsBloc>(context),
+                                                child: PostDetailsScreen(
+                                                  isFromProfileVisit: false,
+                                                  isFromHome: false,
+                                                  isFromProfile: true,
+                                                  postId: posts![index].id!,
+                                                  isFromComment: false,
                                                 ),
                                               ),
-                                            );
-                                          },
-                                          child: posts![index].fileType == "video"
-                                              ? Stack(
-                                                  children: [
-                                                    ClipRRect(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      child: Image.network(
-                                                        posts[index].file?.thumbnail ?? "",
-                                                        height: 500,
-                                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                                          return const Text('😢Error!');
-                                                        },
-                                                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                                          if (loadingProgress == null) {
-                                                            return child;
-                                                          }
-                                                          return Center(
-                                                            child: CircularProgressIndicator(
-                                                              value: loadingProgress.expectedTotalBytes != null
-                                                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                                                  : null,
-                                                            ),
-                                                          );
-                                                        },
-                                                        width: MediaQuery.of(context).size.width,
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ),
-                                                    Positioned(
-                                                      top: 0,
-                                                      left: 0,
-                                                      bottom: 0,
-                                                      right: 0,
-                                                      child: IconButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context).push(
-                                                            MaterialPageRoute(
-                                                              builder: (context) => BlocProvider.value(
-                                                                value: BlocProvider.of<PostsBloc>(context),
-                                                                child: PostDetailsBody(
-                                                                  // isFromProfileVisit: false,
-                                                                  // isFromHome: false,
-                                                                  // isFromProfile: true,
-                                                                  postId: state.postModel![index].id!,
-                                                                  // isFromComment: false,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        },
-                                                        splashRadius: 2,
-                                                        icon: const Icon(
-                                                          Icons.play_arrow_rounded,
-                                                          color: Colors.white,
-                                                          size: 35.0,
-                                                        ),
-                                                      ),
-                                                    )
-                                                  ],
-                                                )
-                                              : posts[index].file?.fileUrl != ""
-                                                  ? ClipRRect(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      child: Image.network(
-                                                        posts[index].file?.fileUrl ?? "",
-                                                        fit: BoxFit.cover,
-                                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                                          return const Text('😢Error!');
-                                                        },
-                                                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                                          if (loadingProgress == null) {
-                                                            return child;
-                                                          }
-                                                          return Center(
-                                                            child: CircularProgressIndicator(
-                                                              value: loadingProgress.expectedTotalBytes != null
-                                                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                                                  : null,
-                                                            ),
-                                                          );
-                                                        },
-                                                        height: 400.0,
-                                                        width: MediaQuery.of(context).size.width,
-                                                        alignment: Alignment.center,
-                                                        isAntiAlias: true,
-                                                        filterQuality: FilterQuality.high,
-                                                      ),
-                                                    )
-                                                  : ClipRRect(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      child: Image.network(
+                                            ),
+                                          );
+                                        },
+                                        child: posts![index].fileType == "video"
+                                            ? ProfileVideoCard(
+                                                fileUrlThumbnail: posts[index].file?.thumbnail,
+                                                postId: posts[index].id,
+                                              )
+                                            : posts[index].file?.fileUrl != ""
+                                                ? ProfileImageCard(
+                                                    fileUrl: posts[index].file?.fileUrl,
+                                                  )
+                                                : const ProfileImageCard(
+                                                    fileUrl:
                                                         "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.6nCVjA0S936UiBlDUsov4QAAAA%26pid%3DApi%26h%3D160&f=1",
-                                                        fit: BoxFit.cover,
-                                                        height: 400.0,
-                                                        width: MediaQuery.of(context).size.width,
-                                                        alignment: Alignment.center,
-                                                        isAntiAlias: true,
-                                                        filterQuality: FilterQuality.high,
-                                                      ),
-                                                    ),
-                                        ),
+                                                  ),
                                       );
                                     },
                                   )
-                                : const Center(child: Text("No Posts Yet."));
+                                : Center(child: PoppinsText("No Posts Yet."));
                           }
-                          return const Center(child: Text("No Posts Yet."));
+                          return Center(child: PoppinsText("No Posts Yet."));
                         },
                       ),
                     ),

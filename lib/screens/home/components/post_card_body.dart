@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/models/post_model/post_model.dart';
 import 'package:moment/screens/home/components/post_display_file.dart';
 import 'package:moment/screens/home/components/post_footer_body.dart';
 import 'package:moment/screens/home/components/post_header_widget.dart';
 import 'package:moment/screens/home/components/widgets/navigation_post_details_widget.dart';
-import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
 class PostCardBody extends StatelessWidget {
@@ -43,7 +41,8 @@ class PostCardBody extends StatelessWidget {
                       children: [
                         CustomExpandableText(
                           text: post.description,
-                          fontSize: 15.0,
+                          fontSize: 14.0,
+                          
                         ),
                       ],
                     ),

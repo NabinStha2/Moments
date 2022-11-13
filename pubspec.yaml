@@ -75,6 +75,7 @@ dependencies:
   timeago: ^3.2.2
   expandable_text: ^2.3.0
   flutter_reaction_button: ^2.0.0+3
+  device_preview: ^1.1.0
 
 dev_dependencies:
   flutter_lints: ^2.0.0

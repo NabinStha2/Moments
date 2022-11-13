@@ -8,6 +8,7 @@ class CustomSnackbarWidget {
       int? secDuration,
       int? milliDuration,
       Color? backgroundColor,
+      Color? textColor,
       SnackBarBehavior? snackBarBehavior}) {
     return ScaffoldMessenger.of(ctx)
       ..hideCurrentSnackBar()
@@ -17,7 +18,7 @@ class CustomSnackbarWidget {
         backgroundColor: backgroundColor ?? Colors.green,
         behavior: snackBarBehavior ?? SnackBarBehavior.fixed,
         content: PoppinsText(
-          color: Colors.white,
+          color: textColor?? Colors.white,
           content ?? "",
           fontSize: 14,
           fontWeight: FontWeight.w500,

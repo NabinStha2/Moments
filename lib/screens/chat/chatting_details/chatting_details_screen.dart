@@ -1,50 +1,55 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 
-import "package:http/http.dart" as http;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import "package:http/http.dart" as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:moment/widgets/custom_text_widget.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-
+import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/bloc/authBloc/auth_bloc.dart';
 import 'package:moment/bloc/postsBloc/posts_bloc.dart';
+import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
 import 'package:moment/main.dart';
 import 'package:moment/models/message_model/message_model.dart';
 import 'package:moment/models/user_model/users_model.dart';
-import 'package:moment/pages/camera_page.dart';
-import 'package:moment/pages/camera_view_page.dart';
+import 'package:moment/screens/camera/camera_screen.dart';
+import 'package:moment/screens/chat/chatting_details/components/Image_preview_body.dart';
+import 'package:moment/screens/chat/chatting_details/components/video_preview_body.dart';
 import 'package:moment/screens/profile/components/profile_page.dart';
-import 'package:moment/pages/video_view_page.dart';
 import 'package:moment/screens/video_screen.dart';
 import 'package:moment/screens/voice_screen.dart';
 import 'package:moment/services/api_config.dart';
 import 'package:moment/utils/storage_services.dart';
-import 'package:moment/widgets/receiver_image_ui.dart';
+import 'package:moment/widgets/custom_cached_network_image_widget.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:moment/widgets/receiver_message_ui.dart';
-import 'package:moment/widgets/sender_image_ui.dart';
 import 'package:moment/widgets/sender_message_ui.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class ChattingDetails extends StatefulWidget {
+import '../../../widgets/receiver_image_ui.dart';
+import '../../../widgets/sender_image_ui.dart';
+
+class ChattingDetailsScreen extends StatefulWidget {
   final UserData chatDetail;
-  const ChattingDetails({
+  const ChattingDetailsScreen({
     Key? key,
     required this.chatDetail,
   }) : super(key: key);
 
   @override
-  _ChattingPageState createState() => _ChattingPageState();
+  _ChattingDetailsScreenState createState() => _ChattingDetailsScreenState();
 }
 
-class _ChattingPageState extends State<ChattingDetails> {
+class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
   final FocusNode _focusNode = FocusNode();
-  // final ScrollController _scrollController = ScrollController();
+  ScrollController scrollController = ScrollController();
   final TextEditingController messageEditingController = TextEditingController();
   bool emojiShowing = false;
   bool isOnline = false;
@@ -56,18 +61,25 @@ class _ChattingPageState extends State<ChattingDetails> {
   }
 
   void connect() async {
+    consolelog("Socket connected");
     socket = IO.io(
-      socketUrl,
+      ApiConfig.socketUrl,
       IO.OptionBuilder()
           .setTransports(['websocket']) // for Flutter or Dart VM
           .disableAutoConnect() // disable auto-connection
           .setExtraHeaders({'foo': 'bar'}) // optional
           .build(),
     );
-    socket!.connect();
+    socket?.connect();
+    consolelog(socket?.active);
 
     socket!.on("message", (msg) {
-      debugPrint("Socket : $msg");
+      consolelog("Socket : $msg");
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent * 2,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
       BlocProvider.of<AuthBloc>(context).add(SendMsgDataEvent(
         context: context,
         msgData: MessageData(
@@ -79,21 +91,16 @@ class _ChattingPageState extends State<ChattingDetails> {
           timeStamp: DateTime.now().toString().substring(10, 16),
         ),
       ));
-      // _scrollController.animateTo(
-      //   _scrollController.position.maxScrollExtent + 100,
-      //   duration: const Duration(milliseconds: 300),
-      //   curve: Curves.easeOut,
-      // );
     });
 
     socket!.on("user_login", (isLogin) {
-      // debugPrint("Socket : $isLogin");
+      consolelog("Socket : $isLogin");
       setState(() {
         isOnline = isLogin;
       });
     });
 
-    // debugPrint("${socket!.connected}");
+    // consolelog("${socket!.connected}");
 
     socket!.emit("signIn", [
       StorageServices.authStorageValues["name"],
@@ -104,8 +111,8 @@ class _ChattingPageState extends State<ChattingDetails> {
     socket!.emit("user_online", [StorageServices.authStorageValues["id"], widget.chatDetail.id]);
 
     socket!.on("user_enter", (name) {
-      // debugPrint(name);
-      // debugPrint("${StorageServices.authStorageValues["name"]} has entered the chat!");
+      // consolelog(name);
+      // consolelog("${StorageServices.authStorageValues["name"]} has entered the chat!");
       BlocProvider.of<AuthBloc>(context).add(SendMsgDataEvent(
         context: context,
         msgData: MessageData(
@@ -120,8 +127,8 @@ class _ChattingPageState extends State<ChattingDetails> {
     });
 
     socket!.on("user_leave", (name) {
-      // debugPrint(botMsgId);
-      // debugPrint("${StorageServices.authStorageValues["name"]} has leaved the chat!");
+      // consolelog(botMsgId);
+      // consolelog("${StorageServices.authStorageValues["name"]} has leaved the chat!");
       BlocProvider.of<AuthBloc>(context).add(SendMsgDataEvent(
         context: context,
         msgData: MessageData(
@@ -157,6 +164,7 @@ class _ChattingPageState extends State<ChattingDetails> {
   @override
   void dispose() {
     socket!.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -207,19 +215,18 @@ class _ChattingPageState extends State<ChattingDetails> {
             ),
             IconButton(
               onPressed: () {
-                Navigator.push(
+                RouteNavigation.navigate(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => VoiceScreen(
-                      userDetail: widget.chatDetail,
-                    ),
+                  VoiceScreen(
+                    userDetail: widget.chatDetail,
                   ),
                 );
               },
               iconSize: 18.0,
               splashRadius: 24.0,
-              icon: const FaIcon(
-                FontAwesomeIcons.phoneAlt,
+              icon: const Icon(
+                Icons.phone,
+                size: 24.0,
               ),
             ),
           ],
@@ -238,7 +245,7 @@ class _ChattingPageState extends State<ChattingDetails> {
                   ],
                 );
 
-                Navigator.pop(context);
+                RouteNavigation.back(context);
               },
               splashColor: Colors.grey[400],
               borderRadius: const BorderRadius.all(Radius.circular(20.0)),
@@ -250,37 +257,27 @@ class _ChattingPageState extends State<ChattingDetails> {
                   const Expanded(
                     child: Icon(Icons.arrow_back_rounded),
                   ),
-                  const SizedBox(
-                    width: 5.0,
-                  ),
+                  hSizedBox0,
                   Expanded(
                     flex: 2,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(50.0),
                       clipBehavior: Clip.antiAlias,
                       child: widget.chatDetail.image?.imageUrl != ""
-                          ? Image.network(
-                              widget.chatDetail.image?.imageUrl ?? "",
-                              fit: BoxFit.cover,
-                              alignment: Alignment.center,
+                          ? CustomCachedNetworkImageWidget(
+                              imageUrl: widget.chatDetail.image?.imageUrl ?? "",
                               height: 50,
                               width: 50,
-                              filterQuality: FilterQuality.high,
                             )
-                          : Image.network(
-                              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
-                              fit: BoxFit.cover,
-                              height: 50.0,
+                          : const CustomCachedNetworkImageWidget(
+                              imageUrl:
+                                  "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
+                              height: 50,
                               width: 50,
-                              alignment: Alignment.center,
-                              isAntiAlias: true,
-                              filterQuality: FilterQuality.high,
                             ),
                     ),
                   ),
-                  const SizedBox(
-                    width: 5.0,
-                  ),
+                  hSizedBox0,
                 ],
               ),
             ),
@@ -304,16 +301,14 @@ class _ChattingPageState extends State<ChattingDetails> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
+                PoppinsText(
                   widget.chatDetail.name.toString(),
-                  style: TextStyle(
-                    fontFamily: GoogleFonts.roboto().fontFamily,
-                    fontSize: 18.0,
-                  ),
+                  color: Colors.white,
+                  fontSize: 16.0,
                 ),
                 PoppinsText(
                   isOnline ? "online" : "offline",
-                  color: isOnline ? Colors.green.shade900 : Colors.red,
+                  color: isOnline ? Colors.white : Colors.white.withOpacity(0.7),
                 ),
               ],
             ),
@@ -342,11 +337,11 @@ class _ChattingPageState extends State<ChattingDetails> {
                 "fileType": state.msgData.data?.fileType ?? "",
                 "thumbnail": state.msgData.data?.thumbnail ?? "",
               });
-              // _scrollController.animateTo(
-              //   _scrollController.position.maxScrollExtent + 200,
-              //   duration: const Duration(milliseconds: 300),
-              //   curve: Curves.easeOut,
-              // );
+              scrollController.animateTo(
+                scrollController.position.maxScrollExtent * 2,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
             }
             if (state is AuthLoaded) {
               var msgListData = state.msgData;
@@ -369,6 +364,8 @@ class _ChattingPageState extends State<ChattingDetails> {
         children: [
           Expanded(
             child: ListView.builder(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              controller: scrollController,
               itemBuilder: (context, index) {
                 if (msgListData?[index].messageType == "bot") {
                   return Center(
@@ -415,8 +412,7 @@ class _ChattingPageState extends State<ChattingDetails> {
                 }
               },
               itemCount: msgListData?.length ?? 0,
-              // controller: _scrollController,
-              // physics: const BouncingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               shrinkWrap: true,
             ),
           ),
@@ -428,13 +424,10 @@ class _ChattingPageState extends State<ChattingDetails> {
                   focusNode: _focusNode,
                   onTap: () {
                     setState(() => emojiShowing = false);
-                    // Timer(
-                    //   const Duration(milliseconds: 300),
-                    //   () => _scrollController.animateTo(
-                    //     _scrollController.position.maxScrollExtent + 100,
-                    //     duration: const Duration(milliseconds: 200),
-                    //     curve: Curves.easeInOut,
-                    //   ),
+                    // scrollController.animateTo(
+                    //   scrollController.position.maxScrollExtent * 2,
+                    //   duration: const Duration(milliseconds: 600),
+                    //   curve: Curves.easeInOut,
                     // );
                   },
                   controller: messageEditingController,
@@ -497,11 +490,11 @@ class _ChattingPageState extends State<ChattingDetails> {
                     "thumbnail": "",
                   });
                   messageEditingController.clear();
-                  // _scrollController.animateTo(
-                  //   _scrollController.position.maxScrollExtent + 100,
-                  //   duration: const Duration(milliseconds: 200),
-                  //   curve: Curves.easeInOut,
-                  // );
+                  scrollController.animateTo(
+                    scrollController.position.maxScrollExtent * 2,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                  );
                 },
                 splashRadius: 20.0,
                 icon: const Icon(
@@ -572,9 +565,7 @@ class _ChattingPageState extends State<ChattingDetails> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               iconCreation(Icons.camera_alt, Colors.pink, "Camera"),
-              const SizedBox(
-                width: 50,
-              ),
+              hSizedBox4,
               iconCreation(Icons.insert_photo, Colors.purple, "Gallery"),
             ],
           ),
@@ -595,7 +586,6 @@ class _ChattingPageState extends State<ChattingDetails> {
             backgroundColor: color,
             child: Icon(
               icons,
-              // semanticLabel: "Help",
               size: 29,
               color: Colors.white,
             ),
@@ -619,12 +609,10 @@ class _ChattingPageState extends State<ChattingDetails> {
     XFile? pickedFile;
     FilePickerResult? result;
     if (source == "Camera") {
-      Navigator.push(
+      RouteNavigation.navigate(
         context,
-        MaterialPageRoute(
-          builder: (context) => CameraPage(
-            sendFile: sendFile,
-          ),
+        CameraScreen(
+          sendFile: sendFile,
         ),
       );
     } else {
@@ -634,25 +622,18 @@ class _ChattingPageState extends State<ChattingDetails> {
 
     if (pickedFile != null || result != null) {
       result!.files.single.extension == "mp4"
-          // ignore: use_build_context_synchronously
-          ? Navigator.push(
+          ? RouteNavigation.navigate(
               context,
-              MaterialPageRoute(
-                builder: (builder) => VideoViewPage(
-                  path: result?.files.single.path ?? "",
-                  sendFile: sendFile,
-                ),
+              VideoPreviewBody(
+                path: result.files.single.path ?? "",
+                sendFile: sendFile,
               ),
             )
-          :
-          // ignore: use_build_context_synchronously
-          Navigator.push(
+          : RouteNavigation.navigate(
               context,
-              MaterialPageRoute(
-                builder: (context) => CameraViewPage(
-                  path: result?.files.single.path ?? "",
-                  sendFile: sendFile,
-                ),
+              ImagePreviewBody(
+                path: result.files.single.path ?? "",
+                sendFile: sendFile,
               ),
             );
     }

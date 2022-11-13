@@ -20,13 +20,13 @@ navigateToPostDetails({
     BlocProvider.value(
       value: BlocProvider.of<PostsBloc>(context),
       child: PostDetailsScreen(
-        // isFromProfileVisit: isFromProfileVisit,
-        // isFromProfile: isFromProfile,
+        isFromProfileVisit: isFromProfileVisit,
+        isFromProfile: isFromProfile,
         postId: postId,
-        //   isFromHome: isFromHome,
-        //   isFromActivity: isFromActivity,
-        //   userVisitId: userVisitId,
-        //   isFromComment: isFromComment,
+        isFromHome: isFromHome,
+        isFromActivity: isFromActivity,
+        userVisitId: userVisitId,
+        isFromComment: isFromComment,
       ),
     ),
   );

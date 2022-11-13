@@ -26,6 +26,7 @@ class PoppinsText extends StatelessWidget {
     return Text(
       text ?? "",
       textAlign: textAlign,
+      
       maxLines: maxLines,
       overflow: maxLines != null ? TextOverflow.ellipsis : null,
       style: GoogleFonts.poppins(
@@ -100,8 +101,10 @@ class CustomExpandableText extends StatelessWidget {
     return ExpandableText(
       text ?? "",
       animation: true,
+      expandOnTextTap: true,
+      collapseOnTextTap: true,
       linkEllipsis: true,
-      expanded: true,
+      expanded: false,
       expandText: expandText ?? 'show more',
       collapseText: collapseText ?? 'show less',
       maxLines: maxLines ?? 3,
@@ -109,7 +112,8 @@ class CustomExpandableText extends StatelessWidget {
       style: TextStyle(
         color: color ?? Colors.black54,
         fontSize: fontSize ?? 14.0,
-        fontWeight: fontWeight ?? FontWeight.w600,
+        fontFamily: GoogleFonts.poppins().fontFamily,
+        fontWeight: fontWeight ?? FontWeight.w500,
       ),
     );
   }

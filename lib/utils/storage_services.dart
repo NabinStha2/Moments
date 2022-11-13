@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:moment/development/console.dart';
 
 class StorageServices {
   static FlutterSecureStorage? _storage;
@@ -17,7 +18,9 @@ class StorageServices {
   static get token => _storage?.read(key: "token");
 
   static Map<String, String> get authStorageValues => _authStorageValues;
+
   static setAuthStorageValues(Map<String, String> value) {
+    consolelog("data");
     _authStorageValues = value;
   }
 

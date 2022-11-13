@@ -38,8 +38,12 @@ class PostClearValueEvent extends PostsEvent {}
 
 class ShowCommentDeleteEvent extends PostsEvent {
   final bool showCommentDelete;
+  final Comments? cmt;
+  final int? index;
   const ShowCommentDeleteEvent({
     this.showCommentDelete = false,
+    this.cmt,
+    this.index,
   });
 }
 
@@ -53,6 +57,21 @@ class ShowFileDownloadLoadingEvent extends PostsEvent {
 }
 
 class HideFileDownloadLoadingEvent extends PostsEvent {}
+
+class ShowReplyCommentEvent extends PostsEvent {
+  final bool showReplyComment;
+  final String? commentId;
+  final String? replyToUserId;
+  final String? replyTo;
+  const ShowReplyCommentEvent({
+    this.showReplyComment = false,
+    this.commentId,
+    this.replyToUserId,
+    this.replyTo,
+  });
+}
+
+class HideReplyCommentEvent extends PostsEvent {}
 
 class GetSinglePostEvent extends PostsEvent {
   final String id;

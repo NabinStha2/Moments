@@ -27,6 +27,19 @@ class HideFileDownloadState extends PostsState {}
 
 class ShowFileDownloadState extends PostsState {}
 
+class ShowReplyCommentState extends PostsState {
+  final String? commentId;
+  final String? replyToUserId;
+  final String? replyTo;
+  const ShowReplyCommentState({
+    this.commentId,
+    this.replyToUserId,
+    this.replyTo,
+  });
+}
+
+class HideReplyCommentState extends PostsState {}
+
 class PostClearValueState extends PostsState {}
 
 class PostDeleteLoading extends PostsState {}

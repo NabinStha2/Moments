@@ -6,10 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moment/bloc/authBloc/auth_bloc.dart';
 import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
 
-class CameraViewPage extends StatelessWidget {
+class ImagePreviewBody extends StatelessWidget {
   final String path;
   final Function? sendFile;
-  CameraViewPage({
+  ImagePreviewBody({
     Key? key,
     required this.path,
     this.sendFile,

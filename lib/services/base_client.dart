@@ -28,7 +28,7 @@ class BaseClient {
       var response = await http
           .delete(uri, body: payload, headers: isTokenHeader ? _tokenHeaders : _headers)
           .timeout(const Duration(seconds: TIME_OUT_DURATION));
-
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');
@@ -47,7 +47,7 @@ class BaseClient {
             headers: isTokenHeader ? _tokenHeaders : _headers,
           )
           .timeout(const Duration(seconds: TIME_OUT_DURATION));
-      // consolelog(response.body);
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');
@@ -69,6 +69,7 @@ class BaseClient {
     try {
       var response =
           await http.patch(uri, body: payload, headers: isTokenHeader ? _tokenHeaders : _headers).timeout(const Duration(seconds: TIME_OUT_DURATION));
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException(
@@ -100,6 +101,7 @@ class BaseClient {
             headers: isTokenHeader ? _tokenHeaders : _headers,
           )
           .timeout(const Duration(seconds: TIME_OUT_DURATION));
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException(
@@ -221,7 +223,7 @@ class BaseClient {
       }
       var data = await request.send();
       var response = await http.Response.fromStream(data);
-      // consoleinspect(response);
+      consolelog(uri); // consoleinspect(response);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException(
@@ -245,6 +247,7 @@ class BaseClient {
     try {
       var response =
           await http.put(uri, body: payload, headers: isTokenHeader ? _tokenHeaders : _headers).timeout(const Duration(seconds: TIME_OUT_DURATION));
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException(

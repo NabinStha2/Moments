@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ import 'package:moment/screens/main/main_screen.dart';
 import 'package:moment/utils/storage_services.dart';
 
 const appId = "ea8b2f5a8acd452e88b5028f95ab55dd";
-const String socketUrl = "http://192.168.1.15:5000";
+
 IO.Socket? socket;
 
 List<CameraDescription>? cameras;
@@ -37,14 +38,14 @@ void main() async {
 
   await Firebase.initializeApp();
 
-  socket = IO.io(
-    socketUrl,
-    IO.OptionBuilder()
-        .setTransports(['websocket']) // for Flutter or Dart VM
-        .disableAutoConnect() // disable auto-connection
-        .setExtraHeaders({'foo': 'bar'}) // optional
-        .build(),
-  );
+  // socket = IO.io(
+  //   socketUrl,
+  //   IO.OptionBuilder()
+  //       .setTransports(['websocket']) // for Flutter or Dart VM
+  //       .disableAutoConnect() // disable auto-connection
+  //       .setExtraHeaders({'foo': 'bar'}) // optional
+  //       .build(),
+  // );
 
   await OneSignal.shared.setAppId("c6055b6a-d6d7-4ecf-99f9-6d7e38e884ae");
   OneSignal.shared.setSubscriptionObserver((OSSubscriptionStateChanges changes) {
@@ -56,7 +57,14 @@ void main() async {
   Bloc.observer = MyBlocObserver();
   cameras = await availableCameras();
   // NativeNotify.initialize(831, 'hsgYDUjuCgmNl9GaYuCc8I', null, null);
-  runApp(MyApp());
+
+  runApp(
+    // DevicePreview(
+    //   enabled: !kReleaseMode,
+    //   builder: (context) =>
+    MyApp(), // Wrap your app
+    // ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -97,6 +105,9 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (context, child) {
           return MaterialApp(
+            // useInheritedMediaQuery: true,
+            // locale: DevicePreview.locale(context),
+            // builder: DevicePreview.appBuilder,
             debugShowCheckedModeBanner: false,
             title: title,
             navigatorKey: navigatorKey,

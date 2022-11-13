@@ -1,23 +1,24 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:moment/app/dimension/dimension.dart';
+import 'package:moment/bloc/authBloc/auth_bloc.dart';
+import 'package:moment/config/routes/route_navigation.dart';
+import 'package:moment/screens/profile/components/profile_page.dart';
 import 'package:moment/utils/storage_services.dart';
+import 'package:moment/widgets/custom_button_widget.dart';
+import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
+import 'package:moment/widgets/custom_snackbar_widget.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
-import 'package:moment/models/user_model/individual_user_model.dart';
-import 'package:moment/screens/profile/components/profile_page.dart';
-
-class UsersPage extends StatefulWidget {
-  const UsersPage({Key? key}) : super(key: key);
+class AllUsersListBody extends StatefulWidget {
+  const AllUsersListBody({Key? key}) : super(key: key);
 
   @override
-  _UsersPageState createState() => _UsersPageState();
+  _AllUsersListBodyState createState() => _AllUsersListBodyState();
 }
 
-class _UsersPageState extends State<UsersPage> {
+class _AllUsersListBodyState extends State<AllUsersListBody> {
   @override
   void initState() {
     super.initState();
@@ -46,17 +47,17 @@ class _UsersPageState extends State<UsersPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pop(true);
+        RouteNavigation.back(context);
         return true;
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Add User"),
+          title: AppBarCookieText("Add User"),
           leading: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6.0),
             child: InkWell(
                 onTap: () {
-                  Navigator.of(context).pop(true);
+                  RouteNavigation.back(context);
                 },
                 child: const Icon(Icons.arrow_back_rounded)),
           ),
@@ -65,27 +66,13 @@ class _UsersPageState extends State<UsersPage> {
           alignment: Alignment.center,
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
-              // if (state is AuthLoading) {
-              //   ScaffoldMessenger.of(context)
-              //     ..removeCurrentSnackBar()
-              //     ..showSnackBar(
-              //       const SnackBar(
-              //         content: Text("Progressing..."),
-              //         backgroundColor: Colors.grey,
-              //         behavior: SnackBarBehavior.floating,
-              //       ),
-              //     );
-              // }
               if (state is AddUserSuccess) {
-                ScaffoldMessenger.of(context)
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                    const SnackBar(
-                      content: Text("Progress Completed"),
-                      duration: Duration(milliseconds: 400),
-                      backgroundColor: Colors.grey,
-                    ),
-                  );
+                CustomSnackbarWidget.showSnackbar(
+                  ctx: context,
+                  content: "Progress Completed",
+                  milliDuration: 400,
+                  backgroundColor: Colors.grey,
+                );
               }
             },
             builder: (context, state) {
@@ -96,31 +83,32 @@ class _UsersPageState extends State<UsersPage> {
                           return InkWell(
                             onTap: () {
                               BlocProvider.of<AuthBloc>(context).clearUserDetails();
-                              Navigator.push(
+                              RouteNavigation.navigate(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return ProfileVisitPage(
-                                      isFromSearch: false,
-                                      userId: state.allUsers?.data?[index].id ?? "",
-                                    );
-                                  },
+                                ProfileVisitPage(
+                                  isFromSearch: false,
+                                  userId: state.allUsers?.data?[index].id ?? "",
                                 ),
                               );
                             },
                             splashColor: Colors.grey[400],
                             child: ListTile(
-                              title: Text(state.allUsers?.data?[index].name ?? ""),
+                              title: PoppinsText(
+                                state.allUsers?.data?[index].name ?? "",
+                                fontSize: 16.0,
+                              ),
                               subtitle: Row(
                                 children: [
                                   const Icon(
                                     Icons.keyboard_arrow_right_rounded,
                                     size: 17.0,
                                   ),
-                                  const SizedBox(
-                                    width: 5.0,
+                                  hSizedBox0,
+                                  PoppinsText(
+                                    state.allUsers?.data?[index].email ?? "",
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 12.0,
                                   ),
-                                  Text(state.allUsers?.data?[index].email ?? ""),
                                 ],
                               ),
                               leading: ClipRRect(
@@ -145,8 +133,7 @@ class _UsersPageState extends State<UsersPage> {
                                         filterQuality: FilterQuality.high,
                                       ),
                               ),
-                              trailing: IconButton(
-                                splashRadius: 25.0,
+                              trailing: CustomIconButtonWidget(
                                 onPressed: () async {
                                   BlocProvider.of<AuthBloc>(context).add(AddUserEvent(
                                     context: context,
@@ -168,13 +155,16 @@ class _UsersPageState extends State<UsersPage> {
 
                                   await OneSignal.shared.postNotification(notification);
                                 },
-                                icon: state.ownerUser?.data?.friends?.isNotEmpty == true &&
-                                        state.ownerUser?.data?.friends?.contains(state.allUsers?.data?[index].id) == true
+                                icon: (state.ownerUser?.data?.friends?.isNotEmpty == true &&
+                                        state.ownerUser?.data?.friends?.contains(state.allUsers?.data?[index].id) == true)
                                     ? const Icon(
                                         Icons.delete,
                                         color: Colors.redAccent,
                                       )
-                                    : const Icon(Icons.add),
+                                    : const Icon(
+                                        Icons.add,
+                                        color: Colors.grey,
+                                      ),
                               ),
                             ),
                           );
@@ -192,35 +182,32 @@ class _UsersPageState extends State<UsersPage> {
                         itemCount: state.allUsers?.data?.length.toInt() ?? 0,
                       )
                     : const Center(
-                        child: SpinKitCircle(
-                          color: Colors.blue,
-                          size: 40.0,
-                        ),
+                        child: CustomCircularProgressIndicatorWidget(),
                       );
               }
               if (state is AuthError) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        BlocProvider.of<AuthBloc>(context).add(
-                          GetAllUser(context: context),
-                        );
-                      },
-                      icon: const Icon(Icons.refresh),
-                    ),
-                    const SizedBox(height: 15),
-                    // Text(state.error!, textAlign: TextAlign.center),
-                  ],
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CustomIconButtonWidget(
+                        onPressed: () {
+                          BlocProvider.of<AuthBloc>(context).add(
+                            GetAllUser(context: context),
+                          );
+                        },
+                        icon: const Icon(Icons.refresh),
+                      ),
+                      vSizedBox0,
+                      vSizedBox1,
+                      // Text(state.error!, textAlign: TextAlign.center),
+                    ],
+                  ),
                 );
               }
               return const Center(
-                child: SpinKitCircle(
-                  color: Colors.blue,
-                  size: 40.0,
-                ),
+                child: CustomCircularProgressIndicatorWidget(),
               );
               // return ownerDetails != null
               //     ? ownerDetails!.friends!.contains(state.allUsers![index].id)

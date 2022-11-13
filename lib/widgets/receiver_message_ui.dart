@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
 
 class ReceiverMessageUi extends StatelessWidget {
-  const ReceiverMessageUi({Key? key, this.message, this.time})
-      : super(key: key);
+  const ReceiverMessageUi({Key? key, this.message, this.time}) : super(key: key);
   final String? message;
   final String? time;
 
@@ -34,22 +34,19 @@ class ReceiverMessageUi extends StatelessWidget {
                   top: 5,
                   bottom: 18,
                 ),
-                child: Text(
+                child: PoppinsText(
                   message!,
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
               Positioned(
                 bottom: 0,
                 right: 10,
-                child: Text(
+                child: PoppinsText(
                   time!,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+                  fontSize: 12,
+                  color: Colors.grey[600],
                 ),
               ),
             ],

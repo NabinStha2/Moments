@@ -3,17 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoViewPage extends StatefulWidget {
-  const VideoViewPage({Key? key, required this.path, required this.sendFile})
+class VideoPreviewBody extends StatefulWidget {
+  const VideoPreviewBody({Key? key, required this.path, required this.sendFile})
       : super(key: key);
   final String path;
   final Function sendFile;
 
   @override
-  _VideoViewPageState createState() => _VideoViewPageState();
+  _VideoPreviewBodyState createState() => _VideoPreviewBodyState();
 }
 
-class _VideoViewPageState extends State<VideoViewPage> {
+class _VideoPreviewBodyState extends State<VideoPreviewBody> {
   VideoPlayerController? _controller;
   final TextEditingController _textEditingController = TextEditingController();
 

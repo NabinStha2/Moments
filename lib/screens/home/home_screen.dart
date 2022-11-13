@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moment/bloc/postsBloc/posts_bloc.dart';
+import 'package:moment/development/console.dart';
 import 'package:moment/main.dart';
 import 'package:moment/screens/home/components/home_body.dart';
 import 'package:moment/widgets/custom_search_widget.dart';
 import 'package:moment/screens/home/components/widgets/navigation_post_details_widget.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
+
+import '../../bloc/authBloc/auth_bloc.dart';
+import '../../utils/storage_services.dart';
 
 class NewsFeedScreen extends StatefulWidget {
   const NewsFeedScreen({

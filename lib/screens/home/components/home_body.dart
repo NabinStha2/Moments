@@ -8,7 +8,6 @@ import 'package:moment/screens/home/components/widgets/custom_paginated_loading_
 import 'package:moment/widgets/custom_all_shimmer_widget.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_dialog_widget.dart';
-import 'package:moment/widgets/custom_snackbar_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
 import '../../../bloc/postsBloc/posts_bloc.dart';
@@ -25,14 +24,15 @@ class HomeBody extends StatelessWidget {
     var postBloc = BlocProvider.of<PostsBloc>(context);
     return BlocConsumer<PostsBloc, PostsState>(
       listener: (context, state) {
-        // if (state is PostCreated) {
-        //   CustomSnackbarWidget.showSnackbar(ctx: context, backgroundColor: Colors.grey, content: "Post created successfully", milliDuration: 400);
-        // }
         if (state is PostError) {
           CustomDialogs.showCustomActionDialog(ctx: context, message: state.error);
         }
         if (state is PostPageChangedLoadedState) {
           postBloc.add(GetPostsEvent(context: context, page: postBloc.currentPage));
+        }
+        if (state is CreatorPostsLoaded || state is CreatorPostError) {
+          postBloc.add(RefreshPostsEvent());
+          postBloc.add(PostPageChangeEvent(context: context, pageNumber: 1));
         }
       },
       builder: (context, state) {
@@ -52,10 +52,7 @@ class HomeBody extends StatelessWidget {
             ),
           );
         }
-        if (state is CreatorPostsLoaded || state is CreatorPostError) {
-          postBloc.add(RefreshPostsEvent());
-          postBloc.add(PostPageChangeEvent(context: context, pageNumber: 1));
-        }
+
         return postBloc.postModels.isNotEmpty
             ? NotificationListener<ScrollUpdateNotification>(
                 onNotification: (ScrollUpdateNotification scrollNotification) {

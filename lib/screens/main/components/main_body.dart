@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
@@ -10,6 +12,9 @@ import 'package:moment/utils/dynamic_link.dart';
 import 'package:moment/utils/storage_services.dart';
 import 'package:moment/widgets/custom_snackbar_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
+
+import '../../../bloc/postsBloc/posts_bloc.dart';
+import '../../../development/console.dart';
 
 class MainBody extends StatefulWidget {
   const MainBody({super.key});
@@ -57,6 +62,23 @@ class _HomeBodyState extends State<MainBody> {
   getStorageItem() async {
     StorageServices.setAuthStorageValues(await StorageServices.getStorage());
     // consolelog(StorageServices.authStorageValues);
+    consolelog(StorageServices.authStorageValues);
+    if (StorageServices.authStorageValues.isNotEmpty == true && StorageServices.authStorageValues != {}) {
+      consolelog("heheasams");
+      // BlocProvider.of<PostsBloc>(context).add(
+      //   GetCreatorPostsEvent(
+      //     context: context,
+      //     creator: StorageServices.authStorageValues["id"] ?? "",
+      //   ),
+      // );
+      BlocProvider.of<AuthBloc>(context).add(GetUserFriends(
+        context: context,
+        id: StorageServices.authStorageValues["id"],
+      ));
+      BlocProvider.of<AuthBloc>(context).add(
+        GetAllUser(context: context),
+      );
+    }
   }
 
   @override

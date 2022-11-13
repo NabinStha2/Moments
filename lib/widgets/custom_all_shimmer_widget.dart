@@ -73,27 +73,56 @@ class CustomAllShimmerWidget {
               ],
             ),
           );
-          // return ListTile(
-          //   contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-          //   leading: const CustomShimmerContainerWidget(
-          //     shape: BoxShape.circle,
-          //   ),
-          //   trailing: const CustomShimmerContainerWidget(
-          //     height: 40,
-          //     width: 50,
-          //     borderRadius: 5,
-          //   ),
-          //   title: CustomShimmerContainerWidget(
-          //     height: 10.0,
-          //     width: 30,
-          //     borderRadius: 3,
-          //   ),
-          //   subtitle: CustomShimmerContainerWidget(
-          //     height: 10.0,
-          //     width: 10,
-          //     borderRadius: 3,
-          //   ),
-          // );
+        },
+      ),
+    );
+  }
+
+  static Widget chatShimmerWidget({userPostsLength}) {
+    return CustomShimmerWidget(
+      widget: ListView.builder(
+        itemCount: 15,
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return CustomShimmerContainerWidget(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            widget: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const CustomShimmerContainerWidget(
+                      shape: BoxShape.circle,
+                    ),
+                    hSizedBox1,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomShimmerContainerWidget(
+                          height: 10.0,
+                          width: appWidth(context) * 0.4,
+                          borderRadius: 3,
+                        ),
+                        vSizedBox1,
+                        CustomShimmerContainerWidget(
+                          height: 10.0,
+                          width: appWidth(context) * 0.2,
+                          borderRadius: 3,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                hSizedBox1,
+                const CustomShimmerContainerWidget(
+                  shape: BoxShape.circle,
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
