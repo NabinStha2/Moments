@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
 import 'package:moment/utils/storage_services.dart';
+
+import '../bloc/auth_bloc/auth_bloc.dart';
 
 class CustomChooseFileWidget {
   static List choose = ["camera", "gallery"];

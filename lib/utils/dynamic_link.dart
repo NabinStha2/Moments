@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:moment/development/console.dart';
+import 'package:moment/screens/posts/post_details/post_details_screen.dart';
 import 'package:moment/screens/profile/components/profile_page.dart';
 import 'package:moment/screens/posts/post_details/components/post_details_body.dart';
 
@@ -68,7 +69,7 @@ class FirebaseDynamicLinkService {
           try {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => PostDetailsBody(
+                builder: (context) => PostDetailsScreen(
                   postId: postId,
                 ),
               ),
@@ -109,7 +110,7 @@ class FirebaseDynamicLinkService {
           try {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => PostDetailsBody(
+                builder: (context) => PostDetailsScreen(
                   postId: postId,
                 ),
               ),

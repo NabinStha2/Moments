@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moment/app/dimension/dimension.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/screens/posts/post_add/components/widgets/post_add_request_button_widget.dart';
 import 'package:moment/screens/posts/post_add/components/widgets/custom_file_choosing_widget.dart';
 import 'package:moment/utils/global_keys.dart';
@@ -9,6 +8,8 @@ import 'package:moment/widgets/custom_dialog_widget.dart';
 import 'package:moment/widgets/custom_snackbar_widget.dart';
 import 'package:moment/widgets/custom_text_form_field_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
+
+import '../../../../bloc/posts_bloc/posts_bloc.dart';
 
 class PostAddBody extends StatefulWidget {
   const PostAddBody({super.key});
@@ -33,6 +34,12 @@ class _PostAddBodyState extends State<PostAddBody> {
     return BlocListener<PostsBloc, PostsState>(
       listener: (context, state) {
         if (state is PostCreated) {
+          BlocProvider.of<PostsBloc>(context).add(
+            RefreshPostsEvent(),
+          );
+          BlocProvider.of<PostsBloc>(context).add(
+            GetPostsEvent(context: context),
+          );
           CustomSnackbarWidget.showSnackbar(ctx: context, backgroundColor: Colors.green, content: 'Post created successfully.', secDuration: 1);
         }
         if (state is PostError) {

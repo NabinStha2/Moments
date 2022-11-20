@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/services/api_config.dart';
 import 'package:moment/utils/storage_services.dart';
 import 'package:moment/utils/user_post_signal_id.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_text_form_field_widget.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+
+import '../../../../../bloc/posts_bloc/posts_bloc.dart';
 
 FocusNode commentFocusNode = FocusNode();
 
@@ -66,6 +67,7 @@ Widget showBottomTextField({
         color: postBloc.showCommentDelete ? Colors.black45 : Colors.transparent,
         child: CustomTextFormFieldWidget(
           isFilled: true,
+          showSuffix: true,
           focusNode: commentFocusNode,
           autofocus: isReply || isFromComment,
           controller: postBloc.commentController,
@@ -76,6 +78,7 @@ Widget showBottomTextField({
           ),
           suffix: CustomIconButtonWidget(
             height: 30,
+            width: 30,
             padding: EdgeInsets.zero,
             onPressed: () async {
               if (postBloc.commentController.text.isNotEmpty) {
@@ -162,9 +165,9 @@ Widget showBottomTextField({
                   );
               }
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.send,
-              color: Colors.grey.shade500,
+              color: Colors.grey,
             ),
           ),
         ),

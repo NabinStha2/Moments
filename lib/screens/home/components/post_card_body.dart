@@ -42,7 +42,6 @@ class PostCardBody extends StatelessWidget {
                         CustomExpandableText(
                           text: post.description,
                           fontSize: 14.0,
-                          
                         ),
                       ],
                     ),

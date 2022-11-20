@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
 import 'package:moment/utils/global_keys.dart';
+import '../../../bloc/auth_bloc/auth_bloc.dart';
 import '../../../utils/storage_services.dart';
 import '../../../widgets/custom_text_form_field_widget.dart';
 

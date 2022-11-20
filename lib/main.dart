@@ -1,5 +1,4 @@
 import 'package:camera/camera.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,19 +6,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:moment/bloc/homeBloc/home_bloc.dart';
+import 'package:moment/blocObserver/bloc_observer.dart';
 import 'package:moment/config/routes/route_generator.dart';
 import 'package:moment/config/routes/routes_path.dart';
+import 'package:moment/utils/storage_services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import 'package:moment/bloc/activityBloc/activity_bloc.dart';
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
-import 'package:moment/bloc/internetBloc/internet_bloc.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
-import 'package:moment/blocObserver/bloc_observer.dart';
-import 'package:moment/screens/main/main_screen.dart';
-import 'package:moment/utils/storage_services.dart';
+import 'bloc/activity_bloc/activity_bloc.dart';
+import 'bloc/auth_bloc/auth_bloc.dart';
+import 'bloc/home_bloc/home_bloc.dart';
+import 'bloc/internet_bloc/internet_bloc.dart';
+import 'bloc/posts_bloc/posts_bloc.dart';
+import 'bloc/profile_posts_bloc/profile_posts_bloc.dart';
 
 const appId = "ea8b2f5a8acd452e88b5028f95ab55dd";
 
@@ -84,7 +83,10 @@ class MyApp extends StatelessWidget {
             ),
         ),
         BlocProvider<PostsBloc>(
-          create: (context) => PostsBloc()..add(PostPageChangeEvent(pageNumber: 1, context: context)),
+          create: (context) => PostsBloc(),
+        ),
+        BlocProvider<ProfilePostsBloc>(
+          create: (context) => ProfilePostsBloc(),
         ),
         BlocProvider<ActivityBloc>(
           // lazy: false,
@@ -95,7 +97,7 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthBloc(),
         ),
         BlocProvider<InternetBloc>(
-          // lazy: false,
+          lazy: false,
           create: (context) => InternetBloc(),
         ),
       ],

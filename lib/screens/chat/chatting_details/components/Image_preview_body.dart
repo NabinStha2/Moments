@@ -3,8 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
 import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
+
+import '../../../../bloc/auth_bloc/auth_bloc.dart';
 
 class ImagePreviewBody extends StatelessWidget {
   final String path;

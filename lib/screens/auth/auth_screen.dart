@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
 import 'package:moment/development/console.dart';
 import 'package:moment/screens/auth/components/auth_body.dart';
 import 'package:moment/screens/profile/profile_screen.dart';
 import 'package:moment/utils/storage_services.dart';
 
+import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../widgets/custom_snackbar_widget.dart';
 
 class AuthScreen extends StatelessWidget {

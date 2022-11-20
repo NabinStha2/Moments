@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
-import 'package:moment/development/console.dart';
 import 'package:moment/main.dart';
 import 'package:moment/screens/home/components/home_body.dart';
-import 'package:moment/widgets/custom_search_widget.dart';
 import 'package:moment/screens/home/components/widgets/navigation_post_details_widget.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
+import 'package:moment/widgets/custom_search_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
-import '../../bloc/authBloc/auth_bloc.dart';
-import '../../utils/storage_services.dart';
+import '../../bloc/posts_bloc/posts_bloc.dart';
 
 class NewsFeedScreen extends StatefulWidget {
   const NewsFeedScreen({
@@ -42,12 +39,11 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
           CustomIconButtonWidget(
             icon: const Icon(
               Icons.search,
-              size: 28.0,
             ),
             alignment: Alignment.center,
             padding: const EdgeInsets.only(right: 5.0),
-            iconSize: 24.0,
-            width: 1,
+            iconSize: 28.0,
+            width: 30,
             onPressed: () async {
               var searchSelectedPost = await showSearch(
                 context: context,

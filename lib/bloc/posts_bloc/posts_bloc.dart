@@ -9,7 +9,6 @@ import "package:http/http.dart" as http;
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moment/bloc/activityBloc/activity_bloc.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
 
@@ -18,6 +17,9 @@ import 'package:moment/repo/post_repo.dart';
 import 'package:moment/services/api_config.dart';
 import 'package:moment/utils/storage_services.dart';
 import 'package:moment/widgets/custom_dialog_widget.dart';
+
+import '../activity_bloc/activity_bloc.dart';
+import '../profile_posts_bloc/profile_posts_bloc.dart';
 
 part 'posts_event.dart';
 part 'posts_state.dart';
@@ -86,9 +88,9 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     });
     on<PostPageChangeEvent>((event, emit) async {
       emit(PostPageChangedLoadingState());
-      consolelog("event: ${event.pageNumber}");
+      // consolelog("event: ${event.pageNumber}");
       currentPage = event.pageNumber ?? 1;
-      consolelog("currentPage: $currentPage");
+      // consolelog("currentPage: $currentPage");
       emit(PostPageChangedLoadedState());
     });
     on<PostClearValueEvent>((event, emit) async {
@@ -126,9 +128,6 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     });
     on<UpdatePostEvent>((event, emit) async {
       await _updatePost(event, emit);
-    });
-    on<GetCreatorPostsEvent>((event, emit) async {
-      await _getCreatorPosts(event, emit);
     });
   }
 
@@ -220,15 +219,15 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
           pages: 1,
         ));
         if (event.isFromVisit) {
-          BlocProvider.of<PostsBloc>(event.context).add(
-            GetCreatorPostsEvent(
+          BlocProvider.of<ProfilePostsBloc>(event.context).add(
+            GetProfilePostsEvent(
               context: event.context,
               creator: event.isFromVisitUserId ?? "",
             ),
           );
         } else if (event.isFromProfile) {
-          BlocProvider.of<PostsBloc>(event.context).add(
-            GetCreatorPostsEvent(
+          BlocProvider.of<ProfilePostsBloc>(event.context).add(
+            GetProfilePostsEvent(
               context: event.context,
               creator: StorageServices.authStorageValues["id"] ?? "",
             ),
@@ -319,12 +318,6 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
           }),
         );
         emit(PostCreated());
-        BlocProvider.of<PostsBloc>(event.context).add(
-          RefreshPostsEvent(),
-        );
-        BlocProvider.of<PostsBloc>(event.context).add(
-          GetPostsEvent(context: event.context),
-        );
       }
       RouteNavigation.back(event.context);
     } catch (err) {
@@ -361,21 +354,6 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     } catch (err) {
       RouteNavigation.back(event.context);
       // print("Error ---- -- -- $err");
-      emit(PostError(error: err.toString()));
-    }
-  }
-
-  Future _getCreatorPosts(GetCreatorPostsEvent event, Emitter<PostsState> emit) async {
-    emit(PostLoading());
-    try {
-      final PostModel post = await _postRepo.creatorPosts(event.creator);
-
-      if (post.message == "Success") {
-        emit(CreatorPostsLoaded(postModel: post.data));
-      }
-    } catch (err) {
-      // print("Error ---- -- -- $err");
-      emit(CreatorPostError());
       emit(PostError(error: err.toString()));
     }
   }

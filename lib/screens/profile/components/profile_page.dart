@@ -1,20 +1,21 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:moment/utils/storage_services.dart';
-import 'package:moment/widgets/custom_text_widget.dart';
-import 'package:shimmer/shimmer.dart';
-
-import 'package:moment/bloc/activityBloc/activity_bloc.dart';
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
+import 'package:moment/config/routes/route_navigation.dart';
+import 'package:moment/models/post_model/post_model.dart';
 import 'package:moment/models/user_model/individual_user_model.dart';
-import 'package:moment/screens/main/main_screen.dart';
-import 'package:moment/screens/posts/post_details/components/post_details_body.dart';
+import 'package:moment/screens/posts/post_details/post_details_screen.dart';
+import 'package:moment/utils/storage_services.dart';
+import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
 import 'package:moment/widgets/custom_image_details_widget.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
+
+import '../../../bloc/auth_bloc/auth_bloc.dart';
+import '../../../bloc/posts_bloc/posts_bloc.dart';
+import '../../../bloc/profile_posts_bloc/profile_posts_bloc.dart';
+import '../../../widgets/custom_all_shimmer_widget.dart';
+import '../../../widgets/custom_button_widget.dart';
 
 class ProfileVisitPage extends StatefulWidget {
   final String userId;
@@ -34,7 +35,8 @@ class ProfileVisitPage extends StatefulWidget {
 class _ProfilePageState extends State<ProfileVisitPage> {
   IndividualUserModel? userData;
   IndividualUserModel? ownerUserData;
-  int userPosts = 0;
+  List<PostModelData>? posts;
+  int userPostsLength = 0;
 
   @override
   void initState() {
@@ -52,8 +54,8 @@ class _ProfilePageState extends State<ProfileVisitPage> {
           id: StorageServices.authStorageValues["id"],
         ),
       );
-      BlocProvider.of<PostsBloc>(context).add(
-        GetCreatorPostsEvent(
+      BlocProvider.of<ProfilePostsBloc>(context).add(
+        GetProfilePostsEvent(
           context: context,
           creator: widget.userId,
         ),
@@ -65,42 +67,22 @@ class _ProfilePageState extends State<ProfileVisitPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (widget.isFromSearch) {
-          BlocProvider.of<AuthBloc>(context).add(GetUserFriends(
-            context: context,
-            id: StorageServices.authStorageValues["id"],
-          ));
-          Navigator.of(context).pop(true);
-        }
-
-        if (widget.isFromActivity) {
-          BlocProvider.of<ActivityBloc>(context).add(GetActivity(id: StorageServices.authStorageValues["id"]!));
-          Navigator.of(context).pop(true);
-        }
         return true;
       },
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthLoaded) {
-            log("userData loaded");
+            // log("userData loaded");
             userData = BlocProvider.of<AuthBloc>(context).userModel;
             ownerUserData = BlocProvider.of<AuthBloc>(context).ownerUserModel;
-            return userData?.data != null && ownerUserData?.data != null ? newMethod(context) : newMethod1(context);
           }
-          return const Scaffold(
-            body: Center(
-              child: SpinKitCircle(
-                color: Colors.blue,
-                size: 40.0,
-              ),
-            ),
-          );
+          return userData?.data != null && ownerUserData?.data != null ? scaffoldWhenDataIsNotEmpty(context) : scaffoldWhenDataEmpty(context);
         },
       ),
     );
   }
 
-  Scaffold newMethod1(BuildContext context) {
+  Scaffold scaffoldWhenDataEmpty(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: AppBarCookieText(userData?.data?.name ?? ""),
@@ -109,13 +91,13 @@ class _ProfilePageState extends State<ProfileVisitPage> {
           padding: const EdgeInsets.symmetric(vertical: 6.0),
           child: InkWell(
               onTap: () {
-                if (widget.isFromSearch) {
-                  BlocProvider.of<AuthBloc>(context).add(GetUserFriends(
-                    context: context,
-                    id: StorageServices.authStorageValues["id"],
-                  ));
-                }
-                Navigator.of(context).pop(true);
+                // if (widget.isFromSearch) {
+                //   BlocProvider.of<AuthBloc>(context).add(GetUserFriends(
+                //     context: context,
+                //     id: StorageServices.authStorageValues["id"],
+                //   ));
+                // }
+                RouteNavigation.back(context);
               },
               child: const Icon(Icons.arrow_back_rounded)),
         ),
@@ -129,7 +111,7 @@ class _ProfilePageState extends State<ProfileVisitPage> {
     );
   }
 
-  Scaffold newMethod(BuildContext context) {
+  Scaffold scaffoldWhenDataIsNotEmpty(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(userData?.data?.name ?? ""),
@@ -138,16 +120,7 @@ class _ProfilePageState extends State<ProfileVisitPage> {
           padding: const EdgeInsets.symmetric(vertical: 6.0),
           child: InkWell(
               onTap: () {
-                if (widget.isFromSearch) {
-                  BlocProvider.of<AuthBloc>(context).add(GetUserFriends(
-                    context: context,
-                    id: StorageServices.authStorageValues["id"],
-                  ));
-                }
-                if (widget.isFromActivity) {
-                  BlocProvider.of<ActivityBloc>(context).add(GetActivity(id: StorageServices.authStorageValues["id"] ?? ""));
-                }
-                Navigator.of(context).pop(true);
+                RouteNavigation.back(context);
               },
               child: const Icon(Icons.arrow_back_rounded)),
         ),
@@ -168,40 +141,43 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CustomImageDetails(
-                            imageUrl: userData?.data?.image?.imageUrl ?? "",
-                          ),
-                        ),
-                      );
-                    },
-                    child: userData?.data?.image?.imageUrl != ""
-                        ? CircleAvatar(
-                            radius: 35.0,
-                            backgroundImage: NetworkImage(userData?.data?.image?.imageUrl ?? ""),
-                            onBackgroundImageError: (object, stackTrace) {
-                              // inspect(object);
-                              // print(object);
-                              const Center(
-                                child: Text(
-                                  "Error",
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              );
-                            },
-                          )
-                        : CircleAvatar(
-                            radius: 35.0,
-                            child: Image.network(
-                              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
+                  Hero(
+                    tag: "send",
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CustomImageDetails(
+                              imageUrl: userData?.data?.image?.imageUrl ?? "",
                             ),
                           ),
+                        );
+                      },
+                      child: userData?.data?.image?.imageUrl != ""
+                          ? CircleAvatar(
+                              radius: 35.0,
+                              backgroundImage: NetworkImage(userData?.data?.image?.imageUrl ?? ""),
+                              onBackgroundImageError: (object, stackTrace) {
+                                // inspect(object);
+                                // print(object);
+                                const Center(
+                                  child: Text(
+                                    "Error",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : CircleAvatar(
+                              radius: 35.0,
+                              child: Image.network(
+                                "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
+                              ),
+                            ),
+                    ),
                   ),
                   const SizedBox(
                     width: 25.0,
@@ -235,11 +211,11 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                         ),
                         Row(
                           children: [
-                            BlocBuilder<PostsBloc, PostsState>(
+                            BlocBuilder<ProfilePostsBloc, ProfilePostsState>(
                               builder: (context, state) {
-                                if (state is CreatorPostsLoaded) {
+                                if (state is ProfilePostsSuccess) {
                                   return Text(
-                                    state.postModel != null ? state.postModel?.length.toString() ?? "0" : userPosts.toString(),
+                                    state.postModel != null ? state.postModel?.length.toString() ?? "0" : userPostsLength.toString(),
                                     style: TextStyle(
                                       fontFamily: GoogleFonts.lato().fontFamily,
                                       fontWeight: FontWeight.w100,
@@ -248,7 +224,7 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                   );
                                 }
                                 return Text(
-                                  userPosts.toString(),
+                                  userPostsLength.toString(),
                                   style: TextStyle(
                                     fontFamily: GoogleFonts.lato().fontFamily,
                                     fontWeight: FontWeight.w100,
@@ -311,27 +287,40 @@ class _ProfilePageState extends State<ProfileVisitPage> {
               // const SizedBox(
               //   height: 10.0,
               // ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  elevation: MaterialStateProperty.all(0),
-                  backgroundColor: MaterialStateProperty.all(Colors.blue.shade400),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  return ElevatedButton(
+                    style: ButtonStyle(
+                      elevation: MaterialStateProperty.all(0),
+                      backgroundColor: MaterialStateProperty.all(Colors.blue.shade400),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                onPressed: () async {
-                  BlocProvider.of<AuthBloc>(context).add(AddUserEvent(
-                    context: context,
-                    userId: StorageServices.authStorageValues["id"]!,
-                    friend: userData?.data?.id,
-                    creatorId: userData?.data?.id ?? "",
-                    userImageUrl: StorageServices.authStorageValues["imageUrl"] ?? "",
-                    activityName: StorageServices.authStorageValues["name"] ?? "",
-                  ));
+                    onPressed: () async {
+                      BlocProvider.of<AuthBloc>(context).add(AddUserEvent(
+                        context: context,
+                        userId: StorageServices.authStorageValues["id"]!,
+                        friend: userData?.data?.id,
+                        creatorId: userData?.data?.id ?? "",
+                        userImageUrl: StorageServices.authStorageValues["imageUrl"] ?? "",
+                        activityName: StorageServices.authStorageValues["name"] ?? "",
+                      ));
+                    },
+                    child: state is AddUserLoading
+                        ? const SizedBox(
+                            width: 50,
+                            child: Center(
+                              child: CustomCircularProgressIndicatorWidget(),
+                            ),
+                          )
+                        : ownerUserData?.data?.friends?.contains(userData?.data?.id) == true
+                            ? const Text("Remove")
+                            : const Text("Add"),
+                  );
                 },
-                child: ownerUserData?.data?.friends?.contains(userData?.data?.id) == true ? const Text("Remove") : const Text("Add"),
               ),
               const SizedBox(
                 height: 15.0,
@@ -345,55 +334,56 @@ class _ProfilePageState extends State<ProfileVisitPage> {
               ),
               Expanded(
                 flex: 2,
-                child: BlocBuilder<PostsBloc, PostsState>(
+                child: BlocBuilder<ProfilePostsBloc, ProfilePostsState>(
                   builder: (context, state) {
-                    if (state is PostLoading) {
-                      return Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: GridView.builder(
-                          physics: const ClampingScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: userPosts > 10 ? 3 : 2,
-                            crossAxisSpacing: 8.0,
-                            mainAxisSpacing: 8.0,
-                          ),
-                          itemCount: 8,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              height: 400,
-                              alignment: Alignment.center,
-                              child: Image.network(
-                                "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.6nCVjA0S936UiBlDUsov4QAAAA%26pid%3DApi%26h%3D160&f=1",
-                                height: 400,
-                                fit: BoxFit.cover,
+                    if (state is ProfilePostsLoading) {
+                      return CustomAllShimmerWidget.creatorPostsShimmerWidget(userPostsLength: userPostsLength);
+                    } else if (state is ProfilePostsFailure) {
+                      return Center(
+                        child: CustomIconButtonWidget(
+                          icon: const Icon(Icons.refresh),
+                          onPressed: () {
+                            BlocProvider.of<ProfilePostsBloc>(context).add(
+                              GetProfilePostsEvent(
+                                context: context,
+                                creator: widget.userId,
                               ),
                             );
                           },
+                          color: Colors.black,
+                          iconSize: 40,
+                          elevation: 0.0,
                         ),
                       );
-                    }
-                    if (state is CreatorPostsLoaded) {
+                    } else if (state is ProfilePostsSuccess) {
                       if (state.postModel != null) {
-                        userPosts = state.postModel?.length ?? 0;
+                        userPostsLength = state.postModel?.length ?? 0;
                       } else {
-                        userPosts = 0;
+                        userPostsLength = 0;
                       }
+                      posts = state.postModel;
+                      posts = posts?.reversed.toList();
+                    }
 
-                      var posts = state.postModel;
-                      if (posts != null) {
-                        posts = posts.reversed.toList();
-                      }
-
-                      return posts != null && posts.isNotEmpty
-                          ? GridView.builder(
-                              physics: const ClampingScrollPhysics(),
+                    return posts?.isNotEmpty == true
+                        ? RefreshIndicator(
+                            onRefresh: () async {
+                              BlocProvider.of<ProfilePostsBloc>(context).add(
+                                GetProfilePostsEvent(
+                                  context: context,
+                                  creator: widget.userId,
+                                ),
+                              );
+                            },
+                            child: GridView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: posts.length > 10 ? 3 : 2,
-                                crossAxisSpacing: 8.0,
-                                mainAxisSpacing: 8.0,
+                                crossAxisCount: (posts?.length ?? 0) > 10 ? 3 : 2,
+                                crossAxisSpacing: 5.0,
+                                mainAxisSpacing: 5.0,
+                                childAspectRatio: 0.8,
                               ),
-                              itemCount: posts.length,
+                              itemCount: posts?.length,
                               itemBuilder: (context, index) {
                                 return Container(
                                   height: 500,
@@ -404,23 +394,18 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                         MaterialPageRoute(
                                           builder: (context) => BlocProvider.value(
                                             value: BlocProvider.of<PostsBloc>(context),
-                                            child: PostDetailsBody(
-                                              // isFromProfileVisit: true,
-                                              // isFromHome: false,
-                                              // isFromProfile: false,
-                                              postId: posts![index].id!,
-                                              // isFromComment: false,
-                                              // userVisitId: widget.userId,
+                                            child: PostDetailsScreen(
+                                              postId: posts?[index].id ?? "",
                                             ),
                                           ),
                                         ),
                                       );
                                     },
-                                    child: posts![index].fileType == "video"
+                                    child: posts?[index].fileType == "video"
                                         ? Stack(
                                             children: [
                                               Image.network(
-                                                posts[index].file?.thumbnail ?? "",
+                                                posts?[index].file?.thumbnail ?? "",
                                                 height: 500,
                                                 width: MediaQuery.of(context).size.width,
                                                 fit: BoxFit.cover,
@@ -450,13 +435,9 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                                     Navigator.of(context).push(
                                                       MaterialPageRoute(
                                                         builder: (context) => BlocProvider.value(
-                                                          value: BlocProvider.of<PostsBloc>(context),
-                                                          child: PostDetailsBody(
-                                                            // isFromProfileVisit: true,
-                                                            // isFromHome: false,
-                                                            // isFromProfile: true,
-                                                            postId: state.postModel![index].id!,
-                                                            // isFromComment: false,
+                                                          value: BlocProvider.of<ProfilePostsBloc>(context),
+                                                          child: PostDetailsScreen(
+                                                            postId: posts?[index].id ?? "",
                                                           ),
                                                         ),
                                                       ),
@@ -472,9 +453,9 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                               )
                                             ],
                                           )
-                                        : posts[index].file?.fileUrl != ""
+                                        : posts?[index].file?.fileUrl != ""
                                             ? Image.network(
-                                                posts[index].file?.fileUrl ?? "",
+                                                posts?[index].file?.fileUrl ?? "",
                                                 fit: BoxFit.cover,
                                                 errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
                                                   return const Text('😢Error!');
@@ -509,10 +490,9 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                   ),
                                 );
                               },
-                            )
-                          : const Center(child: Text("No Posts Yet."));
-                    }
-                    return const Center(child: Text("No Posts Yet."));
+                            ),
+                          )
+                        : const Center(child: Text("No Posts Yet."));
                   },
                 ),
               ),

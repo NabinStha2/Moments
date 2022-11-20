@@ -29,7 +29,7 @@ class CustomCachedNetworkImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      height: height ?? appHeight(context) * 0.55,
+      // height: height ?? appHeight(context) * 0.6,
       width: width ?? appWidth(context),
       alignment: Alignment.center,
       filterQuality: FilterQuality.high,

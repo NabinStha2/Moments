@@ -10,17 +10,17 @@ class StorageServices {
   static get storage => _storage;
   static get accountNameController => _accountNameController;
 
-  static get rememberMe => _storage?.read(key: "rememberMe") ?? "false";
-  static get email => _storage?.read(key: "email");
-  static get name => _storage?.read(key: "name");
-  static get imageUrl => _storage?.read(key: "imageUrl");
-  static get id => _storage?.read(key: "id");
-  static get token => _storage?.read(key: "token");
+  static get rememberMe async => await _storage?.read(key: "rememberMe") ?? "false";
+  static get email async => await _storage?.read(key: "email");
+  static get name async => await _storage?.read(key: "name");
+  static get imageUrl async => await _storage?.read(key: "imageUrl");
+  static get id async => await _storage?.read(key: "id");
+  static get token async => await _storage?.read(key: "token");
 
   static Map<String, String> get authStorageValues => _authStorageValues;
 
   static setAuthStorageValues(Map<String, String> value) {
-    consolelog("data");
+    // consolelog("data");
     _authStorageValues = value;
   }
 

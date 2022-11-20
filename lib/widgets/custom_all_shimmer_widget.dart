@@ -10,8 +10,9 @@ class CustomAllShimmerWidget {
         physics: const ClampingScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: userPostsLength > 10 ? 3 : 2,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
+          crossAxisSpacing: 5.0,
+          mainAxisSpacing: 5.0,
+          childAspectRatio: 0.8,
         ),
         itemCount: 9,
         padding: const EdgeInsets.symmetric(horizontal: 10.0),

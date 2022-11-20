@@ -12,8 +12,6 @@ import 'package:google_fonts/google_fonts.dart';
 import "package:http/http.dart" as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:moment/app/dimension/dimension.dart';
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
 import 'package:moment/main.dart';
@@ -33,6 +31,8 @@ import 'package:moment/widgets/receiver_message_ui.dart';
 import 'package:moment/widgets/sender_message_ui.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../../../bloc/auth_bloc/auth_bloc.dart';
+import '../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../widgets/receiver_image_ui.dart';
 import '../../../widgets/sender_image_ui.dart';
 

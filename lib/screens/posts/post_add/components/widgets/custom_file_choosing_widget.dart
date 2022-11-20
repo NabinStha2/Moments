@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moment/app/dimension/dimension.dart';
 
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_image_show_dialog_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
+
+import '../../../../../bloc/posts_bloc/posts_bloc.dart';
 
 class CustomFileChoosingWidget extends StatelessWidget {
   final bool isUpdate;

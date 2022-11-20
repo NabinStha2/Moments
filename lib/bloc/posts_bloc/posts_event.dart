@@ -203,17 +203,6 @@ class UpdatePostEvent extends PostsEvent {
   List<Object> get props => [id, data, token];
 }
 
-class GetCreatorPostsEvent extends PostsEvent {
-  final String creator;
-  final BuildContext context;
-  const GetCreatorPostsEvent({
-    required this.creator,
-    required this.context,
-  });
-  @override
-  List<Object> get props => [creator];
-}
-
 class DeleteCommentEvent extends PostsEvent {
   final String commentId;
   final String postId;

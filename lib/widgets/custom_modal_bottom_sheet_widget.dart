@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/models/post_model/post_model.dart';
 import 'package:moment/screens/posts/post_add/components/widgets/post_add_request_button_widget.dart';
@@ -8,6 +7,7 @@ import 'package:moment/screens/posts/post_add/components/widgets/custom_file_cho
 import 'package:moment/utils/global_keys.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
+import '../bloc/posts_bloc/posts_bloc.dart';
 import '../utils/url_to_file.dart';
 
 void customModalBottomSheetWidget(

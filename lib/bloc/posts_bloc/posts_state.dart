@@ -87,17 +87,6 @@ class PostCreated extends PostsState {}
 
 class PostUpdated extends PostsState {}
 
-class CreatorPostsLoaded extends PostsState {
-  final List<PostModelData>? postModel;
-  const CreatorPostsLoaded({
-    required this.postModel,
-  });
-  @override
-  List<Object> get props => [postModel!];
-}
-
-class CreatorPostError extends PostsState {}
-
 class PostError extends PostsState {
   final String? error;
   const PostError({

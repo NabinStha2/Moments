@@ -128,36 +128,39 @@ class CustomIconButtonWidget extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height ?? 60,
-      width: width ?? 60,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: isFloatingButton ? floatingButtonContainerColor : Colors.transparent,
-        shape: BoxShape.circle,
-      ),
-      child: Center(
-        child: IconButton(
-          padding: padding ?? const EdgeInsets.all(15.0),
-          splashRadius: splashRadius ?? 1.0,
-          alignment: alignment ?? Alignment.center,
-          color: color ?? Colors.white,
-          style: IconButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(borderRadius ?? 20.0),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: height ?? 60,
+        width: width ?? 60,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isFloatingButton ? floatingButtonContainerColor : Colors.transparent,
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: IconButton(
+            padding: padding ?? const EdgeInsets.all(15.0),
+            splashRadius: splashRadius ?? 1.0,
+            alignment: alignment ?? Alignment.center,
+            color: color ?? Colors.white,
+            style: IconButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(borderRadius ?? 20.0),
+              ),
+              elevation: elevation ?? 0.0,
+              splashFactory: InkSplash.splashFactory,
             ),
-            elevation: elevation ?? 0.0,
-            splashFactory: InkSplash.splashFactory,
+            iconSize: iconSize ?? 24.0,
+            onPressed: () {
+              FocusScopeNode currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+                currentFocus.focusedChild!.unfocus();
+              }
+              onPressed();
+            },
+            icon: icon ?? Container(),
           ),
-          iconSize: iconSize ?? 24.0,
-          onPressed: () {
-            FocusScopeNode currentFocus = FocusScope.of(context);
-            if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
-              currentFocus.focusedChild!.unfocus();
-            }
-            onPressed();
-          },
-          icon: icon ?? Container(),
         ),
       ),
     );

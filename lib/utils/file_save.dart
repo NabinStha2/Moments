@@ -7,12 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
 import 'package:moment/utils/permission.dart';
 import 'package:moment/widgets/custom_snackbar_widget.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../bloc/posts_bloc/posts_bloc.dart';
 
 saveImage(
     {required BuildContext ctx,

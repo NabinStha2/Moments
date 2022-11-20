@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moment/bloc/activityBloc/activity_bloc.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/utils/storage_services.dart';
+
+import '../../../../../bloc/activity_bloc/activity_bloc.dart';
+import '../../../../../bloc/posts_bloc/posts_bloc.dart';
+import '../../../../../bloc/profile_posts_bloc/profile_posts_bloc.dart';
 
 void WillPopScopePostDetailsBody({
   required BuildContext context,
@@ -12,15 +14,15 @@ void WillPopScopePostDetailsBody({
   String? userVisitId,
 }) {
   if (isFromProfileVisit == true) {
-    BlocProvider.of<PostsBloc>(context).add(
-      GetCreatorPostsEvent(
+    BlocProvider.of<ProfilePostsBloc>(context).add(
+      GetProfilePostsEvent(
         context: context,
         creator: userVisitId!,
       ),
     );
   } else if (isFromProfile == true) {
-    BlocProvider.of<PostsBloc>(context).add(
-      GetCreatorPostsEvent(
+    BlocProvider.of<ProfilePostsBloc>(context).add(
+      GetProfilePostsEvent(
         context: context,
         creator: StorageServices.authStorageValues["id"] ?? "",
       ),

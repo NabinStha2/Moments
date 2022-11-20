@@ -42,7 +42,6 @@ class ProfileImageCard extends StatelessWidget {
         height: height ?? 400.0,
         width: width ?? appWidth(context),
         alignment: alignment ?? Alignment.center,
-        isAntiAlias: true,
         filterQuality: FilterQuality.high,
       ),
     );

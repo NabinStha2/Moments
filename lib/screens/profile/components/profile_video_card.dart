@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moment/screens/profile/components/widgets/profile_image_card.dart';
 
-import '../../../bloc/postsBloc/posts_bloc.dart';
+import '../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../widgets/custom_text_widget.dart';
 import '../../posts/post_details/post_details_screen.dart';
 
@@ -34,9 +34,6 @@ class ProfileVideoCard extends StatelessWidget {
                   builder: (context) => BlocProvider.value(
                     value: BlocProvider.of<PostsBloc>(context),
                     child: PostDetailsScreen(
-                      isFromProfileVisit: false,
-                      isFromHome: false,
-                      isFromProfile: true,
                       postId: postId ?? "",
                       isFromComment: false,
                     ),

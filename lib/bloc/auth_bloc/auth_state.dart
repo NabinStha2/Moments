@@ -69,6 +69,8 @@ class EditProfileSuccess extends AuthState {
   });
 }
 
+class AddUserLoading extends AuthState {}
+
 class AddUserSuccess extends AuthState {
   final IndividualUserModel? user;
   AddUserSuccess({
@@ -83,4 +85,13 @@ class GetUserByIdSuccess extends AuthState {
   });
 }
 
-class GetUserByFriends extends AuthState {}
+class GetUserFriendsLoading extends AuthState {}
+
+class GetAllUsersLoading extends AuthState {}
+
+class GetAllUsersFailure extends AuthState {
+  final String error;
+  GetAllUsersFailure({
+    required this.error,
+  });
+}

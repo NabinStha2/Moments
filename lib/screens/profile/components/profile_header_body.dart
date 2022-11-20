@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../app/dimension/dimension.dart';
-import '../../../bloc/authBloc/auth_bloc.dart';
-import '../../../bloc/postsBloc/posts_bloc.dart';
+import '../../../bloc/auth_bloc/auth_bloc.dart';
+import '../../../bloc/profile_posts_bloc/profile_posts_bloc.dart';
 import '../../../utils/storage_services.dart';
 import '../../../widgets/custom_circular_progress_indicator_widget.dart';
 import '../../../widgets/custom_image_show_dialog_widget.dart';
@@ -112,9 +112,9 @@ class ProfileHeaderBody extends StatelessWidget {
               vSizedBox1,
               Row(
                 children: [
-                  BlocBuilder<PostsBloc, PostsState>(
+                  BlocBuilder<ProfilePostsBloc, ProfilePostsState>(
                     builder: (context, state) {
-                      if (state is CreatorPostsLoaded) {
+                      if (state is ProfilePostsSuccess) {
                         return PoppinsText(
                           state.postModel != null ? state.postModel?.length.toString() ?? "0" : userPostsLength.toString(),
                           fontWeight: FontWeight.w400,

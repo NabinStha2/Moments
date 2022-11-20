@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moment/bloc/activityBloc/activity_bloc.dart';
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/screens/chat/cmponents/all_users_list_body.dart';
 import 'package:moment/screens/activity/activity_screen.dart';
@@ -12,6 +10,9 @@ import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_search_widget.dart';
 import 'package:moment/widgets/custom_snackbar_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
+
+import '../../bloc/activity_bloc/activity_bloc.dart';
+import '../../bloc/auth_bloc/auth_bloc.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -33,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
           CustomIconButtonWidget(
             alignment: Alignment.center,
             padding: const EdgeInsets.only(right: 10.0),
-            iconSize: 24.0,
+            width: 30,
             onPressed: () async {
               if (StorageServices.authStorageValues.isNotEmpty == true) {
                 RouteNavigation.navigate(
@@ -59,7 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
           CustomIconButtonWidget(
             alignment: Alignment.center,
             padding: const EdgeInsets.only(right: 10.0),
-            iconSize: 24.0,
+            width: 30,
             onPressed: () async {
               var searchSelectedUser = await showSearch(
                 context: context,

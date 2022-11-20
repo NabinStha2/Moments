@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:moment/app/dimension/dimension.dart';
-import 'package:moment/bloc/authBloc/auth_bloc.dart';
-import 'package:moment/bloc/postsBloc/posts_bloc.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
+import 'package:moment/models/post_model/post_model.dart';
 import 'package:moment/screens/posts/post_details/post_details_screen.dart';
 import 'package:moment/screens/profile/components/profile_header_body.dart';
 import 'package:moment/screens/profile/components/profile_video_card.dart';
@@ -19,6 +18,9 @@ import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
 import 'package:moment/widgets/custom_modal_bottom_sheet_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
+import '../../../bloc/auth_bloc/auth_bloc.dart';
+import '../../../bloc/posts_bloc/posts_bloc.dart';
+import '../../../bloc/profile_posts_bloc/profile_posts_bloc.dart';
 import '../../../models/user_model/individual_user_model.dart';
 import '../../../services/one_signal_services.dart';
 
@@ -38,25 +40,19 @@ class _ProfileBodyState extends State<ProfileBody> {
   String? fileName;
   IndividualUserModel? userProfileData = IndividualUserModel();
   int userPostsLength = 0;
+  List<PostModelData>? posts;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      consolelog(StorageServices.authStorageValues);
-      if (StorageServices.authStorageValues.isNotEmpty) {
-        BlocProvider.of<PostsBloc>(context).add(
-          GetCreatorPostsEvent(
-            context: context,
-            creator: StorageServices.authStorageValues["id"] ?? "",
-          ),
-        );
-        if (StorageServices.authStorageValues["rememberMe"] == "true") {
-          timer = Timer(Duration(seconds: expiredToken!), () {
-            setState(() {
-              decodedToken();
-            });
+      // consolelog(StorageServices.authStorageValues);
+
+      if (StorageServices.authStorageValues.isNotEmpty && StorageServices.authStorageValues["rememberMe"] == "true") {
+        timer = Timer(Duration(seconds: expiredToken!), () {
+          setState(() {
+            decodedToken();
           });
-        }
+        });
       }
     });
     super.initState();
@@ -92,6 +88,7 @@ class _ProfileBodyState extends State<ProfileBody> {
 
   @override
   Widget build(BuildContext context) {
+    var profilePostsBloc = BlocProvider.of<ProfilePostsBloc>(context);
     return StorageServices.authStorageValues.isNotEmpty == true
         ? Scaffold(
             appBar: AppBar(
@@ -159,32 +156,55 @@ class _ProfileBodyState extends State<ProfileBody> {
                     vSizedBox0,
                     vSizedBox1,
                     Flexible(
-                      flex: 2,
-                      child: BlocBuilder<PostsBloc, PostsState>(
+                      child: BlocBuilder<ProfilePostsBloc, ProfilePostsState>(
                         builder: (context, state) {
-                          if (state is PostLoading || state is PostDeleteLoading) {
+                          if (state is ProfilePostsLoading || state is PostDeleteLoading) {
                             return CustomAllShimmerWidget.creatorPostsShimmerWidget(userPostsLength: userPostsLength);
-                          }
-                          if (state is CreatorPostsLoaded) {
+                          } else if (state is ProfilePostsFailure) {
+                            return Center(
+                              child: CustomIconButtonWidget(
+                                icon: const Icon(Icons.refresh),
+                                onPressed: () {
+                                  profilePostsBloc.add(
+                                    GetProfilePostsEvent(
+                                      context: context,
+                                      creator: StorageServices.authStorageValues["id"] ?? "",
+                                    ),
+                                  );
+                                },
+                                color: Colors.black,
+                                iconSize: 40,
+                                elevation: 0.0,
+                              ),
+                            );
+                          } else if (state is ProfilePostsSuccess) {
                             if (state.postModel != null) {
                               userPostsLength = state.postModel!.length;
                             } else {
                               userPostsLength = 0;
                             }
-                            var posts = state.postModel;
-                            if (posts != null) {
-                              posts = posts.reversed.toList();
-                            }
-                            return posts != null && posts.isNotEmpty
-                                ? GridView.builder(
-                                    physics: const ClampingScrollPhysics(),
-                                    clipBehavior: Clip.antiAlias,
+                            posts = state.postModel;
+                            posts = posts?.reversed.toList();
+                          }
+                          return posts?.isNotEmpty == true
+                              ? RefreshIndicator(
+                                  onRefresh: () async {
+                                    profilePostsBloc.add(
+                                      GetProfilePostsEvent(
+                                        context: context,
+                                        creator: StorageServices.authStorageValues["id"] ?? "",
+                                      ),
+                                    );
+                                  },
+                                  child: GridView.builder(
+                                    physics: const AlwaysScrollableScrollPhysics(),
                                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: posts.length > 10 ? 3 : 2,
-                                      crossAxisSpacing: 8.0,
-                                      mainAxisSpacing: 8.0,
+                                      crossAxisCount: (posts?.length ?? 0) > 10 ? 3 : 2,
+                                      crossAxisSpacing: 5.0,
+                                      mainAxisSpacing: 5.0,
+                                      childAspectRatio: 0.8,
                                     ),
-                                    itemCount: posts.length,
+                                    itemCount: posts?.length,
                                     itemBuilder: (context, index) {
                                       return GestureDetector(
                                         onTap: () {
@@ -193,24 +213,21 @@ class _ProfileBodyState extends State<ProfileBody> {
                                               builder: (context) => BlocProvider.value(
                                                 value: BlocProvider.of<PostsBloc>(context),
                                                 child: PostDetailsScreen(
-                                                  isFromProfileVisit: false,
-                                                  isFromHome: false,
-                                                  isFromProfile: true,
-                                                  postId: posts![index].id!,
+                                                  postId: posts?[index].id ?? "",
                                                   isFromComment: false,
                                                 ),
                                               ),
                                             ),
                                           );
                                         },
-                                        child: posts![index].fileType == "video"
+                                        child: posts?[index].fileType == "video"
                                             ? ProfileVideoCard(
-                                                fileUrlThumbnail: posts[index].file?.thumbnail,
-                                                postId: posts[index].id,
+                                                fileUrlThumbnail: posts?[index].file?.thumbnail,
+                                                postId: posts?[index].id,
                                               )
-                                            : posts[index].file?.fileUrl != ""
+                                            : posts?[index].file?.fileUrl != ""
                                                 ? ProfileImageCard(
-                                                    fileUrl: posts[index].file?.fileUrl,
+                                                    fileUrl: posts?[index].file?.fileUrl,
                                                   )
                                                 : const ProfileImageCard(
                                                     fileUrl:
@@ -218,10 +235,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                                                   ),
                                       );
                                     },
-                                  )
-                                : Center(child: PoppinsText("No Posts Yet."));
-                          }
-                          return Center(child: PoppinsText("No Posts Yet."));
+                                  ),
+                                )
+                              : Center(child: PoppinsText("No Posts Yet."));
                         },
                       ),
                     ),

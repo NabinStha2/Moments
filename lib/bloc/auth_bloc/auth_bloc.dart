@@ -257,7 +257,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future _addUser(AddUserEvent event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
-    // emit(AuthLoading());
+    emit(AddUserLoading());
     try {
       final IndividualUserModel user = await _userRepo.addUser(
         userId: event.userId,
@@ -268,26 +268,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       if (user.message == "Success" && user.data != null) {
         ownerUserModel = user;
-        // emit(AddUserSuccess(user: user));
         await StorageServices.deleteSpecificStorage(key: "friends");
         await StorageServices.writeStorage(key: "friends", value: user.data?.friends?.join(",").toString() ?? "");
         StorageServices.setAuthStorageValues(await StorageServices.getStorage());
-        emit(AuthLoaded(
-          user: userModel,
-          ownerUser: ownerUserModel,
-          allUsers: allUsers,
-          userFriends: userFriends,
-        ));
-        BlocProvider.of<AuthBloc>(event.context).add(
-          GetOwnerById(
-            context: event.context,
-            id: StorageServices.authStorageValues["id"],
-          ),
-        );
-        BlocProvider.of<AuthBloc>(event.context).add(GetUserFriends(
-          context: event.context,
-          id: StorageServices.authStorageValues["id"],
-        ));
+        emit(AddUserSuccess(user: user));
       }
     } catch (err) {
       consolelog("err : $err");
@@ -334,7 +318,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future _getUserFriends(GetUserFriends event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
-    // emit(AuthLoading());
+    emit(GetUserFriendsLoading());
     try {
       final UserModel user = await _userRepo.getUserFriends(id: event.id, ctx: ctx);
       if (user.message == "Success" && user.data != null) {
@@ -353,7 +337,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future _getAllUser(GetAllUser event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
-    // emit(AuthLoading());
+    emit(GetAllUsersLoading());
     try {
       final UserModel allUser = await _userRepo.getAllUsers(ctx: ctx);
       if (allUser.message == "Success" && allUser.data != null) {

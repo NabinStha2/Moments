@@ -1,8 +1,6 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:moment/app/states/states.dart';
 // import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 // import 'package:video_thumbnail/video_thumbnail.dart';
@@ -21,8 +19,8 @@ class Video extends StatefulWidget {
 }
 
 class _VideoState extends State<Video> {
-  VideoPlayerController? _controller;
   // String? fileName;
+  VideoPlayerController? videoController;
 
   @override
   void initState() {
@@ -47,40 +45,39 @@ class _VideoState extends State<Video> {
 
   @override
   void dispose() {
-    if (_controller != null) {
-      _controller!.dispose();
+    if (videoController != null) {
+      videoController!.dispose();
     }
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: _controller != null
+      child: videoController != null
           ? Center(
               child: AspectRatio(
-                aspectRatio: _controller!.value.aspectRatio,
+                aspectRatio: videoController!.value.aspectRatio,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: () {
-                    if (_controller!.value.isPlaying) {
-                      _controller!.pause();
+                    if (videoController!.value.isPlaying) {
+                      videoController!.pause();
                     } else {
-                      _controller!.play();
+                      videoController!.play();
                     }
                   },
                   child: Stack(
                     fit: StackFit.loose,
                     alignment: Alignment.center,
                     children: [
-                      VideoPlayer(_controller!),
+                      VideoPlayer(videoController!),
                       Positioned(
                         left: 0,
                         bottom: -0.3,
                         right: 0,
                         child: VideoProgressIndicator(
-                          _controller!,
+                          videoController!,
                           allowScrubbing: true,
                           colors: const VideoProgressColors(
                             bufferedColor: Colors.white,
@@ -89,7 +86,7 @@ class _VideoState extends State<Video> {
                           ),
                         ),
                       ),
-                      _controller!.value.isBuffering
+                      videoController!.value.isBuffering
                           ? Container(
                               color: Colors.white12,
                               alignment: Alignment.center,
@@ -102,7 +99,7 @@ class _VideoState extends State<Video> {
                             )
                           : Container(
                               alignment: Alignment.center,
-                              child: _controller!.value.isPlaying
+                              child: videoController!.value.isPlaying
                                   ? Container()
                                   : const Icon(
                                       Icons.play_arrow,
@@ -116,13 +113,11 @@ class _VideoState extends State<Video> {
               ),
             )
           : SizedBox(
-              height: 500,
               width: MediaQuery.of(context).size.width,
               child: Stack(
                 children: [
                   Image.network(
                     widget.thumbnail,
-                    height: 500,
                     width: MediaQuery.of(context).size.width,
                     fit: BoxFit.cover,
                   ),
@@ -133,16 +128,16 @@ class _VideoState extends State<Video> {
                     right: 0,
                     child: IconButton(
                       onPressed: () {
-                        _controller = VideoPlayerController.network(widget.url)
+                        videoController = VideoPlayerController.network(widget.url)
                           ..initialize().then((_) {
                             // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
                             setState(() {});
-                            _controller!.play();
+                            videoController!.play();
                           })
                           ..addListener(() {
                             setState(() {});
                           })
-                          ..setLooping(true);
+                          ..setLooping(false);
                       },
                       icon: const Icon(
                         Icons.play_arrow_rounded,
