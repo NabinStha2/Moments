@@ -16,10 +16,11 @@ module.exports.getPosts = async (req, res) => {
     const posts = await PostModel.find()
       .sort({ _id: -1 })
       .limit(perPage)
-      .skip(perPage * (pageNumber - 1));
-    // console.log(posts);
+      .skip(perPage * (pageNumber - 1))
+      .populate("creator", "id image.imageUrl");
+    console.log(posts);
     // posts.map((post) => {
-    //   console.log({ post });
+    //   console.log({ post: post.creator.image });
     // });
     res.status(200).json({
       data: posts,
@@ -42,7 +43,9 @@ module.exports.getAllPosts = async (req, res) => {
   try {
     const count = await PostModel.countDocuments();
     // console.log(count);
-    const posts = await PostModel.find().lean();
+    const posts = await PostModel.find()
+      .populate("creator", "id image.imageUrl")
+      .lean();
     // console.log(posts);
     res.status(200).json({ message: "Success", data: posts });
   } catch (err) {
@@ -54,7 +57,9 @@ module.exports.getAllPosts = async (req, res) => {
 module.exports.getPostById = async (req, res) => {
   console.log("single post fetching...");
   try {
-    const post = await PostModel.findOne({ _id: req.params.id });
+    const post = await PostModel.findOne({ _id: req.params.id })
+      .populate("creator", "id image.imageUrl")
+      .lean();
 
     // console.log(post);
     res.status(200).json({ message: "Success", data: [post] });
@@ -68,7 +73,9 @@ module.exports.getPostsByCreator = async (req, res) => {
   try {
     // const name = req.params.name.split("%20").join(" ");
     // console.log(name);
-    const posts = await PostModel.find({ creator: req.params.id });
+    const posts = await PostModel.find({ creator: req.params.id })
+      .populate("creator", "id image.imageUrl")
+      .lean();
 
     // console.log(posts);
     res.status(200).json({ message: "Success", data: posts });
@@ -160,11 +167,11 @@ module.exports.createPost = async (req, res) => {
       }
     }
     // console.log(post);
-    fs.unlinkSync(req.file.path);
+    //fs.unlinkSync(req.file.path);
     res.status(201).json({ message: "Success", data: [post] });
   } catch (err) {
     console.error(err.message);
-    fs.unlinkSync(req.file.path);
+    //fs.unlinkSync(req.file.path);
     res.status(409).json({ errMessage: err.message });
   }
 };
@@ -243,12 +250,12 @@ module.exports.updatePost = async (req, res) => {
           { new: true, timestamp: true }
         );
       }
-      fs.unlinkSync(req.file.path);
+      //fs.unlinkSync(req.file.path);
       res.status(201).json({ message: "Success", data: [post] });
     }
   } catch (err) {
     console.error(err.message);
-    fs.unlinkSync(req.file.path);
+    //fs.unlinkSync(req.file.path);
     res.status(201).json({ errMessage: err.message });
   }
 };
