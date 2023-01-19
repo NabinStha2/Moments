@@ -9,12 +9,14 @@ import 'package:moment/utils/storage_services.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
 import 'package:moment/widgets/custom_error_widget.dart';
+import 'package:moment/widgets/custom_image_error_widget.dart';
 import 'package:moment/widgets/custom_snackbar_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import '../../../bloc/auth_bloc/auth_bloc.dart';
 import '../../../widgets/custom_all_shimmer_widget.dart';
+import '../../../widgets/custom_cached_network_image_widget.dart';
 
 class AllUsersListBody extends StatefulWidget {
   const AllUsersListBody({Key? key}) : super(key: key);
@@ -55,7 +57,6 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        RouteNavigation.back(context);
         return true;
       },
       child: Scaffold(
@@ -96,9 +97,14 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
             builder: (context, state) {
               if (state is GetAllUsersLoading) {
                 return CustomAllShimmerWidget.chatShimmerWidget();
-              } else if (state is AuthError) {
+              } else if (state is GetAllUsersFailure ||
+                  state is GetUserByIdFailure) {
                 return CustomErrorWidget(
-                  message: state.error,
+                  message: state is GetAllUsersFailure
+                      ? state.error
+                      : state is GetUserByIdFailure
+                          ? state.error
+                          : "Error",
                   onPressed: () {
                     BlocProvider.of<AuthBloc>(context).add(
                       GetAllUser(context: context),
@@ -133,7 +139,8 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                              BlocProvider.of<AuthBloc>(context).clearUserDetails();
+                              BlocProvider.of<AuthBloc>(context)
+                                  .clearUserDetails();
                               RouteNavigation.navigate(
                                 context,
                                 ProfileVisitPage(
@@ -143,6 +150,7 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                               );
                             },
                             splashColor: Colors.grey[400],
+                            // ignore: sort_child_properties_last
                             child: ListTile(
                               title: PoppinsText(
                                 allUsers?.data?[index].name ?? "",
@@ -163,51 +171,64 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                                 ],
                               ),
                               leading: ClipRRect(
-                                borderRadius: BorderRadius.circular(50.0),
-                                child: allUsers?.data?[index].image?.imageUrl != ""
-                                    ? Image.network(
-                                        allUsers?.data?[index].image?.imageUrl ?? "",
-                                        fit: BoxFit.cover,
-                                        alignment: Alignment.center,
-                                        height: 50,
-                                        width: 50,
-                                        filterQuality: FilterQuality.high,
-                                        isAntiAlias: true,
-                                      )
-                                    : Image.network(
-                                        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
-                                        fit: BoxFit.cover,
-                                        height: 50.0,
-                                        width: 50,
-                                        alignment: Alignment.center,
-                                        isAntiAlias: true,
-                                        filterQuality: FilterQuality.high,
-                                      ),
-                              ),
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  child: allUsers
+                                              ?.data?[index].image?.imageUrl !=
+                                          ""
+                                      ? CustomCachedNetworkImageWidget(
+                                          imageUrl: allUsers?.data?[index].image
+                                                  ?.imageUrl ??
+                                              "",
+                                          height: 50,
+                                          width: 50,
+                                        )
+                                      : const CustomCachedNetworkImageWidget(
+                                          imageUrl:
+                                              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
+                                          height: 50,
+                                          width: 50,
+                                        )),
                               trailing: CustomIconButtonWidget(
                                 onPressed: () async {
-                                  BlocProvider.of<AuthBloc>(context).add(AddUserEvent(
+                                  BlocProvider.of<AuthBloc>(context)
+                                      .add(AddUserEvent(
                                     context: context,
-                                    userId: StorageServices.authStorageValues["id"].toString(),
+                                    userId: StorageServices
+                                        .authStorageValues["id"]
+                                        .toString(),
                                     friend: allUsers?.data?[index].id,
                                     creatorId: allUsers?.data?[index].id ?? "",
-                                    userImageUrl: StorageServices.authStorageValues["imageUrl"] ?? "",
-                                    activityName: StorageServices.authStorageValues["name"].toString(),
+                                    userImageUrl: StorageServices
+                                            .authStorageValues["imageUrl"] ??
+                                        "",
+                                    activityName: StorageServices
+                                        .authStorageValues["name"]
+                                        .toString(),
                                   ));
 
                                   var notification = OSCreateNotification(
-                                    playerIds: List<String>.from(allUsers?.data?[index].oneSignalUserId?.map((e) => e) ?? []),
-                                    content: ownerUser?.data?.friends?.contains(allUsers?.data?[index].id) != true
+                                    playerIds: List<String>.from(allUsers
+                                            ?.data?[index].oneSignalUserId
+                                            ?.map((e) => e) ??
+                                        []),
+                                    content: ownerUser?.data?.friends?.contains(
+                                                allUsers?.data?[index].id) !=
+                                            true
                                         ? "${StorageServices.authStorageValues["name"]} has removed you from friend."
                                         : "${StorageServices.authStorageValues["name"]} has added you to friend.",
                                     heading: "Moments",
-                                    bigPicture: allUsers?.data?[index].image?.imageUrl,
+                                    bigPicture:
+                                        allUsers?.data?[index].image?.imageUrl,
                                   );
 
-                                  await OneSignal.shared.postNotification(notification);
+                                  await OneSignal.shared
+                                      .postNotification(notification);
                                 },
-                                icon: (ownerUser?.data?.friends?.isNotEmpty == true &&
-                                        ownerUser?.data?.friends?.contains(allUsers?.data?[index].id) == true)
+                                icon: (ownerUser?.data?.friends?.isNotEmpty ==
+                                            true &&
+                                        ownerUser?.data?.friends?.contains(
+                                                allUsers?.data?[index].id) ==
+                                            true)
                                     ? const Icon(
                                         Icons.delete,
                                         color: Colors.redAccent,
@@ -236,15 +257,6 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                   : const Center(
                       child: CustomCircularProgressIndicatorWidget(),
                     );
-
-              // return ownerDetails != null
-              //     ? ownerDetails!.friends!.contains(allUsers![index].id)
-              //         ? const Icon(
-              //             Icons.delete,
-              //             color: Colors.redAccent,
-              //           )
-              //         : const Icon(Icons.add)
-              //     : const CircularProgressIndicator();
             },
           ),
         ),

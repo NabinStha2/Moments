@@ -7,15 +7,6 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
-class AuthError extends AuthState {
-  final String error;
-  AuthError({
-    required this.error,
-  });
-}
-
-class LoginSuccess extends AuthState {}
-
 class AuthLoaded extends AuthState {
   IndividualUserModel? user = IndividualUserModel();
   IndividualUserModel? ownerUser = IndividualUserModel();
@@ -31,10 +22,33 @@ class AuthLoaded extends AuthState {
   });
 }
 
+class AuthError extends AuthState {
+  final String error;
+  AuthError({
+    required this.error,
+  });
+}
+
+class LoginSuccess extends AuthState {}
+
+class LoginFailure extends AuthState {
+  final String error;
+  LoginFailure({
+    required this.error,
+  });
+}
+
 class RegisterSuccess extends AuthState {
   final IndividualUserModel? user;
   RegisterSuccess({
     this.user,
+  });
+}
+
+class RegisterFailure extends AuthState {
+  final String error;
+  RegisterFailure({
+    required this.error,
   });
 }
 
@@ -44,12 +58,26 @@ class UploadImageLoading extends AuthState {}
 
 class UploadImageSuccess extends AuthState {}
 
+class UploadImageFailure extends AuthState {
+  final String error;
+  UploadImageFailure({
+    required this.error,
+  });
+}
+
 class UploadMsgImageLoading extends AuthState {}
 
 class UploadMsgImageSuccess extends AuthState {
   final MessageModel msgData;
   UploadMsgImageSuccess({
     required this.msgData,
+  });
+}
+
+class UploadMsgImageFailure extends AuthState {
+  final String error;
+  UploadMsgImageFailure({
+    required this.error,
   });
 }
 
@@ -69,12 +97,26 @@ class EditProfileSuccess extends AuthState {
   });
 }
 
+class EditProfileFailure extends AuthState {
+  final String error;
+  EditProfileFailure({
+    required this.error,
+  });
+}
+
 class AddUserLoading extends AuthState {}
 
 class AddUserSuccess extends AuthState {
   final IndividualUserModel? user;
   AddUserSuccess({
     this.user,
+  });
+}
+
+class AddUserFailure extends AuthState {
+  final String error;
+  AddUserFailure({
+    required this.error,
   });
 }
 
@@ -85,7 +127,21 @@ class GetUserByIdSuccess extends AuthState {
   });
 }
 
+class GetUserByIdFailure extends AuthState {
+  final String error;
+  GetUserByIdFailure({
+    required this.error,
+  });
+}
+
 class GetUserFriendsLoading extends AuthState {}
+
+class GetUserFriendsFailure extends AuthState {
+  final String error;
+  GetUserFriendsFailure({
+    required this.error,
+  });
+}
 
 class GetAllUsersLoading extends AuthState {}
 

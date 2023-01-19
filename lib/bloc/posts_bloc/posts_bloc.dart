@@ -40,7 +40,8 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController updateDescriptionController = TextEditingController();
+  final TextEditingController updateDescriptionController =
+      TextEditingController();
   final TextEditingController tagsController = TextEditingController();
   final TextEditingController commentController = TextEditingController();
   File? postSelectedFile;
@@ -49,7 +50,9 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   PostsBloc() : super(PostsInitial()) {
     on<PostFileSelectedEvent>((event, emit) async {
       emit(PostFileSelectingLoadingState());
-      event.isUpdate == true ? updatePostSelectedFile = event.selectedFile : postSelectedFile = event.selectedFile;
+      event.isUpdate == true
+          ? updatePostSelectedFile = event.selectedFile
+          : postSelectedFile = event.selectedFile;
       emit(PostFileSelectedState());
     });
     on<ShowCommentDeleteEvent>((event, emit) async {
@@ -140,7 +143,9 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       final PostModel posts = await _postRepo.getPosts(page: event.page);
       final PostModel allPosts = await _postRepo.getAllPosts();
 
-      if (posts.message == "Success" && posts.data?.isNotEmpty == true && allPosts.data?.isNotEmpty == true) {
+      if (posts.message == "Success" &&
+          posts.data?.isNotEmpty == true &&
+          allPosts.data?.isNotEmpty == true) {
         postModels.addAll(posts.data ?? []);
         allPostModels.addAll(allPosts.data ?? []);
         pages = posts.pages ?? 0;
@@ -152,11 +157,12 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       ));
     } catch (e) {
       log("Error ---- $e.toString()");
-      emit(PostError(error: e.toString()));
+      emit(GetAllPostFailure(error: e.toString()));
     }
   }
 
-  Future _getSinglePost(GetSinglePostEvent event, Emitter<PostsState> emit) async {
+  Future _getSinglePost(
+      GetSinglePostEvent event, Emitter<PostsState> emit) async {
     emit(PostLoading());
     try {
       final PostModel post = await _postRepo.getSinglePost(id: event.id);
@@ -168,7 +174,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       }
     } catch (e) {
       print("Error from GetSinglePostEvent ---- $e");
-      emit(PostError(error: e.toString()));
+      emit(GetSinglePostFailure(error: e.toString()));
     }
   }
 
@@ -189,7 +195,9 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
         reactionType: event.reactionType,
       );
       if (post.message == "Success") {
-        postModels[postModels.indexWhere((element) => element.id == post.data?[0].id)] = post.data?[0] as PostModelData;
+        postModels[postModels
+                .indexWhere((element) => element.id == post.data?[0].id)] =
+            post.data?[0] as PostModelData;
         emit(PostLiked());
         if (event.postDetails) {
           emit(GetSinglePostLoaded(
@@ -201,17 +209,21 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       }
     } catch (err) {
       print(err);
-      emit(PostError(error: err.toString()));
+      emit(PostLikedFailure(error: err.toString()));
     }
   }
 
   Future _deletePost(DeletePostEvent event, Emitter<PostsState> emit) async {
     try {
       emit(PostDeleteLoading());
-      CustomDialogs.showCustomFullLoadingDialog(ctx: event.context, title: "Deleting...");
-      final PostModel deletedPost = await _postRepo.deletePost(event.id, event.token);
-      if (deletedPost.message == "Success" && deletedPost.data?.isNotEmpty == true) {
-        postModels.removeAt(postModels.indexWhere((element) => element.id == deletedPost.data?[0].id));
+      CustomDialogs.showCustomFullLoadingDialog(
+          ctx: event.context, title: "Deleting...");
+      final PostModel deletedPost =
+          await _postRepo.deletePost(event.id, event.token);
+      if (deletedPost.message == "Success" &&
+          deletedPost.data?.isNotEmpty == true) {
+        postModels.removeAt(postModels
+            .indexWhere((element) => element.id == deletedPost.data?[0].id));
         emit(PostDeleted());
         emit(GetPostLoaded(
           postModel: postModels,
@@ -234,7 +246,8 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
           );
           RouteNavigation.back(event.context);
         } else if (event.isFromActivity) {
-          BlocProvider.of<ActivityBloc>(event.context).add(GetActivity(id: StorageServices.authStorageValues["id"] ?? ""));
+          BlocProvider.of<ActivityBloc>(event.context).add(
+              GetActivity(id: StorageServices.authStorageValues["id"] ?? ""));
         } else {
           // BlocProvider.of<PostsBloc>(event.context).add(RefreshPostsEvent());
           // BlocProvider.of<PostsBloc>(event.context).add(GetPostsEvent(
@@ -246,7 +259,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     } catch (e) {
       RouteNavigation.back(event.context);
       print("Error ---- $e");
-      emit(PostError(error: e.toString()));
+      emit(PostDeleteFailure(error: e.toString()));
     }
   }
 
@@ -275,11 +288,12 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       }
     } catch (err) {
       print("Error ---- $err");
-      emit(PostError(error: err.toString()));
+      emit(PostCommentFailure(error: err.toString()));
     }
   }
 
-  Future _deletePostComment(DeleteCommentEvent event, Emitter<PostsState> emit) async {
+  Future _deletePostComment(
+      DeleteCommentEvent event, Emitter<PostsState> emit) async {
     try {
       final PostModel post = await _postRepo.deleteComment(
         postId: event.postId,
@@ -296,15 +310,17 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       }
     } catch (err) {
       print("Error ---- $err");
-      emit(PostError(error: err.toString()));
+      emit(PostDeleteCommentFailure(error: err.toString()));
     }
   }
 
   Future _createPost(CreatePostEvent event, Emitter<PostsState> emit) async {
     emit(PostLoading());
-    CustomDialogs.showCustomFullLoadingDialog(ctx: event.context, title: "Uploading...");
+    CustomDialogs.showCustomFullLoadingDialog(
+        ctx: event.context, title: "Uploading...");
     try {
-      final PostModel post = await _postRepo.createPost(event.data, event.token, isImage: event.isImage);
+      final PostModel post = await _postRepo.createPost(event.data, event.token,
+          isImage: event.isImage);
       if (post.message == "Success" && post.data?.isNotEmpty == true) {
         final uri = Uri.http(ApiConfig.baseUrl, "/api/SendNotification");
         await http.post(
@@ -323,7 +339,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     } catch (err) {
       RouteNavigation.back(event.context);
       consolelog(err);
-      emit(PostError(error: err.toString()));
+      emit(PostCreatedFailure(error: err.toString()));
     }
   }
 
@@ -332,11 +348,16 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     Emitter<PostsState> emit,
   ) async {
     emit(PostUpdateLoading());
-    CustomDialogs.showCustomFullLoadingDialog(ctx: event.context, title: "Uploading...");
+    CustomDialogs.showCustomFullLoadingDialog(
+        ctx: event.context, title: "Uploading...");
     try {
-      final PostModel post = await _postRepo.updatePost(event.id, event.data, event.token, isImage: event.isImage);
+      final PostModel post = await _postRepo.updatePost(
+          event.id, event.data, event.token,
+          isImage: event.isImage);
       if (post.data != null && post.message == "Success") {
-        postModels[postModels.indexWhere((element) => element.id == post.data?[0].id)] = post.data?[0] ?? PostModelData();
+        postModels[postModels
+                .indexWhere((element) => element.id == post.data?[0].id)] =
+            post.data?[0] ?? PostModelData();
         emit(PostUpdated());
         emit(GetPostLoaded(
           postModel: postModels,
@@ -354,7 +375,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     } catch (err) {
       RouteNavigation.back(event.context);
       // print("Error ---- -- -- $err");
-      emit(PostError(error: err.toString()));
+      emit(PostUpdateFailure(error: err.toString()));
     }
   }
 }

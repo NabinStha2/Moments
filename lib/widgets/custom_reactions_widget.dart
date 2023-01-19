@@ -30,7 +30,8 @@ class CustomReactionsWidget extends StatefulWidget {
   _ReactionsState createState() => _ReactionsState();
 }
 
-class _ReactionsState extends State<CustomReactionsWidget> with AutomaticKeepAliveClientMixin {
+class _ReactionsState extends State<CustomReactionsWidget>
+    with AutomaticKeepAliveClientMixin {
   String? reactionType = "none";
   bool isReacted = false;
   int? reactionTypeIndex;
@@ -100,18 +101,24 @@ class _ReactionsState extends State<CustomReactionsWidget> with AutomaticKeepAli
               ? ReactionButtonToggle<String>(
                   boxPadding: const EdgeInsets.all(5.0),
                   onReactionChanged: (String? value, bool isChecked) async {
-                    var postsBloc = BlocProvider.of<PostsBloc>(context, listen: false);
+                    var postsBloc =
+                        BlocProvider.of<PostsBloc>(context, listen: false);
                     if (StorageServices.authStorageValues.isNotEmpty == true) {
                       postsBloc.add(
                         LikePostEvent(
                           context: context,
                           id: widget.post.id!,
-                          creatorId: widget.post.creator!,
+                          creatorId: widget.post.creator?.id ?? "",
                           token: StorageServices.authStorageValues["token"]!,
                           userId: StorageServices.authStorageValues["id"]!,
-                          postUrl: widget.post.fileType == "video" ? widget.post.file?.thumbnail ?? "" : widget.post.file?.fileUrl ?? "",
-                          userImageUrl: StorageServices.authStorageValues["imageUrl"] ?? "",
-                          activityName: "${StorageServices.authStorageValues["name"]} has reacted $value to your post.",
+                          postUrl: widget.post.fileType == "video"
+                              ? widget.post.file?.thumbnail ?? ""
+                              : widget.post.file?.fileUrl ?? "",
+                          userImageUrl:
+                              StorageServices.authStorageValues["imageUrl"] ??
+                                  "",
+                          activityName:
+                              "${StorageServices.authStorageValues["name"]} has reacted $value to your post.",
                           reactionType: value!,
                           postDetails: widget.isFromPostDetails,
                         ),
@@ -122,10 +129,16 @@ class _ReactionsState extends State<CustomReactionsWidget> with AutomaticKeepAli
                         postId: widget.post.id,
                       );
                       var resData = json.decode(resOneSignalIds);
-                      if (resData["message"] == "Success" && resData["data"] != []) {
+                      if (resData["message"] == "Success" &&
+                          resData["data"] != []) {
                         var notification = OSCreateNotification(
-                          playerIds: (resData["data"] as List).map((e) => e.toString()).toList(),
-                          content: (StorageServices.authStorageValues.isNotEmpty && containLikeUserId(like: widget.post.likes, react: value))
+                          playerIds: (resData["data"] as List)
+                              .map((e) => e.toString())
+                              .toList(),
+                          content: (StorageServices
+                                      .authStorageValues.isNotEmpty &&
+                                  containLikeUserId(
+                                      like: widget.post.likes, react: value))
                               ? "${StorageServices.authStorageValues["name"]} has unliked your post."
                               : "${StorageServices.authStorageValues["name"]} has reacted $value to your post.",
                           heading: "Moments",
@@ -144,11 +157,13 @@ class _ReactionsState extends State<CustomReactionsWidget> with AutomaticKeepAli
                     }
                   },
                   reactions: FlutterReactions.reactions,
-                  initialReaction: (StorageServices.authStorageValues.isNotEmpty && containLike(like: widget.post.likes))
-                      ? reactionTypeIndex != null
-                          ? FlutterReactions.reactions[reactionTypeIndex!]
-                          : FlutterReactions.defaultInitialReaction
-                      : FlutterReactions.defaultInitialReaction,
+                  initialReaction:
+                      (StorageServices.authStorageValues.isNotEmpty &&
+                              containLike(like: widget.post.likes))
+                          ? reactionTypeIndex != null
+                              ? FlutterReactions.reactions[reactionTypeIndex!]
+                              : FlutterReactions.defaultInitialReaction
+                          : FlutterReactions.defaultInitialReaction,
                   selectedReaction: FlutterReactions.defaultInitialReaction,
                 )
               : IconButton(
@@ -177,7 +192,8 @@ class _ReactionsState extends State<CustomReactionsWidget> with AutomaticKeepAli
 
   bool containLikeUserId({List<Likes>? like, String? react}) {
     for (var value in like!) {
-      if (value.userId == StorageServices.authStorageValues["id"] && value.reactionType == react) {
+      if (value.userId == StorageServices.authStorageValues["id"] &&
+          value.reactionType == react) {
         return true;
       }
     }

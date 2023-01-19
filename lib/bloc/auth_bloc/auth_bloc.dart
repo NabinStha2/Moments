@@ -32,7 +32,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   File? userSelectedFile;
   bool isSignIn = true;
   bool showPassword = false;
@@ -93,7 +94,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  _authLoaded(AuthInitialLoadedEvent event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  _authLoaded(AuthInitialLoadedEvent event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     emit(AuthLoaded(
       ownerUser: IndividualUserModel(
         message: "Success",
@@ -105,7 +107,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ),
           token: event.data["token"] ?? "",
           name: event.data["name"] ?? "",
-          friends: event.data["friends"] != null ? event.data["friends"].split(",") : [],
+          friends: event.data["friends"] != null
+              ? event.data["friends"].split(",")
+              : [],
         ),
       ),
     ));
@@ -120,7 +124,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ownerUserModel = IndividualUserModel();
   }
 
-  _sendMsgData(SendMsgDataEvent event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  _sendMsgData(SendMsgDataEvent event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     messageData.add(event.msgData);
     emit(AuthLoaded(
       msgData: messageData,
@@ -131,24 +136,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ));
   }
 
-  Future _login(LoginEvent event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  Future _login(LoginEvent event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     emit(AuthLoading());
     CustomDialogs.showCustomFullLoadingDialog(ctx: ctx, title: "Logging In...");
     try {
-      final IndividualUserModel user = await _userRepo.login(data: event.data ?? {}, ctx: ctx);
+      final IndividualUserModel user =
+          await _userRepo.login(data: event.data ?? {}, ctx: ctx);
       if (user.message == "Success" && user.data != null) {
         ownerUserModel = user;
-        await StorageServices.writeStorage(key: "imageUrl", value: user.data?.image?.imageUrl ?? "");
-        await StorageServices.writeStorage(key: "email", value: user.data?.email);
+        await StorageServices.writeStorage(
+            key: "imageUrl", value: user.data?.image?.imageUrl ?? "");
+        await StorageServices.writeStorage(
+            key: "email", value: user.data?.email);
         await StorageServices.writeStorage(key: "name", value: user.data?.name);
         await StorageServices.writeStorage(key: "id", value: user.data?.id);
-        await StorageServices.writeStorage(key: "token", value: user.data?.token);
-        await StorageServices.writeStorage(key: "about", value: user.data?.about);
+        await StorageServices.writeStorage(
+            key: "token", value: user.data?.token);
+        await StorageServices.writeStorage(
+            key: "about", value: user.data?.about);
         await StorageServices.writeStorage(key: "rememberMe", value: "true");
         user.data?.friends != [] && user.data?.friends?.isNotEmpty == true
-            ? await StorageServices.writeStorage(key: "friends", value: user.data?.friends?.join(",").toString() ?? "")
+            ? await StorageServices.writeStorage(
+                key: "friends",
+                value: user.data?.friends?.join(",").toString() ?? "")
             : null;
-        StorageServices.setAuthStorageValues(await StorageServices.getStorage());
+        StorageServices.setAuthStorageValues(
+            await StorageServices.getStorage());
         emit(LoginSuccess());
         clearAuthValue();
         emit(AuthLoaded(
@@ -158,28 +172,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       Navigator.pop(ctx);
     } catch (err) {
       consolelog("Error : $err");
-      emit(AuthError(error: err.toString()));
+      emit(LoginFailure(error: err.toString()));
     }
   }
 
-  Future _register(RegisterEvent event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  Future _register(RegisterEvent event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     emit(AuthLoading());
     CustomDialogs.showCustomFullLoadingDialog(ctx: ctx);
     try {
-      final IndividualUserModel user = await _userRepo.register(data: event.data ?? {}, ctx: ctx);
+      final IndividualUserModel user =
+          await _userRepo.register(data: event.data ?? {}, ctx: ctx);
       if (user.message == "Success" && user.data != null) {
         emit(RegisterSuccess(user: user));
       }
       Navigator.pop(ctx);
     } catch (err) {
       consolelog("Error : $err");
-      emit(AuthError(error: err.toString()));
+      emit(RegisterFailure(error: err.toString()));
     }
   }
 
-  Future _logout(LogoutEvent event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  Future _logout(LogoutEvent event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     emit(AuthLoading());
-    CustomDialogs.showCustomFullLoadingDialog(ctx: ctx, title: "Logging Out...");
+    CustomDialogs.showCustomFullLoadingDialog(
+        ctx: ctx, title: "Logging Out...");
     try {
       await _userRepo.logout(
         ctx: ctx,
@@ -201,10 +219,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future _uploadUserImage(UploadImageEvent event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  Future _uploadUserImage(UploadImageEvent event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     emit(UploadImageLoading());
     try {
-      final IndividualUserModel user = await _userRepo.uploadImage(event.image, event.id);
+      final IndividualUserModel user =
+          await _userRepo.uploadImage(event.image, event.id);
       if (user.message == "Success" && user.data != null) {
         ownerUserModel = user;
         clearAuthValue();
@@ -215,48 +235,53 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           userFriends: userFriends,
         ));
         await StorageServices.deleteSpecificStorage(key: "imageUrl");
-        await StorageServices.writeStorage(key: "imageUrl", value: user.data?.image?.imageUrl);
-        StorageServices.setAuthStorageValues(await StorageServices.getStorage());
+        await StorageServices.writeStorage(
+            key: "imageUrl", value: user.data?.image?.imageUrl);
+        StorageServices.setAuthStorageValues(
+            await StorageServices.getStorage());
       }
     } catch (err) {
       consolelog("err : $err");
-      emit(AuthError(error: err.toString()));
+      emit(UploadImageFailure(error: err.toString()));
     }
   }
 
-  Future _uploadMsgImage(UploadMsgImageEvent event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  Future _uploadMsgImage(UploadMsgImageEvent event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     emit(UploadMsgImageLoading());
     try {
-      final MessageModel msgData = await _userRepo.uploadMsgImage(event.image, event.id, event.text);
+      final MessageModel msgData =
+          await _userRepo.uploadMsgImage(event.image, event.id, event.text);
       if (msgData.message == "Success" && msgData.data != null) {
         emit(UploadMsgImageSuccess(msgData: msgData));
         Navigator.pop(event.context);
       }
     } catch (err) {
       consolelog("err : $err");
-      emit(AuthError(error: err.toString()));
+      emit(UploadMsgImageFailure(error: err.toString()));
     }
   }
 
-  Future _editUserProfile(event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  Future _editUserProfile(event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     try {
       final user = await _userRepo.editUser(event.id, event.name, event.about);
       if (user != null) {
         if (user.errMessage != "") {
-          emit(AuthError(error: user.errMessage!));
+          emit(EditProfileFailure(error: user.errMessage!));
         } else {
           consolelog("user ---- ${user.name}");
           emit(EditProfileSuccess(user: user));
         }
       }
     } catch (err) {
-      // ignore: avoid_log
       consolelog("err : $err");
-      emit(AuthError(error: "Server has been down recently"));
+      emit(EditProfileFailure(error: "Server has been down recently"));
     }
   }
 
-  Future _addUser(AddUserEvent event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  Future _addUser(AddUserEvent event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     emit(AddUserLoading());
     try {
       final IndividualUserModel user = await _userRepo.addUser(
@@ -269,20 +294,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user.message == "Success" && user.data != null) {
         ownerUserModel = user;
         await StorageServices.deleteSpecificStorage(key: "friends");
-        await StorageServices.writeStorage(key: "friends", value: user.data?.friends?.join(",").toString() ?? "");
-        StorageServices.setAuthStorageValues(await StorageServices.getStorage());
+        await StorageServices.writeStorage(
+            key: "friends",
+            value: user.data?.friends?.join(",").toString() ?? "");
+        StorageServices.setAuthStorageValues(
+            await StorageServices.getStorage());
         emit(AddUserSuccess(user: user));
       }
     } catch (err) {
       consolelog("err : $err");
-      emit(AuthError(error: err.toString()));
+      emit(AddUserFailure(error: err.toString()));
     }
   }
 
-  Future _getOwnerById(GetOwnerById event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
-    // emit(AuthLoading());
+  Future _getOwnerById(GetOwnerById event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     try {
-      final IndividualUserModel user = await _userRepo.getUserById(id: event.id, ctx: ctx);
+      final IndividualUserModel user =
+          await _userRepo.getUserById(id: event.id, ctx: ctx);
       if (user.message == "Success" && user.data != null) {
         ownerUserModel = user;
         emit(AuthLoaded(
@@ -294,14 +323,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (err) {
       consolelog("_getOwnerById : $err");
-      emit(AuthError(error: err.toString()));
+      emit(GetUserByIdFailure(error: err.toString()));
     }
   }
 
-  Future _getUserById(GetUserById event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
-    // emit(AuthLoading());
+  Future _getUserById(GetUserById event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     try {
-      final IndividualUserModel user = await _userRepo.getUserById(id: event.id, ctx: ctx);
+      final IndividualUserModel user =
+          await _userRepo.getUserById(id: event.id, ctx: ctx);
       if (user.message == "Success" && user.data != null) {
         userModel = user;
         emit(AuthLoaded(
@@ -313,14 +343,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (err) {
       consolelog("_getUserById : $err");
-      emit(AuthError(error: err.toString()));
+      emit(GetUserByIdFailure(error: err.toString()));
     }
   }
 
-  Future _getUserFriends(GetUserFriends event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  Future _getUserFriends(GetUserFriends event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     emit(GetUserFriendsLoading());
     try {
-      final UserModel user = await _userRepo.getUserFriends(id: event.id, ctx: ctx);
+      final UserModel user =
+          await _userRepo.getUserFriends(id: event.id, ctx: ctx);
       if (user.message == "Success" && user.data != null) {
         userFriends = user;
         emit(AuthLoaded(
@@ -332,11 +364,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (err) {
       consolelog("_getUserFriendsError : $err");
-      emit(AuthError(error: err.toString()));
+      emit(GetUserFriendsFailure(error: err.toString()));
     }
   }
 
-  Future _getAllUser(GetAllUser event, Emitter<AuthState> emit, {required BuildContext ctx}) async {
+  Future _getAllUser(GetAllUser event, Emitter<AuthState> emit,
+      {required BuildContext ctx}) async {
     emit(GetAllUsersLoading());
     try {
       final UserModel allUser = await _userRepo.getAllUsers(ctx: ctx);
@@ -351,7 +384,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (err) {
       consolelog("_getAllUser : $err");
-      emit(AuthError(error: err.toString()));
+      emit(GetAllUsersFailure(error: err.toString()));
     }
   }
 }

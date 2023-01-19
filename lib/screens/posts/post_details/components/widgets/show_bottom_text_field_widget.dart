@@ -90,7 +90,7 @@ Widget showBottomTextField({
                         id: postBloc.singlePostData?.id ?? "",
                         value: "${StorageServices.authStorageValues["name"]}:${postBloc.commentController.text}",
                         token: StorageServices.authStorageValues["token"] ?? "",
-                        creatorId: postBloc.singlePostData?.creator ?? "",
+                        creatorId: postBloc.singlePostData?.creator?.id ?? "",
                         userId: StorageServices.authStorageValues["id"] ?? "",
                         postUrl: postBloc.singlePostData?.fileType == "video"
                             ? postBloc.singlePostData?.file?.thumbnail ?? ""
@@ -112,7 +112,7 @@ Widget showBottomTextField({
                         id: postBloc.singlePostData?.id ?? "",
                         value: "${StorageServices.authStorageValues["name"]}:${postBloc.commentController.text}",
                         token: StorageServices.authStorageValues["token"] ?? "",
-                        creatorId: postBloc.singlePostData?.creator ?? "",
+                        creatorId: postBloc.singlePostData?.creator?.id ?? "",
                         userId: StorageServices.authStorageValues["id"] ?? "",
                         postUrl: postBloc.singlePostData?.fileType == "video"
                             ? postBloc.singlePostData?.file?.thumbnail ?? ""

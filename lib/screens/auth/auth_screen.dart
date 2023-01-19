@@ -46,6 +46,20 @@ class AuthScreen extends StatelessWidget {
             snackBarBehavior: SnackBarBehavior.floating,
           );
         }
+        if (state is LoginFailure) {
+          CustomSnackbarWidget.showSnackbar(
+              ctx: context,
+              backgroundColor: Colors.red,
+              content: state.error,
+              secDuration: 2);
+        }
+        if (state is RegisterFailure) {
+          CustomSnackbarWidget.showSnackbar(
+              ctx: context,
+              backgroundColor: Colors.red,
+              content: state.error,
+              secDuration: 2);
+        }
       },
       builder: (context, state) {
         if (state is LogoutSuccess) {
@@ -55,10 +69,10 @@ class AuthScreen extends StatelessWidget {
           return AuthBody(state: state);
         }
         if (state is AuthLoaded) {
-          // print(state.user);
           return const ProfileScreen();
         }
-        return StorageServices.authStorageValues.isNotEmpty == true && StorageServices.authStorageValues["rememberMe"] == "true"
+        return StorageServices.authStorageValues.isNotEmpty == true &&
+                StorageServices.authStorageValues["rememberMe"] == "true"
             ? const ProfileScreen()
             : AuthBody(state: state);
       },

@@ -32,11 +32,18 @@ class PostAddBody extends StatelessWidget {
               creator: StorageServices.authStorageValues["id"] ?? "",
             ),
           );
-          CustomSnackbarWidget.showSnackbar(ctx: context, backgroundColor: Colors.green, content: 'Post created successfully.', secDuration: 1);
+          CustomSnackbarWidget.showSnackbar(
+              ctx: context,
+              backgroundColor: Colors.green,
+              content: 'Post created successfully.',
+              secDuration: 1);
         }
-        if (state is PostError) {
-          // CustomDialogs.showCustomActionDialog(ctx: context, message: state.error);
-          CustomSnackbarWidget.showSnackbar(ctx: context, backgroundColor: Colors.red, content: state.error, secDuration: 2);
+        if (state is PostCreatedFailure) {
+          CustomSnackbarWidget.showSnackbar(
+              ctx: context,
+              backgroundColor: Colors.red,
+              content: state.error,
+              secDuration: 2);
         }
       },
       child: Center(
@@ -62,7 +69,8 @@ class PostAddBody extends StatelessWidget {
                       vSizedBox0,
                       vSizedBox1,
                       CustomTextFormFieldWidget(
-                        controller: BlocProvider.of<PostsBloc>(context).descriptionController,
+                        controller: BlocProvider.of<PostsBloc>(context)
+                            .descriptionController,
                         keyboardType: TextInputType.text,
                         labelText: "Description",
                         hintText: 'Enter your description here',

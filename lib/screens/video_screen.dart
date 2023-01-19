@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_brace_in_string_interps
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -10,10 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
-import 'package:moment/main.dart';
 import 'package:moment/services/api_config.dart';
 import 'package:permission_handler/permission_handler.dart';
 import "package:http/http.dart" as http;
+
+import '../app/states/states.dart';
 
 class VideoScreen extends StatefulWidget {
   const VideoScreen({Key? key}) : super(key: key);

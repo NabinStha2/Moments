@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 import 'dart:io';
 
@@ -31,6 +29,7 @@ import 'package:moment/widgets/receiver_message_ui.dart';
 import 'package:moment/widgets/sender_message_ui.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../../../app/states/states.dart';
 import '../../../bloc/auth_bloc/auth_bloc.dart';
 import '../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../utils/unfocus_keyboard.dart';
@@ -51,7 +50,8 @@ class ChattingDetailsScreen extends StatefulWidget {
 class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
   final FocusNode _focusNode = FocusNode();
   ScrollController scrollController = ScrollController();
-  final TextEditingController messageEditingController = TextEditingController();
+  final TextEditingController messageEditingController =
+      TextEditingController();
   bool emojiShowing = false;
   bool isOnline = false;
 
@@ -109,7 +109,8 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
       widget.chatDetail.id,
     ]);
 
-    socket!.emit("user_online", [StorageServices.authStorageValues["id"], widget.chatDetail.id]);
+    socket!.emit("user_online",
+        [StorageServices.authStorageValues["id"], widget.chatDetail.id]);
 
     socket!.on("user_enter", (name) {
       // consolelog(name);
@@ -147,7 +148,8 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
   void deleteMsgImage() async {
     consolelog("delete all msg Image");
     BlocProvider.of<AuthBloc>(context).clearMessageData();
-    final uri = Uri.http(ApiConfig.baseUrl, "/user/deleteMsgImage/${StorageServices.authStorageValues["id"]}");
+    final uri = Uri.http(ApiConfig.baseUrl,
+        "/user/deleteMsgImage/${StorageServices.authStorageValues["id"]}");
     await http.patch(
       uri,
       headers: {
@@ -158,8 +160,11 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
 
   sendFile(String filePath, String text, String fileType) async {
     consolelog("hello $filePath $fileType $text");
-    BlocProvider.of<AuthBloc>(context)
-        .add(UploadMsgImageEvent(image: File(filePath), context: context, id: StorageServices.authStorageValues["id"] ?? "", text: text));
+    BlocProvider.of<AuthBloc>(context).add(UploadMsgImageEvent(
+        image: File(filePath),
+        context: context,
+        id: StorageServices.authStorageValues["id"] ?? "",
+        text: text));
   }
 
   @override
@@ -172,13 +177,15 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
   _onEmojiSelected(Emoji emoji) {
     messageEditingController
       ..text += emoji.emoji
-      ..selection = TextSelection.fromPosition(TextPosition(offset: messageEditingController.text.length));
+      ..selection = TextSelection.fromPosition(
+          TextPosition(offset: messageEditingController.text.length));
   }
 
   _onBackspacePressed() {
     messageEditingController
       ..text = messageEditingController.text.characters.skipLast(1).toString()
-      ..selection = TextSelection.fromPosition(TextPosition(offset: messageEditingController.text.length));
+      ..selection = TextSelection.fromPosition(
+          TextPosition(offset: messageEditingController.text.length));
   }
 
   @override
@@ -309,7 +316,8 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
                 ),
                 PoppinsText(
                   isOnline ? "online" : "offline",
-                  color: isOnline ? Colors.white : Colors.white.withOpacity(0.7),
+                  color:
+                      isOnline ? Colors.white : Colors.white.withOpacity(0.7),
                 ),
               ],
             ),
@@ -348,7 +356,8 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
               var msgListData = state.msgData;
               return newMethod(context, msgListData: msgListData);
             }
-            return newMethod(context, msgListData: BlocProvider.of<AuthBloc>(context).messageData);
+            return newMethod(context,
+                msgListData: BlocProvider.of<AuthBloc>(context).messageData);
           },
         ),
       ),
