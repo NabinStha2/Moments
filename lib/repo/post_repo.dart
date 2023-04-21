@@ -124,6 +124,7 @@ class PostRepo {
         file: value["selectedFile"],
         imageKey: "image",
       );
+      // consolelog(response);
       return postModelFromJson(response);
     } catch (err) {
       consolelog("createPost: $err");

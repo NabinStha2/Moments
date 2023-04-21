@@ -68,7 +68,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
     _engine.setEventHandler(
       RtcEngineEventHandler(
         joinChannelSuccess: (channel, uid, elapsed) {
-          log('joinChannelSuccess ${channel} ${uid} ${elapsed}');
+          log('joinChannelSuccess $channel $uid $elapsed');
           setState(() {
             isJoined = true;
           });
@@ -132,13 +132,13 @@ class _VoiceScreenState extends State<VoiceScreen> {
           });
         },
         userJoined: (uid, elapsed) {
-          log('userJoined  ${uid} ${elapsed}');
+          log('userJoined  $uid $elapsed');
           setState(() {
             userJoin = true;
           });
         },
         userOffline: (uid, reason) {
-          log('userOffline  ${uid} ${reason}');
+          log('userOffline  $uid $reason');
           setState(() {
             userJoin = false;
           });
@@ -156,7 +156,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
   _joinChannel() async {
     try {
       // final uri = Uri.https(baseUrl, "/rtcToken/$channelName");
-      final uri = Uri.http(ApiConfig.baseUrl, "/rtcToken/$channelName");
+      final uri = Uri.parse("${ApiConfig.baseUrl}/rtcToken/$channelName");
       final response = await http.get(
         uri,
       );

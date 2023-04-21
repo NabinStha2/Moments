@@ -35,7 +35,8 @@ class PostAddRequestButtonWidget extends StatelessWidget {
                       id: postId ?? "",
                       data: {
                         "name": StorageServices.authStorageValues["name"],
-                        "description": postBloc.updateDescriptionController.text,
+                        "description":
+                            postBloc.updateDescriptionController.text,
                         "selectedFile": postBloc.updatePostSelectedFile ?? "",
                       },
                       token: StorageServices.authStorageValues["token"] ?? "",
@@ -66,10 +67,18 @@ class PostAddRequestButtonWidget extends StatelessWidget {
                 );
               }
             } else {
-              CustomSnackbarWidget.showSnackbar(ctx: context, backgroundColor: Colors.red, content: "Description mustn't be empty", secDuration: 2);
+              CustomSnackbarWidget.showSnackbar(
+                  ctx: context,
+                  backgroundColor: Colors.red,
+                  content: "Description mustn't be empty",
+                  secDuration: 2);
             }
           } else {
-            CustomSnackbarWidget.showSnackbar(ctx: context, backgroundColor: Colors.red, content: "Required Sign In!", secDuration: 2);
+            CustomSnackbarWidget.showSnackbar(
+                ctx: context,
+                backgroundColor: Colors.red,
+                content: "Required Sign In!",
+                secDuration: 2);
           }
         },
         child: PoppinsText(isUpdate ? "Update" : "Create", color: Colors.white),

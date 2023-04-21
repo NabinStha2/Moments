@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 import "package:http/http.dart" as http;
 
 import '../app/states/states.dart';
+import '../development/console.dart';
 
 class VideoScreen extends StatefulWidget {
   const VideoScreen({Key? key}) : super(key: key);
@@ -54,13 +54,13 @@ class _VideoScreenState extends State<VideoScreen> {
     await [Permission.microphone, Permission.camera].request();
 
     //create the engine
-    _engine = await RtcEngine.create(appId);
+    _engine = await RtcEngine.createWithContext(RtcEngineContext(appId));
     await _engine.enableVideo();
 
     _engine.setEventHandler(
       RtcEngineEventHandler(
         joinChannelSuccess: (channel, uid, elapsed) {
-          log('joinChannelSuccess ${channel} ${uid} ${elapsed}');
+          log('joinChannelSuccess $channel $uid $elapsed');
           setState(() {
             isJoined = true;
           });
@@ -116,13 +116,13 @@ class _VideoScreenState extends State<VideoScreen> {
           }
         },
         userJoined: (uid, elapsed) {
-          log('userJoined  ${uid} ${elapsed}');
+          log('userJoined  $uid $elapsed');
           setState(() {
             remoteUid.add(uid);
           });
         },
         userOffline: (uid, reason) {
-          log('userOffline  ${uid} ${reason}');
+          log('userOffline  $uid $reason');
           setState(() {
             remoteUid.removeWhere((element) => element == uid);
           });
@@ -138,7 +138,7 @@ class _VideoScreenState extends State<VideoScreen> {
     );
 
     // await _engine.startPreview();
-    // await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
+    await _engine.setChannelProfile(ChannelProfile.Communication);
     // await _engine.setClientRole(ClientRole.Broadcaster);
   }
 
@@ -149,14 +149,14 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   _joinChannel() async {
-    debugPrint(channelName);
+    consolelog(channelName);
 
     try {
       if (channelName == "") {
         throw "channel name is required";
       }
       // final uri = Uri.https(baseUrl, "/rtcToken/$channelName");
-      final uri = Uri.http(ApiConfig.baseUrl, "/rtcToken/$channelName");
+      final uri = Uri.parse("${ApiConfig.baseUrl}/rtcToken/$channelName");
       final response = await http.get(
         uri,
       );
@@ -291,27 +291,27 @@ class _VideoScreenState extends State<VideoScreen> {
                   ),
                 ),
               ),
-              if (isJoined)
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _controllerText,
-                          decoration: const InputDecoration(
-                            hintText: 'Input Message',
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: _onPressSend,
-                        child: const Text('Send'),
-                      ),
-                    ],
-                  ),
-                )
+              // if (isJoined)
+              //   Padding(
+              //     padding: const EdgeInsets.all(10.0),
+              //     child: Row(
+              //       mainAxisSize: MainAxisSize.max,
+              //       children: [
+              //         Expanded(
+              //           child: TextField(
+              //             controller: _controllerText,
+              //             decoration: const InputDecoration(
+              //               hintText: 'Input Message',
+              //             ),
+              //           ),
+              //         ),
+              //         ElevatedButton(
+              //           onPressed: _onPressSend,
+              //           child: const Text('Send'),
+              //         ),
+              //       ],
+              //     ),
+              //   )
             ],
           ),
         ],
@@ -352,12 +352,14 @@ class _VideoScreenState extends State<VideoScreen> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-          const Align(
+          Align(
             alignment: Alignment.topLeft,
             child: SizedBox(
               width: 120,
               height: 160,
-              child: RtcLocalView.SurfaceView(),
+              child: RtcLocalView.SurfaceView(
+                channelId: channelName,
+              ),
             ),
           ),
         ],

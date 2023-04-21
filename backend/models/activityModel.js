@@ -24,7 +24,7 @@ const activitySchema = mongoose.Schema({
       ownerId: { type: mongoose.Types.ObjectId, ref: "User" },
       type: {
         type: String,
-        enum: ["Like", "Comment", "AddFriend", "RemoveFriend"],
+        enum: ["Like", "Comment", "ReplyComment", "AddFriend", "RemoveFriend"],
       },
       timestamps: { type: Date, default: Date() },
     },

@@ -150,7 +150,7 @@ const login = async (req, res) => {
   }
 };
 
-const getOneSignalUserById = async (req, res) => {
+const getOneSignalUserByPostId = async (req, res) => {
   try {
     const post = await PostModel.findById({ _id: req.params.id })
       .populate("creator")
@@ -158,6 +158,17 @@ const getOneSignalUserById = async (req, res) => {
     // console.log(post);
     const user = await User.findById({ _id: post.creator._id });
     // console.log(user.oneSignalUserId);
+    res.status(200).json({ message: "Success", data: user.oneSignalUserId });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ errMessage: err.message });
+  }
+};
+
+const getOneSignalUserById = async (req, res) => {
+  try {
+    const user = await User.findById({ _id: req.params.id });
+    console.log(user.oneSignalUserId);
     res.status(200).json({ message: "Success", data: user.oneSignalUserId });
   } catch (err) {
     console.log(err.message);
@@ -509,4 +520,5 @@ module.exports = {
   deleteMsgImage,
   getUserFriends,
   getOneSignalUserById,
+  getOneSignalUserByPostId,
 };

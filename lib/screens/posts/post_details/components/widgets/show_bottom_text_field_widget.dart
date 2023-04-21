@@ -10,6 +10,7 @@ import 'package:moment/widgets/custom_text_form_field_widget.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import '../../../../../bloc/posts_bloc/posts_bloc.dart';
+import '../../../../../development/console.dart';
 
 FocusNode commentFocusNode = FocusNode();
 
@@ -36,7 +37,8 @@ Widget showBottomTextField({
                 ),
                 Container(
                   color: Colors.grey.shade200,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -88,15 +90,18 @@ Widget showBottomTextField({
                       CommentPostEvent(
                         context: context,
                         id: postBloc.singlePostData?.id ?? "",
-                        value: "${StorageServices.authStorageValues["name"]}:${postBloc.commentController.text}",
+                        value:
+                            "${StorageServices.authStorageValues["name"]}:${postBloc.commentController.text}",
                         token: StorageServices.authStorageValues["token"] ?? "",
                         creatorId: postBloc.singlePostData?.creator?.id ?? "",
                         userId: StorageServices.authStorageValues["id"] ?? "",
                         postUrl: postBloc.singlePostData?.fileType == "video"
                             ? postBloc.singlePostData?.file?.thumbnail ?? ""
                             : postBloc.singlePostData?.file?.fileUrl ?? "",
-                        userImageUrl: StorageServices.authStorageValues["imageUrl"] ?? "",
-                        activityName: "${StorageServices.authStorageValues["name"]} has commented on your post.",
+                        userImageUrl:
+                            StorageServices.authStorageValues["imageUrl"] ?? "",
+                        activityName:
+                            "${StorageServices.authStorageValues["name"]} has reply to comment on a post.",
                         isReply: true,
                         commentId: commentId,
                         replyToUserId: replyToUserId,
@@ -110,33 +115,65 @@ Widget showBottomTextField({
                       CommentPostEvent(
                         context: context,
                         id: postBloc.singlePostData?.id ?? "",
-                        value: "${StorageServices.authStorageValues["name"]}:${postBloc.commentController.text}",
+                        value:
+                            "${StorageServices.authStorageValues["name"]}:${postBloc.commentController.text}",
                         token: StorageServices.authStorageValues["token"] ?? "",
                         creatorId: postBloc.singlePostData?.creator?.id ?? "",
                         userId: StorageServices.authStorageValues["id"] ?? "",
                         postUrl: postBloc.singlePostData?.fileType == "video"
                             ? postBloc.singlePostData?.file?.thumbnail ?? ""
                             : postBloc.singlePostData?.file?.fileUrl ?? "",
-                        userImageUrl: StorageServices.authStorageValues["imageUrl"] ?? "",
-                        activityName: "${StorageServices.authStorageValues["name"]} has commented on your post.",
+                        userImageUrl:
+                            StorageServices.authStorageValues["imageUrl"] ?? "",
+                        activityName:
+                            "${StorageServices.authStorageValues["name"]} has commented on your post.",
                       ),
                     );
                   }
                   postBloc.add(PostClearValueEvent());
-                  var resOneSignalIds = await getUserPostSignalId(
-                    baseUrl: ApiConfig.baseUrl,
-                    postId: postBloc.singlePostData!.id,
-                  );
-                  var resData = json.decode(resOneSignalIds);
-                  if (resData["message"] == "Success" && resData["data"] != []) {
-                    var notification = OSCreateNotification(
-                      playerIds: (resData["data"] as List).map((e) => e.toString()).toList(),
-                      androidSound: "landras_dream",
-                      content: "${StorageServices.authStorageValues["name"]} has commented on your post.",
-                      heading: "Moments",
-                      bigPicture: postBloc.singlePostData?.file?.fileUrl,
+
+                  if (isReply) {
+                    var resOneSignalIds = await getUserSignalId(
+                      baseUrl: ApiConfig.baseUrl,
+                      userId: replyToUserId,
                     );
-                    await OneSignal.shared.postNotification(notification);
+                    var resData = json.decode(resOneSignalIds);
+                    consolelog(resData);
+                    if (resData["message"] == "Success" &&
+                        resData["data"] != []) {
+                      var notifications = OSCreateNotification(
+                        playerIds: (resData["data"] as List)
+                            .map((e) => e.toString())
+                            .toList(),
+                        androidSound: "landras_dream",
+                        content:
+                            "${StorageServices.authStorageValues["name"]} has reply to your comment on a post.",
+                        heading: "Moments",
+                        bigPicture: postBloc.singlePostData?.file?.fileUrl,
+                      );
+                      await OneSignal.shared.postNotification(notifications);
+                    } else {
+                      var resOneSignalIds = await getUserPostSignalId(
+                        baseUrl: ApiConfig.baseUrl,
+                        postId: postBloc.singlePostData!.id,
+                      );
+                      var resData = json.decode(resOneSignalIds);
+                      // consolelog(resData);
+                      if (resData["message"] == "Success" &&
+                          resData["data"] != []) {
+                        var notification = OSCreateNotification(
+                          playerIds: (resData["data"] as List)
+                              .map((e) => e.toString())
+                              .toList(),
+                          androidSound: "landras_dream",
+                          content:
+                              "${StorageServices.authStorageValues["name"]} has commented on your post.",
+                          heading: "Moments",
+                          bigPicture: postBloc.singlePostData?.file?.fileUrl,
+                        );
+                        await OneSignal.shared.postNotification(notification);
+                      }
+                    }
                   }
                 } else {
                   ScaffoldMessenger.of(context)

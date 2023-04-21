@@ -65,7 +65,7 @@ class PostHeaderBody extends StatelessWidget {
               ),
             ],
           ),
-          (StorageServices.authStorageValues["id"] == post.creator)
+          (StorageServices.authStorageValues["id"] == post.creator?.id)
               ? PopupMenuButton(
                   onSelected: (value) {
                     if (value as String == "edit") {

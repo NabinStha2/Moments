@@ -7,7 +7,7 @@ const uuidv4 = require("uuid").v4;
 
 module.exports.getPosts = async (req, res) => {
   const { page } = req.query;
-  const perPage = 3;
+  const perPage = 10;
   const pageNumber = Number(page) || 1;
   // console.log(page);
 
@@ -91,6 +91,7 @@ module.exports.createPost = async (req, res) => {
   if (!name || !description)
     return res.json({ errMessage: "Fill the form completely" });
   var post;
+  var createdPost;
   try {
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "moments",
@@ -120,25 +121,32 @@ module.exports.createPost = async (req, res) => {
           },
           creator: req.userId,
           createdAt: Date.now(),
+        }).then(async (result) => {
+          console.log(result);
+          createdPost = await PostModel.findById({ _id: result._id })
+            .populate("creator")
+            .lean();
+          const user = await User.findById({ _id: req.userId });
+          if (user) {
+            user.posts.push(result._id);
+            // console.log(user);
+            await User.findByIdAndUpdate(
+              {
+                _id: req.userId,
+              },
+              user,
+              {
+                new: true,
+              }
+            );
+          }
+          console.log(createdPost);
+          //fs.unlinkSync(req.file.path);
+          res.status(201).json({ message: "Success", data: [createdPost] });
         });
-        // console.log(post);
-        const user = await User.findById({ _id: req.userId });
-        if (user) {
-          user.posts.push(post._id);
-          // console.log(user);
-          await User.findByIdAndUpdate(
-            {
-              _id: req.userId,
-            },
-            user,
-            {
-              new: true,
-            }
-          );
-        }
       } else {
         console.log("uploading image");
-        post = await PostModel.create({
+        PostModel.create({
           name,
           description,
           fileType: "image",
@@ -148,27 +156,32 @@ module.exports.createPost = async (req, res) => {
           },
           creator: req.userId,
           createdAt: Date.now(),
+        }).then(async (result) => {
+          console.log(result);
+          createdPost = await PostModel.findById({ _id: result._id })
+            .populate("creator")
+            .lean();
+          const user = await User.findById({ _id: req.userId });
+          if (user) {
+            user.posts.push(result._id);
+            // console.log(user);
+            await User.findByIdAndUpdate(
+              {
+                _id: req.userId,
+              },
+              user,
+              {
+                new: true,
+              }
+            );
+          }
+
+          console.log(createdPost);
+          //fs.unlinkSync(req.file.path);
+          res.status(201).json({ message: "Success", data: [createdPost] });
         });
-        // console.log(post);
-        const user = await User.findById({ _id: req.userId });
-        if (user) {
-          user.posts.push(post._id);
-          // console.log(user);
-          await User.findByIdAndUpdate(
-            {
-              _id: req.userId,
-            },
-            user,
-            {
-              new: true,
-            }
-          );
-        }
       }
     }
-    // console.log(post);
-    //fs.unlinkSync(req.file.path);
-    res.status(201).json({ message: "Success", data: [post] });
   } catch (err) {
     console.error(err.message);
     //fs.unlinkSync(req.file.path);
@@ -248,7 +261,7 @@ module.exports.updatePost = async (req, res) => {
           },
           postBody,
           { new: true, timestamp: true }
-        );
+        ).populate("creator");
       }
       //fs.unlinkSync(req.file.path);
       res.status(201).json({ message: "Success", data: [post] });
@@ -282,29 +295,28 @@ module.exports.commentPost = async (req, res) => {
     const post = await PostModel.findById(id);
     // console.log(post);
 
-    const acts = await Activity.findOne({ activityUserId: creatorId });
-    newActivityData = {
-      userId: userId,
-      postId: id,
-      userImageUrl: userImageUrl,
-      activityName: activityName,
-      postUrl: postUrl,
-      type: "Comment",
-      ownerId: creatorId,
-      activityId: activityId,
-      timestamps: new Date(),
-    };
-    acts.activity.push(newActivityData);
-    const activity = await Activity.findOneAndUpdate(
-      { activityUserId: creatorId },
-      acts,
-      {
-        new: true,
-      }
-    );
-    // console.log(activity);
-
     if (isReply) {
+      const acts = await Activity.findOne({ activityUserId: replyToUserId });
+      newActivityData = {
+        userId: userId,
+        postId: id,
+        userImageUrl: userImageUrl,
+        activityName: activityName,
+        postUrl: postUrl,
+        type: "ReplyComment",
+        ownerId: creatorId,
+        activityId: activityId,
+        timestamps: new Date(),
+      };
+      acts.activity.push(newActivityData);
+      const activity = await Activity.findOneAndUpdate(
+        { activityUserId: replyToUserId },
+        acts,
+        {
+          new: true,
+        }
+      );
+      // console.log(activity);
       newReplyCommentData = {
         commentName: value,
         commentUserId: userId,
@@ -321,6 +333,28 @@ module.exports.commentPost = async (req, res) => {
       });
       // console.log(post.comments);
     } else {
+      const acts = await Activity.findOne({ activityUserId: creatorId });
+      newActivityData = {
+        userId: userId,
+        postId: id,
+        userImageUrl: userImageUrl,
+        activityName: activityName,
+        postUrl: postUrl,
+        type: "Comment",
+        ownerId: creatorId,
+        activityId: activityId,
+        timestamps: new Date(),
+      };
+      acts.activity.push(newActivityData);
+      const activity = await Activity.findOneAndUpdate(
+        { activityUserId: creatorId },
+        acts,
+        {
+          new: true,
+        }
+      );
+      // console.log(activity);
+
       newCommentData = {
         commentName: value,
         commentUserId: userId,
@@ -332,7 +366,8 @@ module.exports.commentPost = async (req, res) => {
     }
     const updatedPost = await PostModel.findByIdAndUpdate(id, post, {
       new: true,
-    });
+    }).populate("creator");
+    // console.log(updatedPost);
 
     res.status(201).json({ message: "Success", data: [updatedPost] });
   } catch (err) {
@@ -430,7 +465,7 @@ module.exports.likePost = async (req, res) => {
 
     const updatedPost = await PostModel.findByIdAndUpdate({ _id: id }, post, {
       new: true,
-    });
+    }).populate("creator");
 
     // console.log(acts);
     await Activity.findOneAndUpdate({ activityUserId: creatorId }, acts, {
@@ -448,17 +483,21 @@ module.exports.likePost = async (req, res) => {
 module.exports.deletePost = async (req, res) => {
   // const id = req.params.id;
   try {
-    const deletedPost = await PostModel.findByIdAndDelete(req.params.id);
+    const deletedPost = await PostModel.findByIdAndDelete(
+      req.params.id
+    ).populate("creator");
     // console.log(deletedPost.file.get("fileUrl"));
     console.log("deleting the post");
-    // console.log(deletedPost);
+    console.log(`deletedPost : ${deletedPost}`);
 
-    const user = await User.findById({ _id: deletedPost.creator });
+    const user = await User.findById({ _id: deletedPost.creator?._id });
     if (user) {
       // console.log(user.posts);
-      user.posts = user.posts.filter((post) => post === deletedPost.creator);
+      user.posts = user.posts.filter(
+        (post) => post === deletedPost.creator._id
+      );
       // console.log(user.posts);
-      await User.findByIdAndUpdate({ _id: deletedPost.creator }, user, {
+      await User.findByIdAndUpdate({ _id: deletedPost.creator._id }, user, {
         new: true,
       });
     }
@@ -535,7 +574,7 @@ module.exports.deleteComment = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).populate("creator");
 
     const acts = await Activity.findOne({ "activity.activityId": activityId });
     if (acts != null) {

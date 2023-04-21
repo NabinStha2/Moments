@@ -3,7 +3,7 @@ const {
   login,
   register,
   imageUpload,
-  getOneSignalUserById,
+  getOneSignalUserByPostId,
   logout,
   getAllUsers,
   getUser,
@@ -12,6 +12,7 @@ const {
   addUser,
   msgImageUpload,
   deleteMsgImage,
+  getOneSignalUserById,
 } = require("../controllers/userController.js");
 const upload = require("./uploadRoutes");
 
@@ -56,6 +57,8 @@ router.get("/getUsers", getAllUsers);
 router.get("/getUser/:id", getUser);
 
 router.get("/getUserFriends/:id", getUserFriends);
+
+router.get("/getOneSignalUserByPostIds/:id", getOneSignalUserByPostId);
 
 router.get("/getOneSignalUserIds/:id", getOneSignalUserById);
 
