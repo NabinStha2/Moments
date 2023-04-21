@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:moment/app/states/states.dart';
 // import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 // import 'package:video_thumbnail/video_thumbnail.dart';
@@ -128,16 +127,17 @@ class _VideoState extends State<Video> {
                     right: 0,
                     child: IconButton(
                       onPressed: () {
-                        videoController = VideoPlayerController.network(widget.url)
-                          ..initialize().then((_) {
-                            // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-                            setState(() {});
-                            videoController!.play();
-                          })
-                          ..addListener(() {
-                            setState(() {});
-                          })
-                          ..setLooping(false);
+                        videoController =
+                            VideoPlayerController.network(widget.url)
+                              ..initialize().then((_) {
+                                // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+                                setState(() {});
+                                videoController!.play();
+                              })
+                              ..addListener(() {
+                                setState(() {});
+                              })
+                              ..setLooping(false);
                       },
                       icon: const Icon(
                         Icons.play_arrow_rounded,

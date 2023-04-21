@@ -37,7 +37,10 @@ class PostFooterBody extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () => {navigateToPostDetails(context: context, postId: post.id, isFromComment: true)},
+                onPressed: () => {
+                  navigateToPostDetails(
+                      context: context, postId: post.id, isFromComment: true)
+                },
                 splashColor: Colors.grey,
                 splashRadius: 20.0,
                 icon: const FaIcon(
@@ -54,7 +57,8 @@ class PostFooterBody extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () async {
-                  var link = await FirebaseDynamicLinkService.createDynamicLink(postId: post.id);
+                  var link = await FirebaseDynamicLinkService.createDynamicLink(
+                      postId: post.id);
                   Share.share(link, subject: "Moments post.");
                 },
                 splashColor: Colors.grey,

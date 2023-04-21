@@ -26,30 +26,31 @@ class AllUsersListBody extends StatefulWidget {
 class _AllUsersListBodyState extends State<AllUsersListBody> {
   UserModel? allUsers;
   IndividualUserModel? ownerUser;
+  int? selectedIndex;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  //     getOwnerDetails();
-  //     getAllUsers();
-  //   });
-  // }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getOwnerDetails();
+      getAllUsers();
+    });
+  }
 
-  // getOwnerDetails() {
-  //   BlocProvider.of<AuthBloc>(context).add(
-  //     GetOwnerById(
-  //       context: context,
-  //       id: StorageServices.authStorageValues["id"],
-  //     ),
-  //   );
-  // }
+  getOwnerDetails() {
+    BlocProvider.of<AuthBloc>(context).add(
+      GetOwnerById(
+        context: context,
+        id: StorageServices.authStorageValues["id"],
+      ),
+    );
+  }
 
-  // getAllUsers() async {
-  //   BlocProvider.of<AuthBloc>(context).add(
-  //     GetAllUser(context: context),
-  //   );
-  // }
+  getAllUsers() async {
+    BlocProvider.of<AuthBloc>(context).add(
+      GetAllUser(context: context),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +134,8 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                              BlocProvider.of<AuthBloc>(context).clearUserDetails();
+                              BlocProvider.of<AuthBloc>(context)
+                                  .clearUserDetails();
                               RouteNavigation.navigate(
                                 context,
                                 ProfileVisitPage(
@@ -164,59 +166,94 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                               ),
                               leading: ClipRRect(
                                 borderRadius: BorderRadius.circular(50.0),
-                                child: allUsers?.data?[index].image?.imageUrl != ""
-                                    ? Image.network(
-                                        allUsers?.data?[index].image?.imageUrl ?? "",
-                                        fit: BoxFit.cover,
-                                        alignment: Alignment.center,
-                                        height: 50,
-                                        width: 50,
-                                        filterQuality: FilterQuality.high,
-                                        isAntiAlias: true,
-                                      )
-                                    : Image.network(
-                                        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
-                                        fit: BoxFit.cover,
-                                        height: 50.0,
-                                        width: 50,
-                                        alignment: Alignment.center,
-                                        isAntiAlias: true,
-                                        filterQuality: FilterQuality.high,
-                                      ),
+                                child:
+                                    allUsers?.data?[index].image?.imageUrl != ""
+                                        ? Image.network(
+                                            allUsers?.data?[index].image
+                                                    ?.imageUrl ??
+                                                "",
+                                            fit: BoxFit.cover,
+                                            alignment: Alignment.center,
+                                            height: 50,
+                                            width: 50,
+                                            filterQuality: FilterQuality.high,
+                                            isAntiAlias: true,
+                                          )
+                                        : Image.network(
+                                            "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1",
+                                            fit: BoxFit.cover,
+                                            height: 50.0,
+                                            width: 50,
+                                            alignment: Alignment.center,
+                                            isAntiAlias: true,
+                                            filterQuality: FilterQuality.high,
+                                          ),
                               ),
-                              trailing: CustomIconButtonWidget(
-                                onPressed: () async {
-                                  BlocProvider.of<AuthBloc>(context).add(AddUserEvent(
-                                    context: context,
-                                    userId: StorageServices.authStorageValues["id"].toString(),
-                                    friend: allUsers?.data?[index].id,
-                                    creatorId: allUsers?.data?[index].id ?? "",
-                                    userImageUrl: StorageServices.authStorageValues["imageUrl"] ?? "",
-                                    activityName: StorageServices.authStorageValues["name"].toString(),
-                                  ));
+                              trailing: state is AddUserLoading &&
+                                      index == selectedIndex
+                                  ? const SizedBox(
+                                      width: 100,
+                                      child:
+                                          CustomCircularProgressIndicatorWidget())
+                                  : CustomIconButtonWidget(
+                                      onPressed: () async {
+                                        setState(() {
+                                          selectedIndex = index;
+                                        });
 
-                                  var notification = OSCreateNotification(
-                                    playerIds: List<String>.from(allUsers?.data?[index].oneSignalUserId?.map((e) => e) ?? []),
-                                    content: ownerUser?.data?.friends?.contains(allUsers?.data?[index].id) != true
-                                        ? "${StorageServices.authStorageValues["name"]} has removed you from friend."
-                                        : "${StorageServices.authStorageValues["name"]} has added you to friend.",
-                                    heading: "Moments",
-                                    bigPicture: allUsers?.data?[index].image?.imageUrl,
-                                  );
+                                        BlocProvider.of<AuthBloc>(context)
+                                            .add(AddUserEvent(
+                                          context: context,
+                                          userId: StorageServices
+                                              .authStorageValues["id"]
+                                              .toString(),
+                                          friend: allUsers?.data?[index].id,
+                                          creatorId:
+                                              allUsers?.data?[index].id ?? "",
+                                          userImageUrl:
+                                              StorageServices.authStorageValues[
+                                                      "imageUrl"] ??
+                                                  "",
+                                          activityName: StorageServices
+                                              .authStorageValues["name"]
+                                              .toString(),
+                                        ));
 
-                                  await OneSignal.shared.postNotification(notification);
-                                },
-                                icon: (ownerUser?.data?.friends?.isNotEmpty == true &&
-                                        ownerUser?.data?.friends?.contains(allUsers?.data?[index].id) == true)
-                                    ? const Icon(
-                                        Icons.delete,
-                                        color: Colors.redAccent,
-                                      )
-                                    : const Icon(
-                                        Icons.add,
-                                        color: Colors.grey,
-                                      ),
-                              ),
+                                        var notification = OSCreateNotification(
+                                          playerIds: List<String>.from(allUsers
+                                                  ?.data?[index].oneSignalUserId
+                                                  ?.map((e) => e) ??
+                                              []),
+                                          content: ownerUser?.data?.friends
+                                                      ?.contains(allUsers
+                                                          ?.data?[index].id) !=
+                                                  true
+                                              ? "${StorageServices.authStorageValues["name"]} has removed you from friend."
+                                              : "${StorageServices.authStorageValues["name"]} has added you to friend.",
+                                          heading: "Moments",
+                                          bigPicture: allUsers
+                                              ?.data?[index].image?.imageUrl,
+                                        );
+
+                                        await OneSignal.shared
+                                            .postNotification(notification);
+                                      },
+                                      icon: (ownerUser?.data?.friends
+                                                      ?.isNotEmpty ==
+                                                  true &&
+                                              ownerUser?.data?.friends
+                                                      ?.contains(allUsers
+                                                          ?.data?[index].id) ==
+                                                  true)
+                                          ? const Icon(
+                                              Icons.delete,
+                                              color: Colors.redAccent,
+                                            )
+                                          : const Icon(
+                                              Icons.add,
+                                              color: Colors.grey,
+                                            ),
+                                    ),
                             ),
                           );
                           // : Container();

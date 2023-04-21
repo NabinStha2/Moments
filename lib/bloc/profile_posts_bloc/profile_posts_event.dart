@@ -17,4 +17,3 @@ class GetProfilePostsEvent extends ProfilePostsEvent {
   @override
   List<Object> get props => [creator];
 }
-

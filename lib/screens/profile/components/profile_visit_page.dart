@@ -14,6 +14,7 @@ import 'package:moment/widgets/custom_text_widget.dart';
 import '../../../bloc/auth_bloc/auth_bloc.dart';
 import '../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../bloc/profile_posts_bloc/profile_posts_bloc.dart';
+import '../../../bloc/profile_visit_posts_bloc/profile_visit_posts_bloc.dart';
 import '../../../widgets/custom_all_shimmer_widget.dart';
 import '../../../widgets/custom_button_widget.dart';
 
@@ -54,8 +55,8 @@ class _ProfilePageState extends State<ProfileVisitPage> {
           id: StorageServices.authStorageValues["id"],
         ),
       );
-      BlocProvider.of<ProfilePostsBloc>(context).add(
-        GetProfilePostsEvent(
+      BlocProvider.of<ProfileVisitPostsBloc>(context).add(
+        GetProfileVisitPostsEvent(
           context: context,
           creator: widget.userId,
         ),
@@ -82,7 +83,9 @@ class _ProfilePageState extends State<ProfileVisitPage> {
             userData = BlocProvider.of<AuthBloc>(context).userModel;
             ownerUserData = BlocProvider.of<AuthBloc>(context).ownerUserModel;
           }
-          return userData?.data != null && ownerUserData?.data != null ? scaffoldWhenDataIsNotEmpty(context) : scaffoldWhenDataEmpty(context);
+          return userData?.data != null && ownerUserData?.data != null
+              ? scaffoldWhenDataIsNotEmpty(context)
+              : scaffoldWhenDataEmpty(context);
         },
       ),
     );
@@ -163,7 +166,8 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                       child: userData?.data?.image?.imageUrl != ""
                           ? CircleAvatar(
                               radius: 35.0,
-                              backgroundImage: NetworkImage(userData?.data?.image?.imageUrl ?? ""),
+                              backgroundImage: NetworkImage(
+                                  userData?.data?.image?.imageUrl ?? ""),
                               onBackgroundImageError: (object, stackTrace) {
                                 // inspect(object);
                                 // print(object);
@@ -217,11 +221,16 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                         ),
                         Row(
                           children: [
-                            BlocBuilder<ProfilePostsBloc, ProfilePostsState>(
+                            BlocBuilder<ProfileVisitPostsBloc,
+                                ProfileVisitPostsState>(
                               builder: (context, state) {
-                                if (state is ProfilePostsSuccess) {
+                                if (state.profileVisitPostsStatus ==
+                                    ProfileVisitPostsStatus.success) {
                                   return Text(
-                                    state.postModel != null ? state.postModel?.length.toString() ?? "0" : userPostsLength.toString(),
+                                    state.postModel != null
+                                        ? state.postModel?.length.toString() ??
+                                            "0"
+                                        : userPostsLength.toString(),
                                     style: TextStyle(
                                       fontFamily: GoogleFonts.lato().fontFamily,
                                       fontWeight: FontWeight.w100,
@@ -298,7 +307,11 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                   return ElevatedButton(
                     style: ButtonStyle(
                       elevation: MaterialStateProperty.all(0),
-                      backgroundColor: MaterialStateProperty.all(Colors.blue.shade400),
+                      backgroundColor: ownerUserData?.data?.friends
+                                  ?.contains(userData?.data?.id) ==
+                              true
+                          ? MaterialStateProperty.all(Colors.red.shade400)
+                          : MaterialStateProperty.all(Colors.blue.shade400),
                       shape: MaterialStateProperty.all(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
@@ -311,18 +324,24 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                         userId: StorageServices.authStorageValues["id"]!,
                         friend: userData?.data?.id,
                         creatorId: userData?.data?.id ?? "",
-                        userImageUrl: StorageServices.authStorageValues["imageUrl"] ?? "",
-                        activityName: StorageServices.authStorageValues["name"] ?? "",
+                        userImageUrl:
+                            StorageServices.authStorageValues["imageUrl"] ?? "",
+                        activityName:
+                            StorageServices.authStorageValues["name"] ?? "",
                       ));
                     },
                     child: state is AddUserLoading
                         ? const SizedBox(
                             width: 50,
                             child: Center(
-                              child: CustomCircularProgressIndicatorWidget(),
+                              child: CustomCircularProgressIndicatorWidget(
+                                color: Colors.white,
+                              ),
                             ),
                           )
-                        : ownerUserData?.data?.friends?.contains(userData?.data?.id) == true
+                        : ownerUserData?.data?.friends
+                                    ?.contains(userData?.data?.id) ==
+                                true
                             ? const Text("Remove")
                             : const Text("Add"),
                   );
@@ -340,17 +359,21 @@ class _ProfilePageState extends State<ProfileVisitPage> {
               ),
               Expanded(
                 flex: 2,
-                child: BlocBuilder<ProfilePostsBloc, ProfilePostsState>(
+                child:
+                    BlocBuilder<ProfileVisitPostsBloc, ProfileVisitPostsState>(
                   builder: (context, state) {
-                    if (state is ProfilePostsLoading) {
-                      return CustomAllShimmerWidget.creatorPostsShimmerWidget(userPostsLength: userPostsLength);
-                    } else if (state is ProfilePostsFailure) {
+                    if (state.profileVisitPostsStatus ==
+                        ProfileVisitPostsStatus.loading) {
+                      return CustomAllShimmerWidget.creatorPostsShimmerWidget(
+                          userPostsLength: userPostsLength);
+                    } else if (state.profileVisitPostsStatus ==
+                        ProfileVisitPostsStatus.failure) {
                       return Center(
                         child: CustomIconButtonWidget(
                           icon: const Icon(Icons.refresh),
                           onPressed: () {
-                            BlocProvider.of<ProfilePostsBloc>(context).add(
-                              GetProfilePostsEvent(
+                            BlocProvider.of<ProfileVisitPostsBloc>(context).add(
+                              GetProfileVisitPostsEvent(
                                 context: context,
                                 creator: widget.userId,
                               ),
@@ -361,7 +384,8 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                           elevation: 0.0,
                         ),
                       );
-                    } else if (state is ProfilePostsSuccess) {
+                    } else if (state.profileVisitPostsStatus ==
+                        ProfileVisitPostsStatus.success) {
                       if (state.postModel != null) {
                         userPostsLength = state.postModel?.length ?? 0;
                       } else {
@@ -374,8 +398,9 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                     return posts?.isNotEmpty == true
                         ? RefreshIndicator(
                             onRefresh: () async {
-                              BlocProvider.of<ProfilePostsBloc>(context).add(
-                                GetProfilePostsEvent(
+                              BlocProvider.of<ProfileVisitPostsBloc>(context)
+                                  .add(
+                                GetProfileVisitPostsEvent(
                                   context: context,
                                   creator: widget.userId,
                                 ),
@@ -383,8 +408,10 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                             },
                             child: GridView.builder(
                               physics: const AlwaysScrollableScrollPhysics(),
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: (posts?.length ?? 0) > 10 ? 3 : 2,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                    (posts?.length ?? 0) > 10 ? 3 : 2,
                                 crossAxisSpacing: 5.0,
                                 mainAxisSpacing: 5.0,
                                 childAspectRatio: 0.8,
@@ -398,8 +425,10 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                     onTap: () {
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (context) => BlocProvider.value(
-                                            value: BlocProvider.of<PostsBloc>(context),
+                                          builder: (context) =>
+                                              BlocProvider.value(
+                                            value: BlocProvider.of<PostsBloc>(
+                                                context),
                                             child: PostDetailsScreen(
                                               postId: posts?[index].id ?? "",
                                             ),
@@ -411,21 +440,37 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                         ? Stack(
                                             children: [
                                               Image.network(
-                                                posts?[index].file?.thumbnail ?? "",
+                                                posts?[index].file?.thumbnail ??
+                                                    "",
                                                 height: 500,
-                                                width: MediaQuery.of(context).size.width,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                                errorBuilder: (BuildContext
+                                                        context,
+                                                    Object exception,
+                                                    StackTrace? stackTrace) {
                                                   return const Text('😢Error!');
                                                 },
-                                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                                loadingBuilder:
+                                                    (BuildContext context,
+                                                        Widget child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
                                                   if (loadingProgress == null) {
                                                     return child;
                                                   }
                                                   return Center(
-                                                    child: CircularProgressIndicator(
-                                                      value: loadingProgress.expectedTotalBytes != null
-                                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      value: loadingProgress
+                                                                  .expectedTotalBytes !=
+                                                              null
+                                                          ? loadingProgress
+                                                                  .cumulativeBytesLoaded /
+                                                              loadingProgress
+                                                                  .expectedTotalBytes!
                                                           : null,
                                                     ),
                                                   );
@@ -440,10 +485,17 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                                   onPressed: () {
                                                     Navigator.of(context).push(
                                                       MaterialPageRoute(
-                                                        builder: (context) => BlocProvider.value(
-                                                          value: BlocProvider.of<ProfilePostsBloc>(context),
-                                                          child: PostDetailsScreen(
-                                                            postId: posts?[index].id ?? "",
+                                                        builder: (context) =>
+                                                            BlocProvider.value(
+                                                          value: BlocProvider
+                                                              .of<ProfilePostsBloc>(
+                                                                  context),
+                                                          child:
+                                                              PostDetailsScreen(
+                                                            postId:
+                                                                posts?[index]
+                                                                        .id ??
+                                                                    "",
                                                           ),
                                                         ),
                                                       ),
@@ -461,37 +513,57 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                           )
                                         : posts?[index].file?.fileUrl != ""
                                             ? Image.network(
-                                                posts?[index].file?.fileUrl ?? "",
+                                                posts?[index].file?.fileUrl ??
+                                                    "",
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                                errorBuilder: (BuildContext
+                                                        context,
+                                                    Object exception,
+                                                    StackTrace? stackTrace) {
                                                   return const Text('😢Error!');
                                                 },
-                                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                                loadingBuilder:
+                                                    (BuildContext context,
+                                                        Widget child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
                                                   if (loadingProgress == null) {
                                                     return child;
                                                   }
                                                   return Center(
-                                                    child: CircularProgressIndicator(
-                                                      value: loadingProgress.expectedTotalBytes != null
-                                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      value: loadingProgress
+                                                                  .expectedTotalBytes !=
+                                                              null
+                                                          ? loadingProgress
+                                                                  .cumulativeBytesLoaded /
+                                                              loadingProgress
+                                                                  .expectedTotalBytes!
                                                           : null,
                                                     ),
                                                   );
                                                 },
                                                 height: 400.0,
-                                                width: MediaQuery.of(context).size.width,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
                                                 alignment: Alignment.center,
                                                 isAntiAlias: true,
-                                                filterQuality: FilterQuality.high,
+                                                filterQuality:
+                                                    FilterQuality.high,
                                               )
                                             : Image.network(
                                                 "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.6nCVjA0S936UiBlDUsov4QAAAA%26pid%3DApi%26h%3D160&f=1",
                                                 fit: BoxFit.cover,
                                                 height: 400.0,
-                                                width: MediaQuery.of(context).size.width,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
                                                 alignment: Alignment.center,
                                                 isAntiAlias: true,
-                                                filterQuality: FilterQuality.high,
+                                                filterQuality:
+                                                    FilterQuality.high,
                                               ),
                                   ),
                                 );

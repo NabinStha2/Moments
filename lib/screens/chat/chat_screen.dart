@@ -65,11 +65,13 @@ class _ChatScreenState extends State<ChatScreen> {
               var searchSelectedUser = await showSearch(
                 context: context,
                 delegate: DataSearch(
-                  allUsersList: BlocProvider.of<AuthBloc>(context).allUsers.data ?? [],
+                  allUsersList:
+                      BlocProvider.of<AuthBloc>(context).allUsers.data ?? [],
                 ),
               );
               if (searchSelectedUser != null) {
                 // ignore: use_build_context_synchronously
+                BlocProvider.of<AuthBloc>(context).clearUserDetails();
                 RouteNavigation.navigate(
                   context,
                   ProfileVisitPage(

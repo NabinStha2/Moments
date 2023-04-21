@@ -12,8 +12,21 @@ import '../../../bloc/auth_bloc/auth_bloc.dart';
 import '../../../utils/storage_services.dart';
 import '../../../widgets/custom_all_shimmer_widget.dart';
 
-class ActivityBody extends StatelessWidget {
+class ActivityBody extends StatefulWidget {
   const ActivityBody({Key? key}) : super(key: key);
+
+  @override
+  State<ActivityBody> createState() => _ActivityBodyState();
+}
+
+class _ActivityBodyState extends State<ActivityBody> {
+  @override
+  initState() {
+    super.initState();
+    BlocProvider.of<ActivityBloc>(context).add(
+      GetActivity(id: StorageServices.authStorageValues["id"] ?? ""),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +36,15 @@ class ActivityBody extends StatelessWidget {
           return CustomAllShimmerWidget.activityShimmerWidget();
         }
         if (state is ActivityLoaded) {
-          var reversedList = List<Activity>.from(state.activityList.data?.activity?.reversed.toList() ?? []);
+          var reversedList = List<Activity>.from(
+              state.activityList.data?.activity?.reversed.toList() ?? []);
           var activity = reversedList;
           return activity.isNotEmpty == true
               ? RefreshIndicator(
                   onRefresh: () async {
                     BlocProvider.of<ActivityBloc>(context).add(
-                      GetActivity(id: StorageServices.authStorageValues["id"] ?? ""),
+                      GetActivity(
+                          id: StorageServices.authStorageValues["id"] ?? ""),
                     );
                   },
                   child: ListView.separated(
@@ -46,7 +61,8 @@ class ActivityBody extends StatelessWidget {
                               postId: activity[index].postId ?? "",
                             );
                           } else {
-                            BlocProvider.of<AuthBloc>(context).clearUserDetails();
+                            BlocProvider.of<AuthBloc>(context)
+                                .clearUserDetails();
                             RouteNavigation.navigate(
                               context,
                               ProfileVisitPage(
@@ -57,9 +73,14 @@ class ActivityBody extends StatelessWidget {
                             );
                           }
                         },
-                        leadingImageUrl:
-                            activity[index].userImageUrl != null && activity[index].userImageUrl != "" ? activity[index].userImageUrl : null,
-                        trailingImageUrl: activity[index].postUrl != null && activity[index].postUrl != "" ? activity[index].postUrl : null,
+                        leadingImageUrl: activity[index].userImageUrl != null &&
+                                activity[index].userImageUrl != ""
+                            ? activity[index].userImageUrl
+                            : null,
+                        trailingImageUrl: activity[index].postUrl != null &&
+                                activity[index].postUrl != ""
+                            ? activity[index].postUrl
+                            : null,
                         subTitleDateTime: activity[index].timestamps,
                         titleText: activity[index].activityName,
                       );

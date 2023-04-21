@@ -25,12 +25,14 @@ class UserRepo {
         "oneSignalUserId": deviceId,
       };
 
-      final response = await BaseClient().post(ApiConfig.userBaseUrl, "/user/login", body, isTokenHeader: false);
+      final response = await BaseClient().post(
+          ApiConfig.userBaseUrl, "/user/login", body,
+          isTokenHeader: false);
       return individualUserModelFromJson(response);
     } catch (err) {
       consolelog("Login Error: $err");
       RouteNavigation.back(ctx);
-      // CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
+      CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
       rethrow;
     }
   }
@@ -45,12 +47,14 @@ class UserRepo {
         "confirmPassword": data["confirmPassword"],
       };
 
-      final response = await BaseClient().post(ApiConfig.userBaseUrl, "/user/signup", body, isTokenHeader: false);
+      final response = await BaseClient().post(
+          ApiConfig.userBaseUrl, "/user/signup", body,
+          isTokenHeader: false);
       return individualUserModelFromJson(response);
     } catch (err) {
       RouteNavigation.back(ctx);
       consolelog("Register Error: $err");
-      // CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
+      CustomDialogs.showCustomActionDialog(ctx: ctx, message: err.toString());
       rethrow;
     }
   }
@@ -58,7 +62,8 @@ class UserRepo {
   logout({id, oneSignalUserId, required BuildContext ctx}) async {
     try {
       Map body = {"oneSignalUserId": oneSignalUserId};
-      await BaseClient().patch(ApiConfig.userBaseUrl, "/user/logout/$id", body, isTokenHeader: false);
+      await BaseClient().patch(ApiConfig.userBaseUrl, "/user/logout/$id", body,
+          isTokenHeader: false);
     } catch (err) {
       RouteNavigation.back(ctx);
       consolelog("Logout Error: $err");
@@ -144,7 +149,8 @@ class UserRepo {
 
   getUserById({String? id, required BuildContext ctx}) async {
     try {
-      var response = await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUser/$id");
+      var response =
+          await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUser/$id");
       return individualUserModelFromJson(response);
     } catch (err) {
       consolelog("GetUserFriends Error: $err");
@@ -155,7 +161,8 @@ class UserRepo {
 
   getUserFriends({String? id, required BuildContext ctx}) async {
     try {
-      var response = await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUserFriends/$id");
+      var response = await BaseClient()
+          .get(ApiConfig.userBaseUrl, "/user/getUserFriends/$id");
       var userModel = userModelFromJson(response);
       return userModel;
     } catch (err) {
@@ -167,7 +174,8 @@ class UserRepo {
 
   getAllUsers({required BuildContext ctx}) async {
     try {
-      var response = await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUsers");
+      var response =
+          await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUsers");
       var userModel = userModelFromJson(response);
       return userModel;
     } catch (err) {

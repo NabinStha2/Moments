@@ -19,6 +19,7 @@ import 'bloc/home_bloc/home_bloc.dart';
 import 'bloc/internet_bloc/internet_bloc.dart';
 import 'bloc/posts_bloc/posts_bloc.dart';
 import 'bloc/profile_posts_bloc/profile_posts_bloc.dart';
+import 'bloc/profile_visit_posts_bloc/profile_visit_posts_bloc.dart';
 
 const appId = "ea8b2f5a8acd452e88b5028f95ab55dd";
 
@@ -47,7 +48,8 @@ void main() async {
   // );
 
   await OneSignal.shared.setAppId("c6055b6a-d6d7-4ecf-99f9-6d7e38e884ae");
-  OneSignal.shared.setSubscriptionObserver((OSSubscriptionStateChanges changes) {
+  OneSignal.shared
+      .setSubscriptionObserver((OSSubscriptionStateChanges changes) {
     if (kDebugMode) {
       print("SUBSCRIPTION STATE CHANGED: ${changes.jsonRepresentation()}");
     }
@@ -87,6 +89,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<ProfilePostsBloc>(
           create: (context) => ProfilePostsBloc(),
+        ),
+        BlocProvider<ProfileVisitPostsBloc>(
+          create: (context) => ProfileVisitPostsBloc(),
         ),
         BlocProvider<ActivityBloc>(
           // lazy: false,

@@ -27,7 +27,9 @@ class HomeBody extends StatelessWidget {
       listeners: [
         BlocListener<HomeBloc, HomeState>(listener: (context, state) {
           if (state is HomeCurrentIndexChangedState) {
-            state.index == 1 ? BlocProvider.of<PostsBloc>(context).add(PostClearValueEvent()) : null;
+            state.index == 1
+                ? BlocProvider.of<PostsBloc>(context).add(PostClearValueEvent())
+                : null;
           }
         }),
         // BlocListener<ProfilePostsBloc, ProfilePostsState>(
@@ -43,7 +45,8 @@ class HomeBody extends StatelessWidget {
           //   CustomDialogs.showCustomActionDialog(ctx: context, message: state.error);
           // }
           if (state is PostPageChangedLoadedState) {
-            postBloc.add(GetPostsEvent(context: context, page: postBloc.currentPage));
+            postBloc.add(
+                GetPostsEvent(context: context, page: postBloc.currentPage));
           }
           if (state is PostDeleted) {
             BlocProvider.of<ProfilePostsBloc>(context).add(
@@ -65,16 +68,21 @@ class HomeBody extends StatelessWidget {
               message: state.error,
               onPressed: () {
                 postBloc.add(RefreshPostsEvent());
-                postBloc.add(PostPageChangeEvent(context: context, pageNumber: 1));
+                postBloc
+                    .add(PostPageChangeEvent(context: context, pageNumber: 1));
               },
             );
           }
           return postBloc.postModels.isNotEmpty
               ? NotificationListener<ScrollUpdateNotification>(
-                  onNotification: (ScrollUpdateNotification scrollNotification) {
-                    if (scrollNotification.metrics.pixels == scrollNotification.metrics.maxScrollExtent &&
+                  onNotification:
+                      (ScrollUpdateNotification scrollNotification) {
+                    if (scrollNotification.metrics.pixels ==
+                            scrollNotification.metrics.maxScrollExtent &&
                         postBloc.currentPage + 1 <= postBloc.pages) {
-                      postBloc.add(PostPageChangeEvent(pageNumber: postBloc.currentPage + 1, context: context));
+                      postBloc.add(PostPageChangeEvent(
+                          pageNumber: postBloc.currentPage + 1,
+                          context: context));
                     }
                     return true;
                   },
@@ -84,9 +92,11 @@ class HomeBody extends StatelessWidget {
                       Expanded(
                         child: RefreshIndicator(
                           onRefresh: () async {
-                            await Future.delayed(const Duration(milliseconds: 1000), () {});
+                            await Future.delayed(
+                                const Duration(milliseconds: 1000), () {});
                             postBloc.add(RefreshPostsEvent());
-                            postBloc.add(PostPageChangeEvent(context: context, pageNumber: 1));
+                            postBloc.add(PostPageChangeEvent(
+                                context: context, pageNumber: 1));
                           },
                           child: SingleChildScrollView(
                             physics: const BouncingScrollPhysics(),
@@ -99,8 +109,10 @@ class HomeBody extends StatelessWidget {
                                   shrinkWrap: true,
                                   itemCount: postBloc.postModels.length,
                                   itemBuilder: (context, index) {
-                                    final PostModelData post = postBloc.postModels[index];
-                                    return PostCardBody(index: index, post: post);
+                                    final PostModelData post =
+                                        postBloc.postModels[index];
+                                    return PostCardBody(
+                                        index: index, post: post);
                                   },
                                 ),
                                 postBloc.currentPage < postBloc.pages
@@ -122,7 +134,8 @@ class HomeBody extends StatelessWidget {
                   message: "No Posts Yet!",
                   onPressed: () {
                     postBloc.add(RefreshPostsEvent());
-                    postBloc.add(PostPageChangeEvent(context: context, pageNumber: 1));
+                    postBloc.add(
+                        PostPageChangeEvent(context: context, pageNumber: 1));
                   },
                 );
         },

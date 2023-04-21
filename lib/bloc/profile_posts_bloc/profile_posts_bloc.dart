@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:moment/models/post_model/post_model.dart';
 
+import '../../development/console.dart';
 import '../../repo/post_repo.dart';
 
 part 'profile_posts_event.dart';
@@ -12,13 +13,13 @@ class ProfilePostsBloc extends Bloc<ProfilePostsEvent, ProfilePostsState> {
   final PostRepo _postRepo = PostRepo();
 
   ProfilePostsBloc() : super(ProfilePostsInitial()) {
-    // on<ProfilePostsEvent>((event, emit) {});
     on<GetProfilePostsEvent>((event, emit) async {
       await _getProfilePosts(event, emit);
     });
   }
 
-  Future _getProfilePosts(GetProfilePostsEvent event, Emitter<ProfilePostsState> emit) async {
+  Future _getProfilePosts(
+      GetProfilePostsEvent event, Emitter<ProfilePostsState> emit) async {
     emit(ProfilePostsLoading());
     try {
       final PostModel post = await _postRepo.creatorPosts(event.creator);
@@ -27,7 +28,7 @@ class ProfilePostsBloc extends Bloc<ProfilePostsEvent, ProfilePostsState> {
         emit(ProfilePostsSuccess(postModel: post.data));
       }
     } catch (err) {
-      print("Error ---- -- -- $err");
+      consolelog("Error ---- -- -- $err");
       emit(ProfilePostsFailure(error: err.toString()));
     }
   }

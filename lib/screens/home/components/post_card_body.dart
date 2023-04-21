@@ -7,6 +7,8 @@ import 'package:moment/screens/home/components/post_header_widget.dart';
 import 'package:moment/screens/home/components/widgets/navigation_post_details_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
+import '../../../widgets/video.dart';
+
 class PostCardBody extends StatelessWidget {
   final int index;
   final PostModelData post;
@@ -33,7 +35,9 @@ class PostCardBody extends StatelessWidget {
               SizedBox(
                 width: appWidth(context),
                 child: InkWell(
-                  onTap: () => {navigateToPostDetails(context: context, postId: post.id)},
+                  onTap: () {
+                    navigateToPostDetails(context: context, postId: post.id);
+                  },
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
