@@ -12,7 +12,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
-import 'package:moment/main.dart';
 import 'package:moment/models/message_model/message_model.dart';
 import 'package:moment/models/user_model/users_model.dart';
 import 'package:moment/screens/camera/camera_screen.dart';
@@ -64,7 +63,7 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
   void connect() async {
     consolelog("Socket connected");
     socket = IO.io(
-      ApiConfig.socketUrl,
+      ApiConfig.baseUrl,
       IO.OptionBuilder()
           .setTransports(['websocket']) // for Flutter or Dart VM
           .disableAutoConnect() // disable auto-connection
@@ -148,8 +147,8 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
   void deleteMsgImage() async {
     consolelog("delete all msg Image");
     BlocProvider.of<AuthBloc>(context).clearMessageData();
-    final uri = Uri.http(ApiConfig.baseUrl,
-        "/user/deleteMsgImage/${StorageServices.authStorageValues["id"]}");
+    final uri = Uri.parse(
+        "${ApiConfig.baseUrl}/user/deleteMsgImage/${StorageServices.authStorageValues["id"]}");
     await http.patch(
       uri,
       headers: {

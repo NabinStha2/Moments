@@ -322,7 +322,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       final PostModel post = await _postRepo.createPost(event.data, event.token,
           isImage: event.isImage);
       if (post.message == "Success" && post.data?.isNotEmpty == true) {
-        final uri = Uri.http(ApiConfig.baseUrl, "/api/SendNotification");
+        final uri = Uri.parse("${ApiConfig.baseUrl}/api/SendNotification");
         await http.post(
           uri,
           headers: {

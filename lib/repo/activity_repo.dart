@@ -6,7 +6,7 @@ import 'package:moment/services/base_client.dart';
 class ActivityRepo {
   getAllActivity({id}) async {
     try {
-      var response = await BaseClient().get(ApiConfig.userBaseUrl, "/activity/$id");
+      var response = await BaseClient().get(ApiConfig.baseUrl, "/activity/$id");
       return activityModelFromJson(response);
     } catch (err) {
       consolelog("ERROR: $err");

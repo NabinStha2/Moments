@@ -25,9 +25,8 @@ class UserRepo {
         "oneSignalUserId": deviceId,
       };
 
-      final response = await BaseClient().post(
-          ApiConfig.userBaseUrl, "/user/login", body,
-          isTokenHeader: false);
+      final response = await BaseClient()
+          .post(ApiConfig.baseUrl, "/user/login", body, isTokenHeader: false);
       return individualUserModelFromJson(response);
     } catch (err) {
       consolelog("Login Error: $err");
@@ -47,9 +46,8 @@ class UserRepo {
         "confirmPassword": data["confirmPassword"],
       };
 
-      final response = await BaseClient().post(
-          ApiConfig.userBaseUrl, "/user/signup", body,
-          isTokenHeader: false);
+      final response = await BaseClient()
+          .post(ApiConfig.baseUrl, "/user/signup", body, isTokenHeader: false);
       return individualUserModelFromJson(response);
     } catch (err) {
       RouteNavigation.back(ctx);
@@ -62,7 +60,7 @@ class UserRepo {
   logout({id, oneSignalUserId, required BuildContext ctx}) async {
     try {
       Map body = {"oneSignalUserId": oneSignalUserId};
-      await BaseClient().patch(ApiConfig.userBaseUrl, "/user/logout/$id", body,
+      await BaseClient().patch(ApiConfig.baseUrl, "/user/logout/$id", body,
           isTokenHeader: false);
     } catch (err) {
       RouteNavigation.back(ctx);
@@ -75,7 +73,7 @@ class UserRepo {
   uploadImage(image, id) async {
     try {
       final response = await BaseClient().postWithImage(
-        ApiConfig.userBaseUrl,
+        ApiConfig.baseUrl,
         "/user/image/$id",
         isBody: false,
         file: image,
@@ -92,7 +90,7 @@ class UserRepo {
   uploadMsgImage(image, id, text) async {
     try {
       final response = await BaseClient().postWithImage(
-        ApiConfig.userBaseUrl,
+        ApiConfig.baseUrl,
         "/user/msgImage/$id",
         payloadObj: {"text": text},
         file: image,
@@ -116,7 +114,7 @@ class UserRepo {
         "activityName": activityName,
       };
       final response = await BaseClient().patch(
-        ApiConfig.userBaseUrl,
+        ApiConfig.baseUrl,
         "/user/addUser/$userId",
         body,
       );
@@ -130,8 +128,8 @@ class UserRepo {
 
   editUser(id, name, about) async {
     try {
-      // final uri = Uri.https(ApiConfig.userBaseUrl, "/user/editProfile/$id");
-      final uri = Uri.http(ApiConfig.userBaseUrl, "/user/editProfile/$id");
+      // final uri = Uri.https(ApiConfig.baseUrl, "/user/editProfile/$id");
+      final uri = Uri.http(ApiConfig.baseUrl, "/user/editProfile/$id");
       final response = await http.patch(
         uri,
         headers: {
@@ -150,7 +148,7 @@ class UserRepo {
   getUserById({String? id, required BuildContext ctx}) async {
     try {
       var response =
-          await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUser/$id");
+          await BaseClient().get(ApiConfig.baseUrl, "/user/getUser/$id");
       return individualUserModelFromJson(response);
     } catch (err) {
       consolelog("GetUserFriends Error: $err");
@@ -161,8 +159,8 @@ class UserRepo {
 
   getUserFriends({String? id, required BuildContext ctx}) async {
     try {
-      var response = await BaseClient()
-          .get(ApiConfig.userBaseUrl, "/user/getUserFriends/$id");
+      var response =
+          await BaseClient().get(ApiConfig.baseUrl, "/user/getUserFriends/$id");
       var userModel = userModelFromJson(response);
       return userModel;
     } catch (err) {
@@ -175,7 +173,7 @@ class UserRepo {
   getAllUsers({required BuildContext ctx}) async {
     try {
       var response =
-          await BaseClient().get(ApiConfig.userBaseUrl, "/user/getUsers");
+          await BaseClient().get(ApiConfig.baseUrl, "/user/getUsers");
       var userModel = userModelFromJson(response);
       return userModel;
     } catch (err) {

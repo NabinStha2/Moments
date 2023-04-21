@@ -7,9 +7,8 @@ import 'package:moment/services/base_client.dart';
 class PostRepo {
   getPosts({page}) async {
     try {
-      var response = await BaseClient().get(
-          ApiConfig.userBaseUrl, "/posts?page=$page",
-          isTokenHeader: false);
+      var response = await BaseClient()
+          .get(ApiConfig.baseUrl, "/posts?page=$page", isTokenHeader: false);
       consolelog(response.toString());
       return postModelFromJson(response);
     } catch (err) {
@@ -20,7 +19,7 @@ class PostRepo {
   getAllPosts() async {
     try {
       var response = await BaseClient()
-          .get(ApiConfig.userBaseUrl, "/posts/all", isTokenHeader: false);
+          .get(ApiConfig.baseUrl, "/posts/all", isTokenHeader: false);
       return postModelFromJson(response);
     } catch (err) {
       // consolelog(err.toString());
@@ -31,7 +30,7 @@ class PostRepo {
   getSinglePost({id}) async {
     try {
       var response = await BaseClient().get(
-          ApiConfig.userBaseUrl, "/posts/singlePost/$id",
+          ApiConfig.baseUrl, "/posts/singlePost/$id",
           isTokenHeader: false);
       // consolelog(response);
       return postModelFromJson(response);
@@ -59,8 +58,8 @@ class PostRepo {
         "postUrl": postUrl,
         "reactionType": reactionType,
       };
-      var response = await BaseClient()
-          .patch(ApiConfig.userBaseUrl, "/posts/like/$id", body);
+      var response =
+          await BaseClient().patch(ApiConfig.baseUrl, "/posts/like/$id", body);
       return postModelFromJson(response);
     } catch (err) {
       log("$err");
@@ -70,8 +69,7 @@ class PostRepo {
 
   deletePost(id, token) async {
     try {
-      var response =
-          await BaseClient().delete(ApiConfig.userBaseUrl, "/posts/$id");
+      var response = await BaseClient().delete(ApiConfig.baseUrl, "/posts/$id");
       return postModelFromJson(response);
     } catch (err) {
       // consolelog("$err");
@@ -104,7 +102,7 @@ class PostRepo {
         "replyToUserId": replyToUserId,
       };
       var response = await BaseClient()
-          .patch(ApiConfig.userBaseUrl, "/posts/$postId/commentPost", body);
+          .patch(ApiConfig.baseUrl, "/posts/$postId/commentPost", body);
       return postModelFromJson(response);
     } catch (err) {
       // consolelog("$err");
@@ -119,7 +117,7 @@ class PostRepo {
         "description": value["description"],
       };
       var response = await BaseClient().postWithImage(
-        ApiConfig.userBaseUrl,
+        ApiConfig.baseUrl,
         "/posts",
         payloadObj: body,
         isImage: isImage,
@@ -139,7 +137,7 @@ class PostRepo {
         "description": value["description"],
       };
       var response = await BaseClient().postWithImage(
-        ApiConfig.userBaseUrl,
+        ApiConfig.baseUrl,
         "/posts/$id",
         payloadObj: body,
         method: "PATCH",
@@ -157,7 +155,7 @@ class PostRepo {
   creatorPosts(creatorId) async {
     try {
       var response = await BaseClient().get(
-          ApiConfig.userBaseUrl, "/posts/creators/$creatorId",
+          ApiConfig.baseUrl, "/posts/creators/$creatorId",
           isTokenHeader: false);
       return postModelFromJson(response);
     } catch (err) {
@@ -173,7 +171,7 @@ class PostRepo {
         "activityId": activityId,
       };
       var response = await BaseClient()
-          .patch(ApiConfig.userBaseUrl, "/posts/deleteComment/$postId", body);
+          .patch(ApiConfig.baseUrl, "/posts/deleteComment/$postId", body);
       return postModelFromJson(response);
     } catch (err) {
       // consolelog("creatorPosts: $err");
