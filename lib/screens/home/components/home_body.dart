@@ -12,6 +12,7 @@ import 'package:moment/widgets/custom_error_widget.dart';
 import '../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../bloc/profile_posts_bloc/profile_posts_bloc.dart';
 import '../../../utils/storage_services.dart';
+import '../../../widgets/custom_snackbar_widget.dart';
 
 class HomeBody extends StatelessWidget {
   final ScrollController scController;
@@ -32,18 +33,7 @@ class HomeBody extends StatelessWidget {
                 : null;
           }
         }),
-        // BlocListener<ProfilePostsBloc, ProfilePostsState>(
-        //   listener: (context, state) {
-        //     if (state is ProfilePostsSuccess || state is ProfilePostsFailure) {
-        //       postBloc.add(RefreshPostsEvent());
-        //       postBloc.add(PostPageChangeEvent(context: context, pageNumber: 1));
-        //     }
-        //   },
-        // ),
         BlocListener<PostsBloc, PostsState>(listener: (context, state) {
-          // if (state is PostError) {
-          //   CustomDialogs.showCustomActionDialog(ctx: context, message: state.error);
-          // }
           if (state is PostPageChangedLoadedState) {
             postBloc.add(
                 GetPostsEvent(context: context, page: postBloc.currentPage));
@@ -56,6 +46,14 @@ class HomeBody extends StatelessWidget {
               ),
             );
           }
+          if (state is PostUpdateFailure) {
+            CustomSnackbarWidget.showSnackbar(
+              ctx: context,
+              content: state.error,
+              backgroundColor: Colors.redAccent,
+              secDuration: 2,
+            );
+          }
         }),
       ],
       child: BlocBuilder<PostsBloc, PostsState>(
@@ -63,7 +61,7 @@ class HomeBody extends StatelessWidget {
           if (state is PostLoading && postBloc.postModels.isEmpty == true) {
             return CustomAllShimmerWidget.allPostsShimmerWidget();
           }
-          if (state is PostError) {
+          if (state is GetAllPostFailure) {
             return CustomErrorWidget(
               message: state.error,
               onPressed: () {

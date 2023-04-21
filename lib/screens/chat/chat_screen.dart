@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moment/config/routes/route_navigation.dart';
-import 'package:moment/screens/chat/cmponents/all_users_list_body.dart';
+import 'package:moment/screens/chat/components/all_users_list_body.dart';
 import 'package:moment/screens/activity/activity_screen.dart';
-import 'package:moment/screens/chat/cmponents/chat_body.dart';
+import 'package:moment/screens/chat/components/chat_body.dart';
 import 'package:moment/screens/profile/components/profile_visit_page.dart';
 import 'package:moment/utils/storage_services.dart';
 import 'package:moment/widgets/custom_button_widget.dart';

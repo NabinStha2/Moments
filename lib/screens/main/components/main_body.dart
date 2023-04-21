@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
@@ -14,6 +12,7 @@ import '../../../bloc/auth_bloc/auth_bloc.dart';
 import '../../../bloc/home_bloc/home_bloc.dart';
 import '../../../bloc/internet_bloc/internet_bloc.dart';
 import '../../../bloc/posts_bloc/posts_bloc.dart';
+import '../../../bloc/profile_posts_bloc/profile_posts_bloc.dart';
 import '../../../development/console.dart';
 
 class MainBody extends StatefulWidget {
@@ -35,19 +34,19 @@ class _HomeBodyState extends State<MainBody> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      authBloc = BlocProvider.of<AuthBloc>(context);
-      homeBloc = BlocProvider.of<HomeBloc>(context);
       FirebaseDynamicLinkService.startDynamicService(ctx: context);
       getStorageItem();
       if (StorageServices.authStorageValues.isNotEmpty == true) {
-        authBloc.add(AuthInitialLoadedEvent(
+        BlocProvider.of<AuthBloc>(context).add(AuthInitialLoadedEvent(
           context: context,
           data: StorageServices.authStorageValues,
         ));
       }
       final internetBloc = BlocProvider.of<InternetBloc>(context);
-      _connectivity.checkConnectivity().then((result) => internetBloc.add(GetInternetStatus(connectivityResult: result)));
-      _connectivitySubscription = _connectivity.onConnectivityChanged.listen((result) {
+      _connectivity.checkConnectivity().then((result) =>
+          internetBloc.add(GetInternetStatus(connectivityResult: result)));
+      _connectivitySubscription =
+          _connectivity.onConnectivityChanged.listen((result) {
         internetBloc.add(GetInternetStatus(connectivityResult: result));
       });
     });
@@ -68,7 +67,8 @@ class _HomeBodyState extends State<MainBody> {
 
     StorageServices.setAuthStorageValues(await StorageServices.getStorage());
     // consolelog(StorageServices.authStorageValues);
-    consolelog("storage is not empty : ${StorageServices.authStorageValues.isNotEmpty}");
+    consolelog(
+        "storage is not empty : ${StorageServices.authStorageValues.isNotEmpty}");
     loadAllData(context: context);
   }
 
@@ -91,16 +91,6 @@ class _HomeBodyState extends State<MainBody> {
         }
       },
       builder: (context, state) {
-        // if (state is InternetDisconnected) {
-        //   return Center(
-        //     child: PoppinsText(
-        //       "It looks as though you're offline.",
-        //       color: Colors.white,
-        //       fontSize: 14,
-        //       fontWeight: FontWeight.w500,
-        //     ),
-        //   );
-        // }
         return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
           if (state is HomeCurrentIndexChangedState) {
             return homeBloc.screens[state.index];

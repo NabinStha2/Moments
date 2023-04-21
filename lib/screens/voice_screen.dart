@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -7,12 +5,11 @@ import 'dart:developer';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:moment/main.dart';
 import 'package:moment/services/api_config.dart';
 import 'package:permission_handler/permission_handler.dart';
 import "package:http/http.dart" as http;
 
-import '../models/user_model/individual_user_model.dart';
+import '../app/states/states.dart';
 import '../models/user_model/users_model.dart';
 
 class VoiceScreen extends StatefulWidget {

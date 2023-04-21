@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 PostModel postModelFromJson(String str) => PostModel.fromJson(json.decode(str));
 
@@ -50,7 +49,7 @@ class PostModelData {
   String? name;
   String? description;
   String? fileType;
-  String? creator;
+  Creator? creator;
   List<Comments>? comments;
   List<Likes>? likes;
   int? v;
@@ -62,7 +61,7 @@ class PostModelData {
         name: json["name"],
         description: json["description"],
         fileType: json["fileType"],
-        creator: json["creator"],
+        creator: Creator.fromJson(json["creator"]),
         comments: List<Comments>.from(
             json["comments"].map((x) => Comments.fromJson(x))),
         likes: List<Likes>.from(json["likes"].map((x) => Likes.fromJson(x))),
@@ -76,10 +75,30 @@ class PostModelData {
         "name": name,
         "description": description,
         "fileType": fileType,
-        "creator": creator,
+        "creator": creator?.toJson(),
         "comments": List<dynamic>.from(comments?.map((x) => x) ?? []),
         "likes": List<dynamic>.from(likes?.map((x) => x) ?? []),
         "__v": v,
+      };
+}
+
+class Creator {
+  Creator({
+    required this.id,
+    required this.image,
+  });
+
+  String? id;
+  CreatorImage image;
+
+  factory Creator.fromJson(Map<String, dynamic> json) => Creator(
+        id: json["_id"],
+        image: CreatorImage.fromJson(json["image"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "_id": id,
+        "image": image.toJson(),
       };
 }
 
@@ -128,6 +147,22 @@ class Likes {
         "userId": userId,
         "timestamps": timestamps,
         "reactionType": reactionType,
+      };
+}
+
+class CreatorImage {
+  CreatorImage({
+    this.imageUrl,
+  });
+
+  String? imageUrl;
+
+  factory CreatorImage.fromJson(Map<String, dynamic> json) => CreatorImage(
+        imageUrl: json["imageUrl"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "imageUrl": imageUrl,
       };
 }
 

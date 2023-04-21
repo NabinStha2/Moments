@@ -44,7 +44,25 @@ class PostClearValueState extends PostsState {}
 
 class PostDeleteLoading extends PostsState {}
 
+class PostDeleteFailure extends PostsState {
+  final String? error;
+  const PostDeleteFailure({
+    required this.error,
+  });
+  @override
+  List<Object> get props => [error!];
+}
+
 class PostUpdateLoading extends PostsState {}
+
+class PostUpdateFailure extends PostsState {
+  final String? error;
+  const PostUpdateFailure({
+    required this.error,
+  });
+  @override
+  List<Object> get props => [error!];
+}
 
 class GetPostLoaded extends PostsState {
   final List<PostModelData>? postModel;
@@ -59,6 +77,15 @@ class GetPostLoaded extends PostsState {
   // List<Object> get props => [postModel!, pages!];
 }
 
+class GetPostFailure extends PostsState {
+  final String? error;
+  const GetPostFailure({
+    required this.error,
+  });
+  @override
+  List<Object> get props => [error!];
+}
+
 class GetSinglePostLoaded extends PostsState {
   final PostModelData? postModel;
   const GetSinglePostLoaded({
@@ -66,6 +93,15 @@ class GetSinglePostLoaded extends PostsState {
   });
   @override
   List<Object> get props => [postModel!];
+}
+
+class GetSinglePostFailure extends PostsState {
+  final String? error;
+  const GetSinglePostFailure({
+    required this.error,
+  });
+  @override
+  List<Object> get props => [error!];
 }
 
 class GetAllPostLoaded extends PostsState {
@@ -77,21 +113,66 @@ class GetAllPostLoaded extends PostsState {
   // List<Object> get props => [postModel!, pages!];
 }
 
-class CommentLoaded extends PostsState {}
-
-class PostDeleted extends PostsState {}
-
-class PostLiked extends PostsState {}
-
-class PostCreated extends PostsState {}
-
-class PostUpdated extends PostsState {}
-
-class PostError extends PostsState {
+class GetAllPostFailure extends PostsState {
   final String? error;
-  const PostError({
+  const GetAllPostFailure({
     required this.error,
   });
   @override
   List<Object> get props => [error!];
 }
+
+class CommentLoaded extends PostsState {}
+
+class PostCommentFailure extends PostsState {
+  final String? error;
+  const PostCommentFailure({
+    required this.error,
+  });
+  @override
+  List<Object> get props => [error!];
+}
+
+class PostDeleteCommentFailure extends PostsState {
+  final String? error;
+  const PostDeleteCommentFailure({
+    required this.error,
+  });
+  @override
+  List<Object> get props => [error!];
+}
+
+class PostDeleted extends PostsState {}
+
+class PostLiked extends PostsState {}
+
+class PostLikedFailure extends PostsState {
+  final String? error;
+  const PostLikedFailure({
+    required this.error,
+  });
+  @override
+  List<Object> get props => [error!];
+}
+
+class PostCreated extends PostsState {}
+
+class PostCreatedFailure extends PostsState {
+  final String? error;
+  const PostCreatedFailure({
+    required this.error,
+  });
+  @override
+  List<Object> get props => [error!];
+}
+
+class PostUpdated extends PostsState {}
+
+// class PostError extends PostsState {
+//   final String? error;
+//   const PostError({
+//     required this.error,
+//   });
+//   @override
+//   List<Object> get props => [error!];
+// }

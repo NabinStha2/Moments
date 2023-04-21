@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 import 'dart:io';
 
@@ -31,6 +29,7 @@ import 'package:moment/widgets/receiver_message_ui.dart';
 import 'package:moment/widgets/sender_message_ui.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../../../app/states/states.dart';
 import '../../../bloc/auth_bloc/auth_bloc.dart';
 import '../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../utils/unfocus_keyboard.dart';

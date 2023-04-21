@@ -11,8 +11,8 @@ import 'package:moment/config/routes/route_generator.dart';
 import 'package:moment/config/routes/routes_path.dart';
 import 'package:moment/utils/storage_services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import 'app/states/states.dart';
 import 'bloc/activity_bloc/activity_bloc.dart';
 import 'bloc/auth_bloc/auth_bloc.dart';
 import 'bloc/home_bloc/home_bloc.dart';
@@ -20,12 +20,6 @@ import 'bloc/internet_bloc/internet_bloc.dart';
 import 'bloc/posts_bloc/posts_bloc.dart';
 import 'bloc/profile_posts_bloc/profile_posts_bloc.dart';
 import 'bloc/profile_visit_posts_bloc/profile_visit_posts_bloc.dart';
-
-const appId = "ea8b2f5a8acd452e88b5028f95ab55dd";
-
-IO.Socket? socket;
-
-List<CameraDescription>? cameras;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

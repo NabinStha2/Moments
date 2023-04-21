@@ -7,11 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
-import 'package:moment/main.dart';
 import 'package:moment/screens/chat/chatting_details/components/Image_preview_body.dart';
 import 'package:moment/screens/chat/chatting_details/components/video_preview_body.dart';
 import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
+
+import '../../app/states/states.dart';
 
 class CameraScreen extends StatefulWidget {
   final Function? sendFile;
@@ -85,7 +86,11 @@ class _CameraScreenState extends State<CameraScreen> {
                           setState(() {
                             flash = !flash!;
                           });
-                          flash! ? await cameraController!.setFlashMode(FlashMode.torch) : await cameraController!.setFlashMode(FlashMode.off);
+                          flash!
+                              ? await cameraController!
+                                  .setFlashMode(FlashMode.torch)
+                              : await cameraController!
+                                  .setFlashMode(FlashMode.off);
                         },
                       ),
                       GestureDetector(
@@ -96,7 +101,8 @@ class _CameraScreenState extends State<CameraScreen> {
                           });
                         },
                         onLongPressUp: () async {
-                          XFile videopath = await cameraController!.stopVideoRecording();
+                          XFile videopath =
+                              await cameraController!.stopVideoRecording();
                           setState(() {
                             isRecoring = false;
                           });
@@ -139,13 +145,14 @@ class _CameraScreenState extends State<CameraScreen> {
                             transform = transform + pi;
                           });
                           int cameraPos = iscamerafront ? 0 : 1;
-                          cameraController = CameraController(cameras![cameraPos], ResolutionPreset.high);
+                          cameraController = CameraController(
+                              cameras![cameraPos], ResolutionPreset.high);
                           cameraValue = cameraController!.initialize();
                         },
                       ),
                     ],
                   ),
-                 vSizedBox0,
+                  vSizedBox0,
                   PoppinsText(
                     "Hold for Video, tap for photo",
                     color: Colors.white,

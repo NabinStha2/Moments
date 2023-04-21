@@ -289,7 +289,7 @@ const imageUpload = async (req, res) => {
         { new: true }
       );
       // console.log(user);
-      fs.unlinkSync(req.file.path);
+      //fs.unlinkSync(req.file.path);
       res.status(200).json({ message: "Success", data: user });
     }
   } catch (err) {
@@ -330,7 +330,7 @@ const msgImageUpload = async (req, res) => {
         { new: true }
       );
       console.log(updatedUser);
-      fs.unlinkSync(req.file.path);
+      //fs.unlinkSync(req.file.path);
       var messageModel = {
         messageContent: req.body.text,
         messageType: "sender",
@@ -342,7 +342,7 @@ const msgImageUpload = async (req, res) => {
     }
   } catch (err) {
     console.log(err.message);
-    fs.unlinkSync(req.file.path);
+    //fs.unlinkSync(req.file.path);
     res.status(500).json({ errMessage: err.message });
   }
 };

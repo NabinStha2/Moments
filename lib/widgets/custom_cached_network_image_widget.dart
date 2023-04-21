@@ -5,6 +5,8 @@ import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
+import 'custom_image_error_widget.dart';
+
 class CustomCachedNetworkImageWidget extends StatelessWidget {
   final double? height;
   final double? width;
@@ -29,36 +31,27 @@ class CustomCachedNetworkImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      // height: height ?? appHeight(context) * 0.6,
       width: width ?? appWidth(context),
+      height: height,
       alignment: Alignment.center,
       filterQuality: FilterQuality.high,
       errorWidget: (context, url, error) {
         return Container(
-          height: 500.0,
-          alignment: Alignment.center,
-          child: Center(
-            child: PoppinsText(
-              errorText ?? "Something went wrong with Image loading!",
-              color: errorTextColor ?? Colors.red,
-              fontSize: 8.0,
-            ),
+          color: Colors.grey.shade300,
+          child: CustomImageErrorWidget(
+            width: width ?? 50,
+            height: height ?? 50,
           ),
         );
       },
       fit: BoxFit.cover,
       fadeInCurve: curves ?? Curves.fastOutSlowIn,
       fadeInDuration: duration ?? const Duration(milliseconds: 600),
-      // placeholder: (context, url) => placeholderWidget ?? const CustomCircularProgressIndicatorWidget(),
       imageBuilder: (context, imageProvider) => Container(
         decoration: BoxDecoration(
           image: DecorationImage(
             image: imageProvider,
             fit: BoxFit.cover,
-            // colorFilter: const ColorFilter.mode(
-            //   Colors.red,
-            //   BlendMode.saturation,
-            // ),
           ),
         ),
       ),
