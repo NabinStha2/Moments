@@ -449,7 +449,7 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
                       onPressed: () {
                         _focusNode.unfocus();
                         _focusNode.canRequestFocus = true;
-                        setState(() => {emojiShowing = !emojiShowing});
+                        setState(() => emojiShowing = !emojiShowing);
                       },
                       splashRadius: 20.0,
                       icon: Icon(
@@ -631,7 +631,7 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
       consolelog("File extension: ${result?.files.single.extension}");
     }
 
-    if (pickedFile != null || result != null) {
+    if (result != null) {
       result!.files.single.extension == "mp4"
           ? RouteNavigation.navigate(
               context,

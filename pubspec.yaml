@@ -41,7 +41,7 @@ dependencies:
   dropdown_button2: ^2.0.0
   emoji_picker_flutter: ^1.1.2
   equatable: ^2.0.3
-  extended_image: ^7.0.2
+  extended_image: ^8.0.1
   file_picker: ^5.0.1
   firebase_core: ^2.9.0
   firebase_dynamic_links: ^5.1.0
@@ -70,12 +70,10 @@ dependencies:
   cloud_firestore: ^4.5.0
   share_plus: ^6.3.1
   simple_tooltip: ^1.0.0
-  flutter_screenutil: ^5.5.3+2
   auto_size_text: ^3.0.0
   timeago: ^3.2.2
   expandable_text: ^2.3.0
   flutter_reaction_button: ^2.0.0+3
-  device_preview: ^1.1.0
   google_sign_in: ^6.0.2
   firebase_auth: ^4.4.0
 

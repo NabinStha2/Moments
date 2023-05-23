@@ -42,7 +42,7 @@ class CustomExtendedImageWidget extends StatelessWidget {
           speed: 1.0,
           inertialSpeed: 100.0,
           initialScale: 1.0,
-          inPageView: true,
+          // inPageView: true,
           cacheGesture: true,
           initialAlignment: InitialAlignment.center,
         );

@@ -165,7 +165,7 @@ var generateRtcToken = function (req, resp) {
 app.get("/rtcToken/:channelName", generateRtcToken);
 // app.get("/rtmToken", generateRtmToken);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 mongoose
   .connect(process.env.MONGODB_URL, {

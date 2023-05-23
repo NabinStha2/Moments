@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moment/blocObserver/bloc_observer.dart';
 import 'package:moment/config/routes/route_generator.dart';
 import 'package:moment/config/routes/routes_path.dart';
+import 'package:moment/screens/main/main_screen.dart';
 import 'package:moment/utils/storage_services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
@@ -100,37 +100,30 @@ class MyApp extends StatelessWidget {
           create: (context) => InternetBloc(),
         ),
       ],
-      child: ScreenUtilInit(
-        designSize: const Size(360, 690),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, child) {
-          return MaterialApp(
-            // useInheritedMediaQuery: true,
-            // locale: DevicePreview.locale(context),
-            // builder: DevicePreview.appBuilder,
-            debugShowCheckedModeBanner: false,
-            title: title,
-            navigatorKey: navigatorKey,
-            // darkTheme: ThemeData.dark(),
-            themeMode: ThemeMode.system,
-            theme: ThemeData(
-              primaryColor: const Color.fromARGB(255, 26, 168, 228),
-              appBarTheme: AppBarTheme(
-                  backgroundColor: const Color.fromARGB(255, 26, 168, 228),
-                  titleTextStyle: TextStyle(
-                    fontFamily: GoogleFonts.cookie().fontFamily,
-                    fontSize: 35,
-                  )),
-              fontFamily: GoogleFonts.openSans(
-                fontSize: 16.0,
-              ).fontFamily,
-            ),
-            initialRoute: RoutesPath.mainRoute,
-            onGenerateRoute: RouteGenerator.generateRoute,
-            home: child,
-          );
-        },
+      child: MaterialApp(
+        // useInheritedMediaQuery: true,
+        // locale: DevicePreview.locale(context),
+        // builder: DevicePreview.appBuilder,
+        debugShowCheckedModeBanner: false,
+        title: title,
+        navigatorKey: navigatorKey,
+        // darkTheme: ThemeData.dark(),
+        themeMode: ThemeMode.system,
+        theme: ThemeData(
+          primaryColor: const Color.fromARGB(255, 26, 168, 228),
+          appBarTheme: AppBarTheme(
+              backgroundColor: const Color.fromARGB(255, 26, 168, 228),
+              titleTextStyle: TextStyle(
+                fontFamily: GoogleFonts.cookie().fontFamily,
+                fontSize: 35,
+              )),
+          fontFamily: GoogleFonts.openSans(
+            fontSize: 16.0,
+          ).fontFamily,
+        ),
+        initialRoute: RoutesPath.mainRoute,
+        onGenerateRoute: RouteGenerator.generateRoute,
+        home: const MainScreen(),
       ),
     );
   }
