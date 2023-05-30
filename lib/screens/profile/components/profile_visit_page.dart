@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/models/post_model/post_model.dart';
 import 'package:moment/models/user_model/individual_user_model.dart';
@@ -93,6 +94,7 @@ class _ProfilePageState extends State<ProfileVisitPage> {
 
   Scaffold scaffoldWhenDataEmpty(BuildContext context) {
     return Scaffold(
+      backgroundColor: MColors.primaryColor,
       appBar: AppBar(
         title: AppBarCookieText(userData?.data?.name ?? ""),
         centerTitle: true,
@@ -108,12 +110,15 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                 // }
                 RouteNavigation.back(context);
               },
-              child: const Icon(Icons.arrow_back_rounded)),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.white,
+              )),
         ),
       ),
       body: const Center(
         child: SpinKitCircle(
-          color: Colors.blue,
+          color: MColors.primaryGrayColor50,
           size: 40.0,
         ),
       ),
@@ -122,8 +127,9 @@ class _ProfilePageState extends State<ProfileVisitPage> {
 
   Scaffold scaffoldWhenDataIsNotEmpty(BuildContext context) {
     return Scaffold(
+      backgroundColor: MColors.primaryColor,
       appBar: AppBar(
-        title: Text(userData?.data?.name ?? ""),
+        title: AppBarCookieText(userData?.data?.name ?? ""),
         centerTitle: true,
         leading: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6.0),
@@ -131,7 +137,10 @@ class _ProfilePageState extends State<ProfileVisitPage> {
               onTap: () {
                 RouteNavigation.back(context);
               },
-              child: const Icon(Icons.arrow_back_rounded)),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.white,
+              )),
         ),
       ),
       body: Padding(
@@ -171,12 +180,10 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                               onBackgroundImageError: (object, stackTrace) {
                                 // inspect(object);
                                 // print(object);
-                                const Center(
-                                  child: Text(
+                                Center(
+                                  child: CustomText(
                                     "Error",
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                    ),
+                                    color: Colors.red,
                                   ),
                                 );
                               },
@@ -197,24 +204,22 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
+                        CustomText(
                           userData?.data?.name?.toUpperCase() ?? "",
-                          style: TextStyle(
-                            fontFamily: GoogleFonts.redressed().fontFamily,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 20.0,
-                          ),
+                          isFontFamily: true,
+                          fontFamily: GoogleFonts.redressed().fontFamily,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 20.0,
                         ),
                         const SizedBox(
                           height: 10.0,
                         ),
-                        Text(
+                        CustomText(
                           userData?.data?.email ?? "",
-                          style: TextStyle(
-                            fontFamily: GoogleFonts.balthazar().fontFamily,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20.0,
-                          ),
+                          isFontFamily: true,
+                          fontFamily: GoogleFonts.balthazar().fontFamily,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20.0,
                         ),
                         const SizedBox(
                           height: 10.0,
@@ -226,54 +231,49 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                               builder: (context, state) {
                                 if (state.profileVisitPostsStatus ==
                                     ProfileVisitPostsStatus.success) {
-                                  return Text(
+                                  return CustomText(
                                     state.postModel != null
                                         ? state.postModel?.length.toString() ??
                                             "0"
                                         : userPostsLength.toString(),
-                                    style: TextStyle(
-                                      fontFamily: GoogleFonts.lato().fontFamily,
-                                      fontWeight: FontWeight.w100,
-                                      fontSize: 15.0,
-                                    ),
-                                  );
-                                }
-                                return Text(
-                                  userPostsLength.toString(),
-                                  style: TextStyle(
+                                    isFontFamily: true,
                                     fontFamily: GoogleFonts.lato().fontFamily,
                                     fontWeight: FontWeight.w100,
                                     fontSize: 15.0,
-                                  ),
+                                  );
+                                }
+                                return CustomText(
+                                  userPostsLength.toString(),
+                                  isFontFamily: true,
+                                  fontFamily: GoogleFonts.lato().fontFamily,
+                                  fontWeight: FontWeight.w100,
+                                  fontSize: 15.0,
                                 );
                               },
                             ),
-                            Text(
+                            CustomText(
                               "  posts",
-                              style: TextStyle(
-                                fontFamily: GoogleFonts.lato().fontFamily,
-                                fontWeight: FontWeight.w100,
-                                fontSize: 15.0,
-                              ),
+                              isFontFamily: true,
+                              fontFamily: GoogleFonts.lato().fontFamily,
+                              fontWeight: FontWeight.w100,
+                              fontSize: 15.0,
                             ),
                             const SizedBox(
                               width: 20.0,
                             ),
-                            Text(
+                            CustomText(
                               userData?.data?.friends?.length.toString() ?? "0",
-                              style: TextStyle(
-                                fontFamily: GoogleFonts.lato().fontFamily,
-                                fontWeight: FontWeight.w100,
-                                fontSize: 15.0,
-                              ),
+                              isFontFamily: true,
+                              fontFamily: GoogleFonts.lato().fontFamily,
+                              fontWeight: FontWeight.w100,
+                              fontSize: 15.0,
                             ),
-                            Text(
+                            CustomText(
                               "  friends",
-                              style: TextStyle(
-                                fontFamily: GoogleFonts.lato().fontFamily,
-                                fontWeight: FontWeight.w100,
-                                fontSize: 15.0,
-                              ),
+                              isFontFamily: true,
+                              fontFamily: GoogleFonts.lato().fontFamily,
+                              fontWeight: FontWeight.w100,
+                              fontSize: 15.0,
                             ),
                           ],
                         ),
@@ -342,8 +342,8 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                         : ownerUserData?.data?.friends
                                     ?.contains(userData?.data?.id) ==
                                 true
-                            ? const Text("Remove")
-                            : const Text("Add"),
+                            ? CustomText("Remove")
+                            : CustomText("Add"),
                   );
                 },
               ),
@@ -451,7 +451,7 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                                         context,
                                                     Object exception,
                                                     StackTrace? stackTrace) {
-                                                  return const Text('😢Error!');
+                                                  return CustomText('😢Error!');
                                                 },
                                                 loadingBuilder:
                                                     (BuildContext context,
@@ -520,7 +520,7 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                                                         context,
                                                     Object exception,
                                                     StackTrace? stackTrace) {
-                                                  return const Text('😢Error!');
+                                                  return CustomText('😢Error!');
                                                 },
                                                 loadingBuilder:
                                                     (BuildContext context,
@@ -570,7 +570,7 @@ class _ProfilePageState extends State<ProfileVisitPage> {
                               },
                             ),
                           )
-                        : const Center(child: Text("No Posts Yet."));
+                        : Center(child: CustomText("No Posts Yet."));
                   },
                 ),
               ),

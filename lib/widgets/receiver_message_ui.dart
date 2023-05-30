@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
+import '../app/colors.dart';
+
 class ReceiverMessageUi extends StatelessWidget {
-  const ReceiverMessageUi({Key? key, this.message, this.time}) : super(key: key);
+  const ReceiverMessageUi({Key? key, this.message, this.time})
+      : super(key: key);
   final String? message;
   final String? time;
 
@@ -23,7 +26,7 @@ class ReceiverMessageUi extends StatelessWidget {
               bottomRight: Radius.elliptical(10, 15),
             ),
           ),
-          color: Colors.grey[350],
+          color: MColors.primaryGrayColor80,
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           child: Stack(
             children: [
@@ -34,7 +37,7 @@ class ReceiverMessageUi extends StatelessWidget {
                   top: 5,
                   bottom: 18,
                 ),
-                child: PoppinsText(
+                child: CustomText(
                   message!,
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
@@ -43,7 +46,7 @@ class ReceiverMessageUi extends StatelessWidget {
               Positioned(
                 bottom: 0,
                 right: 10,
-                child: PoppinsText(
+                child: CustomText(
                   time!,
                   fontSize: 12,
                   color: Colors.grey[600],

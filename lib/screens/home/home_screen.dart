@@ -7,6 +7,7 @@ import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_search_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
+import '../../app/colors.dart';
 import '../../bloc/posts_bloc/posts_bloc.dart';
 
 class NewsFeedScreen extends StatefulWidget {
@@ -30,10 +31,12 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MColors.primaryColor,
       appBar: AppBar(
         title: AppBarCookieText(
           MyApp.title,
         ),
+        automaticallyImplyLeading: false,
         elevation: 0.0,
         actions: [
           CustomIconButtonWidget(
@@ -52,7 +55,10 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
                 ),
               );
               if (searchSelectedPost != null) {
-                navigateToPostDetails(context: context, postId: searchSelectedPost.id, isFromHome: true);
+                navigateToPostDetails(
+                    context: context,
+                    postId: searchSelectedPost.id,
+                    isFromHome: true);
               }
             },
           )
@@ -63,7 +69,7 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
         elevation: 0.0,
         icon: const Icon(Icons.arrow_upward),
         isFloatingButton: true,
-        floatingButtonContainerColor: Colors.blue,
+        floatingButtonContainerColor: MColors.primaryGrayColor80,
         onPressed: () {
           scrollController.animateTo(
             0.0,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
 
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/config/routes/route_navigation.dart';
@@ -48,7 +49,10 @@ class CustomImageDetails extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     CustomSnackbarWidget.showSnackbar(
-                        content: "Wait until image saved.", milliDuration: 400, ctx: context, backgroundColor: Colors.grey);
+                        content: "Wait until image saved.",
+                        milliDuration: 400,
+                        ctx: context,
+                        backgroundColor: MColors.primaryGrayColor50);
                     saveImage(
                       ctx: context,
                       imageUrl: imageUrl,
@@ -58,13 +62,14 @@ class CustomImageDetails extends StatelessWidget {
                     padding: const EdgeInsets.all(6.0),
                     width: 250,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 26, 168, 228),
+                      color: MColors.primaryGrayColor80,
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                     child: Column(
                       children: [
-                        PoppinsText("Save", color: Colors.white),
-                        PoppinsText("Image will be saved to gallary", color: Colors.white),
+                        CustomText("Save", color: Colors.white),
+                        CustomText("Image will be saved to gallary",
+                            color: Colors.white),
                       ],
                     ),
                   ),
@@ -76,7 +81,7 @@ class CustomImageDetails extends StatelessWidget {
                     RouteNavigation.back(context);
                   },
                   backgroundColor: Colors.redAccent,
-                  child: PoppinsText(
+                  child: CustomText(
                     "Cancel",
                     color: Colors.white,
                   ),

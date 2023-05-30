@@ -5,7 +5,11 @@ import 'dart:developer';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
+import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/services/api_config.dart';
+import 'package:moment/widgets/custom_button_widget.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import "package:http/http.dart" as http;
 
@@ -40,11 +44,11 @@ class _VoiceScreenState extends State<VoiceScreen> {
     Timer(
       const Duration(seconds: 2),
       () => ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
+        SnackBar(
+          content: CustomText(
               "Only share your unique channel name with those you wish to call."),
           backgroundColor: Colors.grey,
-          duration: Duration(seconds: 4),
+          duration: const Duration(seconds: 4),
           behavior: SnackBarBehavior.floating,
         ),
       ),
@@ -81,10 +85,10 @@ class _VoiceScreenState extends State<VoiceScreen> {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                const SnackBar(
-                  content: Text("Reconnecting..."),
+                SnackBar(
+                  content: CustomText("Reconnecting..."),
                   backgroundColor: Colors.red,
-                  duration: Duration(seconds: 1),
+                  duration: const Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -92,10 +96,10 @@ class _VoiceScreenState extends State<VoiceScreen> {
             ScaffoldMessenger.of(context)
               ..removeCurrentSnackBar()
               ..showSnackBar(
-                const SnackBar(
-                  content: Text("Connecting..."),
+                SnackBar(
+                  content: CustomText("Connecting..."),
                   backgroundColor: Colors.grey,
-                  duration: Duration(seconds: 1),
+                  duration: const Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -103,10 +107,10 @@ class _VoiceScreenState extends State<VoiceScreen> {
             ScaffoldMessenger.of(context)
               ..removeCurrentSnackBar()
               ..showSnackBar(
-                const SnackBar(
-                  content: Text("Connected"),
+                SnackBar(
+                  content: CustomText("Connected"),
                   backgroundColor: Colors.pinkAccent,
-                  duration: Duration(seconds: 1),
+                  duration: const Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -114,10 +118,10 @@ class _VoiceScreenState extends State<VoiceScreen> {
             ScaffoldMessenger.of(context)
               ..removeCurrentSnackBar()
               ..showSnackBar(
-                const SnackBar(
-                  content: Text("Disconnected!!!"),
+                SnackBar(
+                  content: CustomText("Disconnected!!!"),
                   backgroundColor: Colors.pinkAccent,
-                  duration: Duration(seconds: 1),
+                  duration: const Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -175,11 +179,11 @@ class _VoiceScreenState extends State<VoiceScreen> {
       token != ""
           ? await _engine.joinChannel(token, channelName, null, 0)
           : ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content:
-                    Text("Voice Call can't be done at this moment.Try later!"),
+              SnackBar(
+                content: CustomText(
+                    "Voice Call can't be done at this moment.Try later!"),
                 backgroundColor: Colors.red,
-                duration: Duration(seconds: 2),
+                duration: const Duration(seconds: 2),
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -187,10 +191,10 @@ class _VoiceScreenState extends State<VoiceScreen> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
-            content: Text("Something went wrong!!!"),
+          SnackBar(
+            content: CustomText("Something went wrong!!!"),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -237,15 +241,17 @@ class _VoiceScreenState extends State<VoiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Voice Call'),
+        title: CustomText('Voice Call'),
       ),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: TextField(
+      body: Padding(
+        padding: const EdgeInsets.all(screenPadding),
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                vSizedBox1,
+                TextField(
+                  cursorColor: Colors.white,
                   controller: _controller,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
@@ -253,6 +259,10 @@ class _VoiceScreenState extends State<VoiceScreen> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     hintText: 'Channel Name',
+                    hintStyle: const TextStyle(
+                      color: MColors.primaryGrayColor35,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                   onChanged: (text) {
                     setState(() {
@@ -260,80 +270,71 @@ class _VoiceScreenState extends State<VoiceScreen> {
                     });
                   },
                 ),
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.lightBlue),
-                  splashFactory: InkSplash.splashFactory,
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
+                vSizedBox1,
+                CustomElevatedButtonWidget(
+                  width: 180,
+                  onPressed: isJoined ? _leaveChannel : _joinChannel,
+                  child: CustomText('${isJoined ? 'Leave' : 'Join'} channel'),
                 ),
-                onPressed: isJoined ? _leaveChannel : _joinChannel,
-                child: Text('${isJoined ? 'Leave' : 'Join'} channel'),
-              ),
-            ],
-          ),
-          userJoin
-              ? SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: 200,
-                        child: Center(
-                          child: Image.network(
-                              widget.userDetail.image?.imageUrl ?? ""),
+              ],
+            ),
+            userJoin
+                ? SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 200,
+                          child: Center(
+                            child: Image.network(
+                                widget.userDetail.image?.imageUrl ?? ""),
+                          ),
                         ),
-                      ),
-                      Text(
-                        "${Duration(hours: totalDuration ~/ 3600, minutes: totalDuration ~/ 60, seconds: totalDuration % 60)} \n Number of Users on this channel: $userCount",
-                        style: const TextStyle(
+                        CustomText(
+                          "${Duration(hours: totalDuration ~/ 3600, minutes: totalDuration ~/ 60, seconds: totalDuration % 60)} \n Number of Users on this channel: $userCount",
                           fontSize: 24.0,
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: CustomText(
+                      'First Join Channel and Please wait for other user to join with the same channel name.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      onPressed: _switchMicrophone,
+                      icon: Icon(
+                        openMicrophone ? Icons.mic : Icons.mic_off,
+                        size: 24.0,
                       ),
-                    ],
-                  ),
-                )
-              : const Center(
-                  child: Text(
-                    'First Join Channel and Please wait for other user to join with the same channel name.',
-                    textAlign: TextAlign.center,
-                  ),
+                    ),
+                    IconButton(
+                      onPressed: _switchSpeakerphone,
+                      icon: Icon(
+                        enableSpeakerphone ? Icons.volume_up : Icons.headphones,
+                        size: 24.0,
+                      ),
+                    ),
+                  ],
                 ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    onPressed: _switchMicrophone,
-                    icon: Icon(
-                      openMicrophone ? Icons.mic : Icons.mic_off,
-                      size: 24.0,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: _switchSpeakerphone,
-                    icon: Icon(
-                      enableSpeakerphone ? Icons.volume_up : Icons.headphones,
-                      size: 24.0,
-                    ),
-                  ),
-                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

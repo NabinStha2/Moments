@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
 
 class CustomElevatedButtonWidget extends StatelessWidget {
   final Widget? child;
@@ -33,15 +34,17 @@ class CustomElevatedButtonWidget extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius ?? 20.0),
           ),
-          backgroundColor: backgroundColor ?? const Color.fromARGB(255, 26, 168, 228),
+          backgroundColor: backgroundColor ?? MColors.primaryGrayColor80,
           elevation: elevation ?? 0.0,
           splashFactory: InkSplash.splashFactory,
           alignment: alignment ?? Alignment.center,
+          foregroundColor: MColors.primaryColor,
           padding: EdgeInsets.all(padding ?? 2.0),
         ),
         onPressed: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
             currentFocus.focusedChild!.unfocus();
           }
           onPressed();
@@ -129,13 +132,15 @@ class CustomIconButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: padding ?? const EdgeInsets.all(8.0),
       child: Container(
         height: height ?? 60,
         width: width ?? 60,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isFloatingButton ? floatingButtonContainerColor : Colors.transparent,
+          color: isFloatingButton
+              ? floatingButtonContainerColor
+              : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: Center(
@@ -154,7 +159,8 @@ class CustomIconButtonWidget extends StatelessWidget {
             iconSize: iconSize ?? 24.0,
             onPressed: () {
               FocusScopeNode currentFocus = FocusScope.of(context);
-              if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+              if (!currentFocus.hasPrimaryFocus &&
+                  currentFocus.focusedChild != null) {
                 currentFocus.focusedChild!.unfocus();
               }
               onPressed();

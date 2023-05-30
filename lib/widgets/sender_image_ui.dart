@@ -1,8 +1,7 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:extended_image/extended_image.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/widgets/custom_extended_image_widget.dart';
 import 'package:moment/widgets/custom_image_details_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
@@ -45,7 +44,7 @@ class SenderImageUi extends StatelessWidget {
               bottomLeft: Radius.elliptical(10, 15),
             ),
           ),
-          color: Colors.white,
+          color: MColors.primaryGrayColor80,
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           child: GestureDetector(
             onTap: () {
@@ -82,7 +81,8 @@ class SenderImageUi extends StatelessWidget {
                     Hero(
                       tag: "send",
                       child: CustomExtendedImageWidget(
-                        imageUrl: fileType == "video" ? thumbnail ?? "" : fileUrl,
+                        imageUrl:
+                            fileType == "video" ? thumbnail ?? "" : fileUrl,
                       ),
                     ),
                     fileType == "video"
@@ -114,7 +114,7 @@ class SenderImageUi extends StatelessWidget {
                 msg != ""
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: PoppinsText(
+                        child: CustomText(
                           msg!,
                           fontSize: 14.0,
                           fontWeight: FontWeight.w400,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/screens/posts/post_add/components/post_add_body.dart';
 
 import 'package:moment/widgets/custom_text_widget.dart';
@@ -9,6 +10,7 @@ class PostAddScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MColors.primaryColor,
       appBar: AppBar(
         title: AppBarCookieText("Add Post"),
         automaticallyImplyLeading: false,

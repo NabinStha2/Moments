@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
 class SenderMessageUi extends StatelessWidget {
@@ -24,7 +25,7 @@ class SenderMessageUi extends StatelessWidget {
               bottomLeft: Radius.elliptical(10, 15),
             ),
           ),
-          color: Colors.blue,
+          color: MColors.primaryGrayColor80,
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           child: Stack(
             children: [
@@ -35,7 +36,7 @@ class SenderMessageUi extends StatelessWidget {
                   top: 5,
                   bottom: 20,
                 ),
-                child: PoppinsText(
+                child: CustomText(
                   message!,
                   fontSize: 15,
                   color: Colors.white,
@@ -47,7 +48,7 @@ class SenderMessageUi extends StatelessWidget {
                 right: 10,
                 child: Row(
                   children: [
-                    PoppinsText(
+                    CustomText(
                       time!,
                       fontSize: 12,
                       color: Colors.white70,

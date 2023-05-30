@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/development/console.dart';
 
 class CustomTextFormFieldWidget extends StatelessWidget {
@@ -42,13 +43,23 @@ class CustomTextFormFieldWidget extends StatelessWidget {
     consolelog(autofocus);
     return TextFormField(
       focusNode: focusNode,
+      cursorColor: Colors.white,
       autocorrect: true,
       autofocus: autofocus ?? false,
       autovalidateMode: AutovalidateMode.disabled,
       controller: controller,
       keyboardType: keyboardType,
       obscureText: showPassword ?? false,
+      style: const TextStyle(
+        color: Colors.white,
+      ),
       decoration: InputDecoration(
+        labelStyle: const TextStyle(
+          color: MColors.primaryGrayColor50,
+        ),
+        hintStyle: const TextStyle(
+          color: MColors.primaryGrayColor50,
+        ),
         suffixIcon: showSuffix ?? false ? suffix : null,
         labelText: labelText ?? "",
         hintText: hintText ?? "",
@@ -58,27 +69,27 @@ class CustomTextFormFieldWidget extends StatelessWidget {
             ? InputBorder.none
             : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   width: 0.7,
-                  color: Colors.grey.shade400,
+                  color: MColors.primaryGrayColor50,
                 ),
               ),
         enabledBorder: isFilled
             ? InputBorder.none
             : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   width: 0.7,
-                  color: Colors.grey.shade400,
+                  color: MColors.primaryGrayColor50,
                 ),
               ),
         focusedBorder: isFilled
             ? InputBorder.none
             : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   width: 0.7,
-                  color: Colors.grey.shade500,
+                  color: MColors.primaryGrayColor50,
                 ),
               ),
         errorBorder: isFilled

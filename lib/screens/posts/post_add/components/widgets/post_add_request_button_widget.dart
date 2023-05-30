@@ -7,6 +7,7 @@ import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_snackbar_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
+import '../../../../../app/colors.dart';
 import '../../../../../bloc/posts_bloc/posts_bloc.dart';
 
 class PostAddRequestButtonWidget extends StatelessWidget {
@@ -23,6 +24,7 @@ class PostAddRequestButtonWidget extends StatelessWidget {
     var postBloc = BlocProvider.of<PostsBloc>(context);
     return Center(
       child: CustomElevatedButtonWidget(
+        backgroundColor: MColors.primaryGrayColor50,
         onPressed: () async {
           if (StorageServices.authStorageValues.isNotEmpty == true) {
             if (GlobalKeys.postFormKey.currentState?.validate() == true) {
@@ -81,7 +83,7 @@ class PostAddRequestButtonWidget extends StatelessWidget {
                 secDuration: 2);
           }
         },
-        child: PoppinsText(isUpdate ? "Update" : "Create", color: Colors.white),
+        child: CustomText(isUpdate ? "Update" : "Create", color: Colors.white),
       ),
     );
   }

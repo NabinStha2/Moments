@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -26,11 +27,13 @@ class _CommentReplyBodyState extends State<CommentReplyBody> {
     return Row(
       children: [
         SizedBox(
-          height: widget.cmt != null ? (40 * (widget.cmt?.replyComments?.length ?? 0)).toDouble() : 0.0,
+          height: widget.cmt != null
+              ? (40 * (widget.cmt?.replyComments?.length ?? 0)).toDouble()
+              : 0.0,
           child: const VerticalDivider(
             thickness: 1,
             width: 30,
-            color: Colors.grey,
+            color: MColors.primaryGrayColor50,
           ),
         ),
         Expanded(
@@ -46,16 +49,18 @@ class _CommentReplyBodyState extends State<CommentReplyBody> {
                             (replyCmt.commentName!.split(":")[1].length) <= 100
                                 ? Text.rich(
                                     TextSpan(
-                                      text: "${replyCmt.commentName!.split(":")[0]}  ",
+                                      text:
+                                          "${replyCmt.commentName!.split(":")[0]}  ",
                                       style: const TextStyle(
-                                        color: Colors.black,
+                                        color: Colors.white,
                                         fontWeight: FontWeight.w600,
                                       ),
                                       children: [
                                         TextSpan(
-                                          text: replyCmt.commentName!.split(":")[1],
+                                          text: replyCmt.commentName!
+                                              .split(":")[1],
                                           style: const TextStyle(
-                                            color: Colors.black,
+                                            color: MColors.primaryGrayColor35,
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
@@ -64,9 +69,10 @@ class _CommentReplyBodyState extends State<CommentReplyBody> {
                                   )
                                 : Text.rich(
                                     TextSpan(
-                                      text: "${replyCmt.commentName!.split(":")[0]}  ",
+                                      text:
+                                          "${replyCmt.commentName!.split(":")[0]}  ",
                                       style: const TextStyle(
-                                        color: Colors.black,
+                                        color: MColors.primaryGrayColor35,
                                         fontWeight: FontWeight.w600,
                                       ),
                                       children: [
@@ -80,27 +86,31 @@ class _CommentReplyBodyState extends State<CommentReplyBody> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: !(ind?.contains(index) == true) ? "show more" : "show less",
+                                          text: !(ind?.contains(index) == true)
+                                              ? "show more"
+                                              : "show less",
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () {
                                               setState(() {
-                                                ind?.contains(index) == true ? ind?.remove(index) : ind?.add(index);
+                                                ind?.contains(index) == true
+                                                    ? ind?.remove(index)
+                                                    : ind?.add(index);
                                               });
                                             },
-                                          style: TextStyle(
-                                            color: Colors.grey.shade600,
+                                          style: const TextStyle(
+                                            color: MColors.primaryGrayColor35,
                                             fontWeight: FontWeight.w300,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                            PoppinsText(
+                            CustomText(
                               timeago.format(
                                 DateTime.parse(replyCmt.timestamps!),
                                 locale: 'en_short',
                               ),
-                              color: Colors.grey.shade700,
+                              color: MColors.primaryGrayColor35,
                               fontSize: 10,
                             ),
                             vSizedBox0,

@@ -34,8 +34,8 @@ class PostDisplayFileBody extends StatelessWidget {
               ? isCachedImage == true
                   ? GestureDetector(
                       onTap: () => {
-
-                        navigateToPostDetails(context: context, postId: post.id)},
+                        navigateToPostDetails(context: context, postId: post.id)
+                      },
                       child: Image.network(
                         post.file?.fileUrl ?? "",
                         errorBuilder: (context, url, error) {
@@ -43,7 +43,7 @@ class PostDisplayFileBody extends StatelessWidget {
                             height: 500.0,
                             alignment: Alignment.center,
                             child: Center(
-                              child: PoppinsText(
+                              child: CustomText(
                                 error.toString(),
                                 // ?? "Something went wrong with Image loading!",
                                 color: Colors.red,
@@ -53,19 +53,25 @@ class PostDisplayFileBody extends StatelessWidget {
                           );
                         },
                         filterQuality: FilterQuality.high,
-                        frameBuilder: (BuildContext context, Widget child, int? frame, bool? wasSynchronouslyLoaded) {
+                        frameBuilder: (BuildContext context, Widget child,
+                            int? frame, bool? wasSynchronouslyLoaded) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: child,
                           );
                         },
-                        loadingBuilder: (BuildContext context, Widget? child, ImageChunkEvent? loadingProgress) {
-                          return loadingProgress != null && loadingProgress.expectedTotalBytes != null
+                        loadingBuilder: (BuildContext context, Widget? child,
+                            ImageChunkEvent? loadingProgress) {
+                          return loadingProgress != null &&
+                                  loadingProgress.expectedTotalBytes != null
                               ? Center(
                                   child: SizedBox(
                                     height: 400,
-                                    child: CustomCircularProgressIndicatorWidget(
-                                      value: loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!,
+                                    child:
+                                        CustomCircularProgressIndicatorWidget(
+                                      value: loadingProgress
+                                              .cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!,
                                     ),
                                   ),
                                 )
@@ -81,7 +87,8 @@ class PostDisplayFileBody extends StatelessWidget {
                       ),
                     )
                   // child: CustomCachedNetworkImageWidget(imageUrl: post.file?.fileUrl ?? ""))
-                  : CustomExtendedImageWidget(imageUrl: post.file?.fileUrl ?? "")
+                  : CustomExtendedImageWidget(
+                      imageUrl: post.file?.fileUrl ?? "")
               : const CustomCachedNetworkImageWidget(
                   imageUrl:
                       "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fbusiness-round-flat-vol-1-1%2F36%2Fuser_account_profile_avatar_person_student_male-512.png&f=1&nofb=1"),

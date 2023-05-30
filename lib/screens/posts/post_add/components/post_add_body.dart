@@ -54,7 +54,7 @@ class PostAddBody extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                PoppinsText(
+                CustomText(
                   "Create",
                   fontSize: 30.0,
                   fontWeight: FontWeight.w600,

@@ -31,7 +31,7 @@ class PostFooterBody extends StatelessWidget {
               Text(
                 post.likes?.length.toString() ?? "0",
                 style: const TextStyle(
-                  color: Colors.black54,
+                  color: Colors.white,
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,
                 ),
@@ -41,7 +41,7 @@ class PostFooterBody extends StatelessWidget {
                   navigateToPostDetails(
                       context: context, postId: post.id, isFromComment: true)
                 },
-                splashColor: Colors.grey,
+                splashColor: Colors.white,
                 splashRadius: 20.0,
                 icon: const FaIcon(
                   FontAwesomeIcons.commentDots,
@@ -50,7 +50,7 @@ class PostFooterBody extends StatelessWidget {
               Text(
                 post.comments?.length.toString() ?? "0",
                 style: const TextStyle(
-                  color: Colors.black54,
+                  color: Colors.white,
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,
                 ),
@@ -61,11 +61,10 @@ class PostFooterBody extends StatelessWidget {
                       postId: post.id);
                   Share.share(link, subject: "Moments post.");
                 },
-                splashColor: Colors.grey,
+                splashColor: Colors.white,
                 splashRadius: 20.0,
                 icon: const FaIcon(
                   FontAwesomeIcons.share,
-                  color: Colors.grey,
                   size: 25.0,
                 ),
               ),

@@ -7,7 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
+import 'package:moment/app/colors.dart';
+import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/services/api_config.dart';
+import 'package:moment/widgets/custom_button_widget.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import "package:http/http.dart" as http;
 
@@ -37,11 +41,11 @@ class _VideoScreenState extends State<VideoScreen> {
     Timer(
       const Duration(seconds: 1),
       () => ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
+        SnackBar(
+          content: CustomText(
               "Only share your unique channel name with those you wish to call."),
           backgroundColor: Colors.grey,
-          duration: Duration(seconds: 4),
+          duration: const Duration(seconds: 4),
           behavior: SnackBarBehavior.floating,
         ),
       ),
@@ -73,10 +77,10 @@ class _VideoScreenState extends State<VideoScreen> {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                const SnackBar(
-                  content: Text("Reconnecting..."),
+                SnackBar(
+                  content: CustomText("Reconnecting..."),
                   backgroundColor: Colors.grey,
-                  duration: Duration(seconds: 1),
+                  duration: const Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -84,10 +88,10 @@ class _VideoScreenState extends State<VideoScreen> {
             ScaffoldMessenger.of(context)
               ..removeCurrentSnackBar()
               ..showSnackBar(
-                const SnackBar(
-                  content: Text("Connecting..."),
+                SnackBar(
+                  content: CustomText("Connecting..."),
                   backgroundColor: Colors.grey,
-                  duration: Duration(seconds: 1),
+                  duration: const Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -95,10 +99,10 @@ class _VideoScreenState extends State<VideoScreen> {
             ScaffoldMessenger.of(context)
               ..removeCurrentSnackBar()
               ..showSnackBar(
-                const SnackBar(
-                  content: Text("Connected"),
+                SnackBar(
+                  content: CustomText("Connected"),
                   backgroundColor: Colors.grey,
-                  duration: Duration(seconds: 1),
+                  duration: const Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -106,10 +110,10 @@ class _VideoScreenState extends State<VideoScreen> {
             ScaffoldMessenger.of(context)
               ..removeCurrentSnackBar()
               ..showSnackBar(
-                const SnackBar(
-                  content: Text("Disconnected!!!"),
+                SnackBar(
+                  content: CustomText("Disconnected!!!"),
                   backgroundColor: Colors.grey,
-                  duration: Duration(seconds: 1),
+                  duration: const Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -173,11 +177,11 @@ class _VideoScreenState extends State<VideoScreen> {
       token != ""
           ? await _engine.joinChannel(token, channelName, null, 0)
           : ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content:
-                    Text("Video Call can't be done at this moment.Try later!"),
+              SnackBar(
+                content: CustomText(
+                    "Video Call can't be done at this moment.Try later!"),
                 backgroundColor: Colors.red,
-                duration: Duration(seconds: 2),
+                duration: const Duration(seconds: 2),
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -187,7 +191,7 @@ class _VideoScreenState extends State<VideoScreen> {
         ..hideCurrentSnackBar()
         ..showSnackBar(
           SnackBar(
-            content: Text(e.toString()),
+            content: CustomText(e.toString()),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
@@ -239,23 +243,28 @@ class _VideoScreenState extends State<VideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Video Call'),
+        title: CustomText('Video Call'),
       ),
       body: Stack(
         children: [
           Column(
             children: [
+              vSizedBox1,
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: TextField(
+                  cursorColor: Colors.white,
                   controller: _controller,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    hintText: 'Channel Name',
-                  ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      hintText: 'Channel Name',
+                      hintStyle: const TextStyle(
+                        color: MColors.primaryGrayColor50,
+                        fontWeight: FontWeight.w400,
+                      )),
                   onChanged: (text) {
                     setState(() {
                       channelName = text;
@@ -263,19 +272,13 @@ class _VideoScreenState extends State<VideoScreen> {
                   },
                 ),
               ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.lightBlue),
-                  splashFactory: InkSplash.splashFactory,
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                ),
+              vSizedBox1,
+              CustomElevatedButtonWidget(
+                width: 180,
                 onPressed: isJoined ? _leaveChannel : _joinChannel,
-                child: Text('${isJoined ? 'Leave' : 'Join'} channel'),
+                child: CustomText('${isJoined ? 'Leave' : 'Join'} channel'),
               ),
+              vSizedBox2,
               _renderVideo(),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -285,7 +288,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     onPressed: _switchCamera,
                     icon: const Icon(
                       Icons.flip_camera_ios_outlined,
-                      color: Colors.blue,
+                      color: Colors.white,
                       size: 30.0,
                     ),
                   ),
@@ -293,21 +296,21 @@ class _VideoScreenState extends State<VideoScreen> {
               ),
               // if (isJoined)
               //   Padding(
-              //     padding: const EdgeInsets.all(10.0),
+              //     padding:  EdgeInsets.all(10.0),
               //     child: Row(
               //       mainAxisSize: MainAxisSize.max,
               //       children: [
               //         Expanded(
               //           child: TextField(
               //             controller: _controllerText,
-              //             decoration: const InputDecoration(
+              //             decoration:  InputDecoration(
               //               hintText: 'Input Message',
               //             ),
               //           ),
               //         ),
               //         ElevatedButton(
               //           onPressed: _onPressSend,
-              //           child: const Text('Send'),
+              //           child:  CustomText('Send'),
               //         ),
               //       ],
               //     ),
@@ -346,8 +349,8 @@ class _VideoScreenState extends State<VideoScreen> {
                     ),
                   ),
                 )
-              : const Center(
-                  child: Text(
+              : Center(
+                  child: CustomText(
                     'Please wait for other user to join with the same channel name.',
                     textAlign: TextAlign.center,
                   ),

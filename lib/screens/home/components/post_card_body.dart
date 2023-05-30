@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:moment/app/dimension/dimension.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/models/post_model/post_model.dart';
 import 'package:moment/screens/home/components/post_display_file.dart';
 import 'package:moment/screens/home/components/post_footer_body.dart';
 import 'package:moment/screens/home/components/post_header_widget.dart';
 import 'package:moment/screens/home/components/widgets/navigation_post_details_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
-
-import '../../../widgets/video.dart';
 
 class PostCardBody extends StatelessWidget {
   final int index;
@@ -21,6 +20,7 @@ class PostCardBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: MColors.primaryGrayColor90,
       clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.all(10.0),
       elevation: 2.0,
@@ -46,6 +46,7 @@ class PostCardBody extends StatelessWidget {
                         CustomExpandableText(
                           text: post.description,
                           fontSize: 14.0,
+                          color: Colors.white,
                         ),
                       ],
                     ),

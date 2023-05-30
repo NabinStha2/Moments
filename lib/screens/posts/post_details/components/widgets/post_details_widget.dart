@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/colors.dart';
 
 import '../../../../../app/dimension/dimension.dart';
 import '../../../../../bloc/posts_bloc/posts_bloc.dart';
@@ -18,7 +19,9 @@ class PostDetailsWidget extends StatelessWidget {
 
     return postBloc.singlePostData != null
         ? Container(
-            color: postBloc.showCommentDelete ? Colors.black45 : Colors.transparent,
+            color: postBloc.showCommentDelete
+                ? Colors.black45
+                : Colors.transparent,
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -49,21 +52,19 @@ class PostDetailsWidget extends StatelessWidget {
                         child: CustomExpandableText(
                           text: postBloc.singlePostData!.description!,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
                           fontSize: 14.0,
                         ),
                       ),
                     ],
                   ),
                   vSizedBox1,
-                  Text(
+                  CustomText(
                     timeago.format(
-                      DateTime.parse(postBloc.singlePostData?.createdAt.toString() ?? ""),
+                      DateTime.parse(
+                          postBloc.singlePostData?.createdAt.toString() ?? ""),
                     ),
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    fontWeight: FontWeight.w600,
+                    color: MColors.primaryGrayColor50,
                   ),
                   vSizedBox0,
                   vSizedBox1,
@@ -71,7 +72,9 @@ class PostDetailsWidget extends StatelessWidget {
                     padding: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.0),
-                      color: postBloc.showCommentDelete ? Colors.black12 : Colors.grey.shade200,
+                      color: postBloc.showCommentDelete
+                          ? MColors.primaryGrayColor90
+                          : MColors.primaryGrayColor80,
                     ),
                     width: double.infinity,
                     child: const CommentListBody(),
@@ -84,7 +87,7 @@ class PostDetailsWidget extends StatelessWidget {
             ),
           )
         : Center(
-            child: PoppinsText("Something went wrong! Please try again."),
+            child: CustomText("Something went wrong! Please try again."),
           );
   }
 }

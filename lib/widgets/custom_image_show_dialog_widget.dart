@@ -1,5 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
+import 'package:moment/widgets/custom_button_widget.dart';
 
 import 'package:moment/widgets/custom_choose_file_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
@@ -13,7 +15,8 @@ customFileShowDialogWidget({
           context: ctx,
           builder: (_) {
             return AlertDialog(
-              title: const Text("Choose:"),
+              backgroundColor: MColors.primaryGrayColor90,
+              title: CustomText("Choose:"),
               content: SizedBox(
                 width: 250,
                 child: ListView.builder(
@@ -21,7 +24,7 @@ customFileShowDialogWidget({
                   itemCount: CustomChooseFileWidget.choose.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
-                      title: Text(CustomChooseFileWidget.choose[index]),
+                      title: CustomText(CustomChooseFileWidget.choose[index]),
                       onTap: () {
                         CustomChooseFileWidget.chooseFile(
                           ctx: ctx,
@@ -34,11 +37,10 @@ customFileShowDialogWidget({
                 ),
               ),
               actions: [
-                ElevatedButton(
+                CustomElevatedButtonWidget(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: PoppinsText(
+                  child: CustomText(
                     "cancel",
-                    color: Colors.white,
                   ),
                 ),
               ],

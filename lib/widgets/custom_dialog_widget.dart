@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
@@ -7,12 +8,13 @@ import 'custom_text_widget.dart';
 
 class CustomDialogs {
   static bool isShowDialog = true;
-  static showCustomFullLoadingDialog({required BuildContext ctx, String? title}) {
+  static showCustomFullLoadingDialog(
+      {required BuildContext ctx, String? title}) {
     return showDialog(
       context: ctx,
       useSafeArea: true,
       barrierDismissible: false,
-      barrierColor: const Color(0xff141A31).withOpacity(0.6),
+      barrierColor: MColors.primaryColor.withOpacity(0.6),
       builder: (_) {
         return WillPopScope(
           onWillPop: () {
@@ -29,7 +31,7 @@ class CustomDialogs {
                   strokeWidth: 2,
                 ),
                 const SizedBox(height: 10),
-                PoppinsText(
+                CustomText(
                   title ?? "Processing...",
                   color: Colors.white,
                   fontSize: 12,
@@ -43,7 +45,8 @@ class CustomDialogs {
     );
   }
 
-  static showCustomActionDialog({required BuildContext ctx, String? message, String? imageUrl}) {
+  static showCustomActionDialog(
+      {required BuildContext ctx, String? message, String? imageUrl}) {
     return showDialog(
       context: ctx,
       useSafeArea: true,
@@ -63,12 +66,13 @@ class CustomDialogs {
                   children: [
                     ClipOval(
                       child: Image.network(
-                        imageUrl ?? "https://uploads.sitepoint.com/wp-content/uploads/2015/12/1450973046wordpress-errors.png",
+                        imageUrl ??
+                            "https://uploads.sitepoint.com/wp-content/uploads/2015/12/1450973046wordpress-errors.png",
                         fit: BoxFit.cover,
                       ),
                     ),
                     vSizedBox0,
-                    PoppinsText(message ?? ""),
+                    CustomText(message ?? ""),
                     vSizedBox1,
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
@@ -78,7 +82,7 @@ class CustomDialogs {
                       onPressed: () {
                         RouteNavigation.back(ctx);
                       },
-                      child: PoppinsText(
+                      child: CustomText(
                         "Ok",
                         color: Colors.white,
                       ),

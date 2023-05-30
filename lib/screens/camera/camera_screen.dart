@@ -153,7 +153,7 @@ class _CameraScreenState extends State<CameraScreen> {
                     ],
                   ),
                   vSizedBox0,
-                  PoppinsText(
+                  CustomText(
                     "Hold for Video, tap for photo",
                     color: Colors.white,
                   ),

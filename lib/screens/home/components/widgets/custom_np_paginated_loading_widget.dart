@@ -16,7 +16,7 @@ class CustomNoPaginatedLoadingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: margin ?? const EdgeInsets.symmetric(vertical: 14),
-      child: PoppinsText(
+      child: CustomText(
         "No more $title to Load.",
         fontSize: 14.0,
         letterSpacing: 0.2,

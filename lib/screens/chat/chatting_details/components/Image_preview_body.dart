@@ -72,7 +72,7 @@ class ImagePreviewBody extends StatelessWidget {
                 color: Colors.black38,
                 width: MediaQuery.of(context).size.width,
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                child: TextFormField(
+                child: TextFormField(cursorColor: Colors.white,
                   controller: _controller,
                   style: const TextStyle(
                     color: Colors.white,

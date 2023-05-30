@@ -21,7 +21,7 @@ class CustomPaginatedLoadingWidget extends StatelessWidget {
       child: Column(
         children: [
           const CustomCircularProgressIndicatorWidget(),
-          PoppinsText(
+          CustomText(
             "Loading for $title.",
             fontSize: 14.0,
             letterSpacing: 0.2,

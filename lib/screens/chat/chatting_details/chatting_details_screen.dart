@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import "package:http/http.dart" as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/development/console.dart';
@@ -22,6 +23,7 @@ import 'package:moment/screens/video_screen.dart';
 import 'package:moment/screens/voice_screen.dart';
 import 'package:moment/services/api_config.dart';
 import 'package:moment/utils/storage_services.dart';
+import 'package:moment/widgets/custom_button_widget.dart';
 import 'package:moment/widgets/custom_cached_network_image_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:moment/widgets/receiver_message_ui.dart';
@@ -254,7 +256,7 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
 
                 RouteNavigation.back(context);
               },
-              splashColor: Colors.grey[400],
+              splashColor: MColors.primaryGrayColor50,
               borderRadius: const BorderRadius.all(Radius.circular(20.0)),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
@@ -262,7 +264,10 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const Expanded(
-                    child: Icon(Icons.arrow_back_rounded),
+                    child: Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                    ),
                   ),
                   hSizedBox0,
                   Expanded(
@@ -309,12 +314,12 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                PoppinsText(
+                CustomText(
                   widget.chatDetail.name.toString(),
                   color: Colors.white,
                   fontSize: 16.0,
                 ),
-                PoppinsText(
+                CustomText(
                   isOnline ? "online" : "offline",
                   color:
                       isOnline ? Colors.white : Colors.white.withOpacity(0.7),
@@ -430,7 +435,7 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
             children: [
               Expanded(
                 flex: 1,
-                child: TextField(
+                child: TextField(cursorColor: Colors.white,
                   focusNode: _focusNode,
                   onTap: () {
                     setState(() => emojiShowing = false);
@@ -444,8 +449,10 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
                   maxLines: 4,
                   minLines: 1,
                   keyboardType: TextInputType.text,
+                  style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    prefixIcon: IconButton(
+                    prefixIcon: CustomIconButtonWidget(
+                      padding: EdgeInsets.zero,
                       onPressed: () {
                         _focusNode.unfocus();
                         _focusNode.canRequestFocus = true;
@@ -454,14 +461,17 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
                       splashRadius: 20.0,
                       icon: Icon(
                         Icons.emoji_emotions_outlined,
-                        color: emojiShowing ? Colors.blue : Colors.black54,
+                        color: emojiShowing
+                            ? Colors.blue
+                            : MColors.primaryGrayColor50,
                       ),
                     ),
-                    suffixIcon: IconButton(
+                    suffixIcon: CustomIconButtonWidget(
+                      padding: EdgeInsets.zero,
                       onPressed: () {
                         unfocusKeyboard(context);
                         showModalBottomSheet(
-                          backgroundColor: Colors.transparent,
+                          backgroundColor: MColors.primaryGrayColor90,
                           context: context,
                           builder: (builder) => bottomSheet(),
                         );
@@ -469,17 +479,32 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
                       splashRadius: 20.0,
                       icon: const Icon(
                         Icons.camera_alt_rounded,
-                        color: Colors.black54,
+                        color: MColors.primaryGrayColor50,
                       ),
                     ),
                     hintText: "Type a message",
+                    hintStyle: const TextStyle(
+                      color: MColors.primaryGrayColor50,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                      borderSide: const BorderSide(
+                        width: 0.7,
+                        color: MColors.primaryGrayColor50,
+                      ),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
+                      borderSide: const BorderSide(
+                        width: 0.7,
+                        color: MColors.primaryGrayColor50,
+                      ),
                     ),
                   ),
                 ),
               ),
-              IconButton(
+              CustomIconButtonWidget(
+                width: 45,
                 onPressed: () {
                   BlocProvider.of<AuthBloc>(context).add(SendMsgDataEvent(
                     context: context,
@@ -510,7 +535,7 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
                 splashRadius: 20.0,
                 icon: const Icon(
                   Icons.send,
-                  color: Colors.black54,
+                  color: MColors.primaryGrayColor50,
                 ),
               ),
             ],
@@ -567,6 +592,7 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
       height: 200,
       width: MediaQuery.of(context).size.width,
       child: Card(
+        color: MColors.primaryGrayColor90,
         margin: const EdgeInsets.all(18.0),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Padding(
@@ -575,7 +601,11 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              iconCreation(Icons.camera_alt, Colors.pink, "Camera"),
+              iconCreation(
+                Icons.camera_alt,
+                Colors.pink,
+                "Camera",
+              ),
               hSizedBox4,
               iconCreation(Icons.insert_photo, Colors.purple, "Gallery"),
             ],
@@ -587,6 +617,7 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
 
   Widget iconCreation(IconData icons, Color color, String text) {
     return InkWell(
+      splashColor: MColors.primaryGrayColor80,
       onTap: () {
         _chooseImage(text);
       },
@@ -604,12 +635,10 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
           const SizedBox(
             height: 5,
           ),
-          Text(
+          CustomText(
             text,
-            style: const TextStyle(
-              fontSize: 12,
-              // fontWeight: FontWeight.w100,
-            ),
+            fontSize: 12,
+            // fontWeight: FontWeight.w100,
           )
         ],
       ),
@@ -632,7 +661,7 @@ class _ChattingDetailsScreenState extends State<ChattingDetailsScreen> {
     }
 
     if (result != null) {
-      result!.files.single.extension == "mp4"
+      result.files.single.extension == "mp4"
           ? RouteNavigation.navigate(
               context,
               VideoPreviewBody(

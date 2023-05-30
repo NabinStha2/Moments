@@ -15,7 +15,7 @@ class CustomErrorWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          PoppinsText(message ?? ""),
+          CustomText(message ?? ""),
           vSizedBox2,
           IconButton(
             onPressed: onPressed,

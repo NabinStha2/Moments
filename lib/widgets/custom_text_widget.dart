@@ -2,7 +2,7 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class PoppinsText extends StatelessWidget {
+class CustomText extends StatelessWidget {
   String? text;
   double? fontSize;
   FontWeight? fontWeight;
@@ -10,7 +10,11 @@ class PoppinsText extends StatelessWidget {
   Color? color;
   int? maxLines;
   TextAlign textAlign;
-  PoppinsText(
+  String? fontFamily;
+  bool? isFontFamily;
+
+  TextDecoration? decoration;
+  CustomText(
     this.text, {
     Key? key,
     this.textAlign = TextAlign.justify,
@@ -19,6 +23,9 @@ class PoppinsText extends StatelessWidget {
     this.fontWeight,
     this.color,
     this.letterSpacing,
+    this.fontFamily,
+    this.isFontFamily = false,
+    this.decoration,
   }) : super(key: key);
 
   @override
@@ -26,15 +33,24 @@ class PoppinsText extends StatelessWidget {
     return Text(
       text ?? "",
       textAlign: textAlign,
-      
       maxLines: maxLines,
       overflow: maxLines != null ? TextOverflow.ellipsis : null,
-      style: GoogleFonts.poppins(
-        fontSize: fontSize ?? 14,
-        fontWeight: fontWeight ?? FontWeight.w500,
-        color: color ?? Colors.black,
-        letterSpacing: letterSpacing ?? -0.2,
-      ),
+      style: isFontFamily ?? false
+          ? TextStyle(
+              fontFamily: fontFamily,
+              fontSize: fontSize ?? 14,
+              fontWeight: fontWeight ?? FontWeight.w500,
+              color: color ?? Colors.white,
+              letterSpacing: letterSpacing ?? -0.2,
+              decoration: decoration ?? TextDecoration.none,
+            )
+          : GoogleFonts.inter(
+              fontSize: fontSize ?? 14,
+              fontWeight: fontWeight ?? FontWeight.w500,
+              color: color ?? Colors.white,
+              letterSpacing: letterSpacing ?? -0.2,
+              decoration: decoration ?? TextDecoration.none,
+            ),
     );
   }
 }
@@ -109,10 +125,10 @@ class CustomExpandableText extends StatelessWidget {
       collapseText: collapseText ?? 'show less',
       maxLines: maxLines ?? 3,
       linkColor: linkColor ?? Colors.grey,
-      style: TextStyle(
-        color: color ?? Colors.black54,
+      style: GoogleFonts.inter(
+        color: color ?? Colors.white,
         fontSize: fontSize ?? 14.0,
-        fontFamily: GoogleFonts.poppins().fontFamily,
+        // fontFamily: GoogleFonts.poppins().fontFamily,
         fontWeight: fontWeight ?? FontWeight.w500,
       ),
     );

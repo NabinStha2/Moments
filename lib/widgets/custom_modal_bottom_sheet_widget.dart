@@ -1,10 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/models/post_model/post_model.dart';
 import 'package:moment/screens/posts/post_add/components/widgets/post_add_request_button_widget.dart';
 import 'package:moment/screens/posts/post_add/components/widgets/custom_file_choosing_widget.dart';
 import 'package:moment/utils/global_keys.dart';
+import 'package:moment/widgets/custom_text_form_field_widget.dart';
 import 'package:moment/widgets/custom_text_widget.dart';
 
 import '../bloc/posts_bloc/posts_bloc.dart';
@@ -18,14 +22,18 @@ void customModalBottomSheetWidget(
     Widget? child,
     PostModelData? post,
     String? title,
+    Color? backgroundColor,
     String? subTitle}) async {
   var postBloc = BlocProvider.of<PostsBloc>(ctx);
   if (post != null) {
-    postBloc.add(PostFileSelectedEvent(selectedFile: await urlToFile(post.file?.fileUrl ?? ""), isUpdate: true));
+    postBloc.add(PostFileSelectedEvent(
+        selectedFile: await urlToFile(post.file?.fileUrl ?? ""),
+        isUpdate: true));
     postBloc.updateDescriptionController.text = post.description ?? "";
   }
 
   showModalBottomSheet(
+    backgroundColor: backgroundColor ?? MColors.primaryGrayColor80,
     context: ctx,
     clipBehavior: Clip.antiAlias,
     isScrollControlled: true,
@@ -57,28 +65,27 @@ void customModalBottomSheetWidget(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                PoppinsText(
+                                CustomText(
                                   title,
                                   fontSize: 30.0,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.w600,
                                 ),
                                 const SizedBox(height: 15.0),
                                 Form(
                                   key: GlobalKeys.postFormKey,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
                                       const SizedBox(height: 20.0),
-                                      TextFormField(
-                                        controller: BlocProvider.of<PostsBloc>(context).updateDescriptionController,
+                                      CustomTextFormFieldWidget(
+                                        controller:
+                                            BlocProvider.of<PostsBloc>(context)
+                                                .updateDescriptionController,
                                         keyboardType: TextInputType.text,
-                                        decoration: InputDecoration(
-                                          labelText: "Description",
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
-                                          ),
-                                          hintText: 'Enter your description',
-                                        ),
+                                        labelText: "Description",
+                                        hintText: 'Enter your description',
                                         validator: (String? value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter description';

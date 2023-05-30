@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/models/user_model/individual_user_model.dart';
@@ -59,6 +60,7 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
         return true;
       },
       child: Scaffold(
+        backgroundColor: MColors.primaryColor,
         appBar: AppBar(
           title: AppBarCookieText("Add User"),
           leading: Padding(
@@ -67,7 +69,10 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                 onTap: () {
                   RouteNavigation.back(context);
                 },
-                child: const Icon(Icons.arrow_back_rounded)),
+                child: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Colors.white,
+                )),
           ),
         ),
         body: Container(
@@ -122,7 +127,7 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
               }
 
               return allUsers?.data?.isNotEmpty != null && ownerUser != null
-                  ? RefreshIndicator(
+                  ? RefreshIndicator(color: Colors.white,
                       onRefresh: () async {
                         BlocProvider.of<AuthBloc>(context).add(
                           GetAllUser(context: context),
@@ -151,7 +156,7 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                             splashColor: Colors.grey[400],
                             // ignore: sort_child_properties_last
                             child: ListTile(
-                              title: PoppinsText(
+                              title: CustomText(
                                 allUsers?.data?[index].name ?? "",
                                 fontSize: 16.0,
                               ),
@@ -160,12 +165,14 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                                   const Icon(
                                     Icons.keyboard_arrow_right_rounded,
                                     size: 17.0,
+                                    color: MColors.primaryGrayColor50,
                                   ),
                                   hSizedBox0,
-                                  PoppinsText(
+                                  CustomText(
                                     allUsers?.data?[index].email ?? "",
                                     fontWeight: FontWeight.w400,
                                     fontSize: 12.0,
+                                    color: MColors.primaryGrayColor50,
                                   ),
                                 ],
                               ),
@@ -231,8 +238,8 @@ class _AllUsersListBodyState extends State<AllUsersListBody> {
                                               []),
                                           content: ownerUser?.data?.friends
                                                       ?.contains(allUsers
-                                                          ?.data?[index].id) !=
-                                                  true
+                                                          ?.data?[index].id) ??
+                                                  false
                                               ? "${StorageServices.authStorageValues["name"]} has removed you from friend."
                                               : "${StorageServices.authStorageValues["name"]} has added you to friend.",
                                           heading: "Moments",

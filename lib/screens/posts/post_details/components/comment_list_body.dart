@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/screens/posts/post_details/components/comment_reply_body.dart';
 import 'package:moment/screens/posts/post_details/components/widgets/show_bottom_text_field_widget.dart';
@@ -37,7 +38,10 @@ class _CommentListBodyState extends State<CommentListBody> {
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
-                      color: postBloc.deleteIndex != null && postBloc.deleteIndex == index ? Colors.white.withOpacity(0.5) : Colors.transparent,
+                      color: postBloc.deleteIndex != null &&
+                              postBloc.deleteIndex == index
+                          ? Colors.white.withOpacity(0.5)
+                          : Colors.transparent,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,8 +51,11 @@ class _CommentListBodyState extends State<CommentListBody> {
                           onLongPress: postBloc.showCommentDelete
                               ? null
                               : () {
-                                  if (StorageServices.authStorageValues.isNotEmpty == true &&
-                                      StorageServices.authStorageValues["id"] == cmt?[index].commentUserId) {
+                                  if (StorageServices
+                                              .authStorageValues.isNotEmpty ==
+                                          true &&
+                                      StorageServices.authStorageValues["id"] ==
+                                          cmt?[index].commentUserId) {
                                     postBloc.add(ShowCommentDeleteEvent(
                                       cmt: cmt?[index],
                                       index: index,
@@ -61,39 +68,58 @@ class _CommentListBodyState extends State<CommentListBody> {
                             children: [
                               Text.rich(
                                 TextSpan(
-                                  text: "${cmt?[index].commentName!.split(":")[0]}  ",
+                                  text:
+                                      "${cmt?[index].commentName!.split(":")[0]}  ",
                                   style: const TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontWeight: FontWeight.w600,
                                   ),
                                   children: [
-                                    (cmt?[index].commentName!.split(":")[1].length ?? 0) <= 100
+                                    (cmt?[index]
+                                                    .commentName!
+                                                    .split(":")[1]
+                                                    .length ??
+                                                0) <=
+                                            100
                                         ? TextSpan(
-                                            text: cmt?[index].commentName!.split(":")[1],
+                                            text: cmt?[index]
+                                                .commentName!
+                                                .split(":")[1],
                                             style: const TextStyle(
-                                              color: Colors.black,
+                                              color: MColors.primaryGrayColor35,
                                               fontWeight: FontWeight.w400,
                                             ),
                                           )
                                         : TextSpan(
-                                            text: !(ind?.contains(index) == true)
+                                            text: !(ind?.contains(index) ==
+                                                    true)
                                                 ? "${cmt?[index].commentName!.split(":")[1].substring(0, 100)}... "
                                                 : "${cmt?[index].commentName!.split(":")[1]}... ",
                                             style: const TextStyle(
-                                              color: Colors.black,
+                                              color: MColors.primaryGrayColor35,
                                               fontWeight: FontWeight.w400,
                                             ),
                                             children: [
                                               TextSpan(
-                                                text: !(ind?.contains(index) == true) ? "show more" : "show less",
-                                                recognizer: TapGestureRecognizer()
-                                                  ..onTap = () {
-                                                    setState(() {
-                                                      ind?.contains(index) == true ? ind?.remove(index) : ind?.add(index);
-                                                    });
-                                                  },
-                                                style: TextStyle(
-                                                  color: Colors.grey.shade600,
+                                                text: !(ind?.contains(index) ==
+                                                        true)
+                                                    ? "show more"
+                                                    : "show less",
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        setState(() {
+                                                          ind?.contains(
+                                                                      index) ==
+                                                                  true
+                                                              ? ind?.remove(
+                                                                  index)
+                                                              : ind?.add(index);
+                                                        });
+                                                      },
+                                                style: const TextStyle(
+                                                  color: MColors
+                                                      .primaryGrayColor35,
                                                   fontWeight: FontWeight.w300,
                                                 ),
                                               ),
@@ -105,12 +131,13 @@ class _CommentListBodyState extends State<CommentListBody> {
                               vSizedBox0,
                               Row(
                                 children: [
-                                  PoppinsText(
+                                  CustomText(
                                     timeago.format(
-                                      DateTime.parse(cmt?[index].timestamps ?? ""),
+                                      DateTime.parse(
+                                          cmt?[index].timestamps ?? ""),
                                       locale: 'en_short',
                                     ),
-                                    color: Colors.grey.shade700,
+                                    color: MColors.primaryGrayColor35,
                                     fontSize: 10,
                                   ),
                                   const SizedBox(
@@ -121,14 +148,17 @@ class _CommentListBodyState extends State<CommentListBody> {
                                       postBloc.add(
                                         ShowReplyCommentEvent(
                                           showReplyComment: true,
-                                          replyTo: cmt?[index].commentName!.split(":")[0],
+                                          replyTo: cmt?[index]
+                                              .commentName!
+                                              .split(":")[0],
                                           commentId: cmt?[index].commentId,
-                                          replyToUserId: cmt?[index].commentUserId,
+                                          replyToUserId:
+                                              cmt?[index].commentUserId,
                                         ),
                                       );
                                       commentFocusNode.requestFocus();
                                     },
-                                    child: PoppinsText(
+                                    child: CustomText(
                                       "Reply",
                                       fontWeight: FontWeight.w400,
                                       fontSize: 12,
@@ -146,7 +176,8 @@ class _CommentListBodyState extends State<CommentListBody> {
                             : Container(),
                         vSizedBox1,
                         const Divider(
-                          thickness: 1,
+                          thickness: 0.8,
+                          color: MColors.primaryGrayColor50,
                           endIndent: 30,
                           indent: 40,
                         ),
@@ -155,7 +186,7 @@ class _CommentListBodyState extends State<CommentListBody> {
                   );
                 },
               )
-            : const Text("No Comments!");
+            : CustomText("No Comments!");
       },
     );
   }

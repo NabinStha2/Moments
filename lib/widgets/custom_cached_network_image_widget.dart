@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
-import 'package:moment/widgets/custom_text_widget.dart';
 
 import 'custom_image_error_widget.dart';
 
@@ -44,6 +43,7 @@ class CustomCachedNetworkImageWidget extends StatelessWidget {
           ),
         );
       },
+      color: Colors.white,
       fit: BoxFit.cover,
       fadeInCurve: curves ?? Curves.fastOutSlowIn,
       fadeInDuration: duration ?? const Duration(milliseconds: 600),
@@ -58,6 +58,7 @@ class CustomCachedNetworkImageWidget extends StatelessWidget {
       progressIndicatorBuilder: (context, url, progress) => Center(
         child: CustomCircularProgressIndicatorWidget(
           value: progress.progress,
+          color: Colors.white,
         ),
       ),
       imageUrl: imageUrl,

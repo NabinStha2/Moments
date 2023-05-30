@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/screens/posts/post_details/components/widgets/post_details_widget.dart';
 
 import 'package:moment/config/routes/route_navigation.dart';
@@ -108,48 +109,57 @@ class _PostDetailsBodyState extends State<PostDetailsBody> {
                               ),
                               collapseMode: CollapseMode.pin,
                             ),
-                            leading: CustomIconButtonWidget(
-                              padding: EdgeInsets.zero,
-                              isFloatingButton: true,
-                              floatingButtonContainerColor: Colors.white,
-                              onPressed: () {
-                                BlocProvider.of<PostsBloc>(context)
-                                    .add(HideCommentDeleteEvent());
-                              },
-                              icon: const Icon(
-                                Icons.close,
-                                color: Colors.black,
-                              ),
-                            ),
-                            actions: [
-                              CustomIconButtonWidget(
+                            leading: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CustomIconButtonWidget(
                                 padding: EdgeInsets.zero,
                                 isFloatingButton: true,
-                                floatingButtonContainerColor: Colors.white,
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.black,
-                                ),
+                                floatingButtonContainerColor:
+                                    MColors.primaryGrayColor90,
                                 onPressed: () {
-                                  BlocProvider.of<PostsBloc>(context)
-                                      .add(DeleteCommentEvent(
-                                    context: context,
-                                    activityId:
-                                        BlocProvider.of<PostsBloc>(context)
-                                                .deleteCommentActivityId ??
-                                            [],
-                                    postId: postBloc.singlePostData?.id ?? "",
-                                    token: StorageServices
-                                            .authStorageValues["token"] ??
-                                        "",
-                                    commentId:
-                                        BlocProvider.of<PostsBloc>(context)
-                                                .deleteCommentId ??
-                                            "",
-                                  ));
                                   BlocProvider.of<PostsBloc>(context)
                                       .add(HideCommentDeleteEvent());
                                 },
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: MColors.primaryGrayColor35,
+                                ),
+                              ),
+                            ),
+                            actions: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: CustomIconButtonWidget(
+                                  padding: EdgeInsets.zero,
+                                  isFloatingButton: true,
+                                  floatingButtonContainerColor:
+                                      MColors.primaryGrayColor90,
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    size: 20,
+                                    color: MColors.primaryGrayColor35,
+                                  ),
+                                  onPressed: () {
+                                    BlocProvider.of<PostsBloc>(context)
+                                        .add(DeleteCommentEvent(
+                                      context: context,
+                                      activityId:
+                                          BlocProvider.of<PostsBloc>(context)
+                                                  .deleteCommentActivityId ??
+                                              [],
+                                      postId: postBloc.singlePostData?.id ?? "",
+                                      token: StorageServices
+                                              .authStorageValues["token"] ??
+                                          "",
+                                      commentId:
+                                          BlocProvider.of<PostsBloc>(context)
+                                                  .deleteCommentId ??
+                                              "",
+                                    ));
+                                    BlocProvider.of<PostsBloc>(context)
+                                        .add(HideCommentDeleteEvent());
+                                  },
+                                ),
                               ),
                             ],
                           ),
@@ -296,17 +306,21 @@ class _PostDetailsBodyState extends State<PostDetailsBody> {
                                           ),
                                         )
                           ],
-                          leading: CustomIconButtonWidget(
-                            padding: EdgeInsets.zero,
-                            isFloatingButton: true,
-                            floatingButtonContainerColor: Colors.white,
-                            onPressed: () {
-                              postBloc.commentController.clear();
-                              RouteNavigation.back(context);
-                            },
-                            icon: const Icon(
-                              Icons.arrow_back_rounded,
-                              color: Colors.black,
+                          leading: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CustomIconButtonWidget(
+                              padding: EdgeInsets.zero,
+                              isFloatingButton: true,
+                              floatingButtonContainerColor:
+                                  MColors.primaryGrayColor90,
+                              onPressed: () {
+                                postBloc.commentController.clear();
+                                RouteNavigation.back(context);
+                              },
+                              icon: const Icon(
+                                Icons.arrow_back_rounded,
+                                color: MColors.primaryGrayColor35,
+                              ),
                             ),
                           ),
                         ),

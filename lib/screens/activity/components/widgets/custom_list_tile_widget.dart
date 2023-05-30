@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moment/app/colors.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import 'package:moment/widgets/custom_cached_network_image_widget.dart';
@@ -48,14 +49,14 @@ class CustomListTileWidget extends StatelessWidget {
               width: 50,
             ),
           ),
-      title: titleWidget ?? PoppinsText(titleText ?? ""),
+      title: titleWidget ?? CustomText(titleText ?? ""),
       subtitle: subTitleWidget ??
-          PoppinsText(
+          CustomText(
             timeago.format(
               subTitleDateTime ?? DateTime.now(),
               locale: 'en',
             ),
-            color: Colors.black54,
+            color: MColors.primaryGrayColor50,
             fontSize: 12.0,
             fontWeight: FontWeight.w400,
           ),

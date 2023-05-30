@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:moment/app/dimension/dimension.dart';
+import 'package:moment/widgets/custom_circular_progress_indicator_widget.dart';
 
 import '../../../../widgets/custom_text_widget.dart';
 
@@ -26,16 +27,21 @@ class ProfileImageCard extends StatelessWidget {
       child: Image.network(
         fileUrl ?? "",
         fit: boxFit ?? BoxFit.cover,
-        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-          return PoppinsText('😢Error!');
+        errorBuilder:
+            (BuildContext context, Object exception, StackTrace? stackTrace) {
+          return CustomText('😢Error!');
         },
-        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
           if (loadingProgress == null) {
             return child;
           }
           return Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null,
+            child: CustomCircularProgressIndicatorWidget(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
             ),
           );
         },

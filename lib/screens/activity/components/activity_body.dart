@@ -88,7 +88,7 @@ class _ActivityBodyState extends State<ActivityBody> {
                   ),
                 )
               : Center(
-                  child: PoppinsText("No activity yet."),
+                  child: CustomText("No activity yet."),
                 );
         }
         return Container();

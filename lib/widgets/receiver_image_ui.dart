@@ -80,7 +80,9 @@ class ReceiverImageUi extends StatelessWidget {
                           Hero(
                             tag: "recieve",
                             child: CustomExtendedImageWidget(
-                              imageUrl: fileType == "video" ? thumbnail ?? "" : fileUrl,
+                              imageUrl: fileType == "video"
+                                  ? thumbnail ?? ""
+                                  : fileUrl,
                             ),
                           ),
                           fileType == "video"
@@ -115,7 +117,7 @@ class ReceiverImageUi extends StatelessWidget {
                 msg != ""
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: PoppinsText(
+                        child: CustomText(
                           msg!,
                           fontSize: 14.0,
                           fontWeight: FontWeight.w400,

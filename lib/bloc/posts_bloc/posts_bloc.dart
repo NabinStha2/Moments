@@ -137,6 +137,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   Future<void> _getPosts(GetPostsEvent event, Emitter<PostsState> emit) async {
     emit(PostLoading());
     try {
+      consolelog("datacsa ad ja a sdn a,md a,sd am, dams");
       if (allPostModels.isNotEmpty) {
         allPostModels.clear();
       }

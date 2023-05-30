@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/bloc/auth_bloc/auth_bloc.dart';
 import 'package:moment/config/routes/route_navigation.dart';
@@ -12,10 +12,9 @@ import 'package:moment/utils/storage_services.dart';
 import 'package:moment/widgets/custom_all_shimmer_widget.dart';
 import 'package:moment/widgets/custom_cached_network_image_widget.dart';
 import 'package:moment/widgets/custom_error_widget.dart';
+import 'package:moment/widgets/custom_text_widget.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:simple_tooltip/simple_tooltip.dart';
-
-import '../../../widgets/custom_snackbar_widget.dart';
 
 class ChatBody extends StatefulWidget {
   const ChatBody({Key? key}) : super(key: key);
@@ -51,8 +50,8 @@ class _ChatBodyState extends State<ChatBody> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (StorageServices.authStorageValues.isEmpty) {
-          return const Center(
-            child: Text("First Login!"),
+          return Center(
+            child: CustomText("First Login!"),
           );
         }
         if (state is GetUserFriendsLoading) {
@@ -71,7 +70,7 @@ class _ChatBodyState extends State<ChatBody> {
           userFriendsList = state.userFriends?.data;
         }
         return userFriendsList != null && userFriendsList?.isNotEmpty == true
-            ? RefreshIndicator(
+            ? RefreshIndicator(color: Colors.white,
                 onRefresh: () async {
                   BlocProvider.of<AuthBloc>(context).add(
                     GetUserFriends(
@@ -98,27 +97,27 @@ class _ChatBodyState extends State<ChatBody> {
                         },
                         splashColor: Colors.grey[400],
                         child: ListTile(
-                          title: Text(userFriendsList?[index].name ?? ""),
+                          title: CustomText(userFriendsList?[index].name ?? ""),
                           subtitle: Row(
                             children: [
                               const Icon(
                                 Icons.keyboard_arrow_right_rounded,
                                 size: 17.0,
+                                color: MColors.primaryGrayColor50,
                               ),
                               hSizedBox0,
-                              Text(userFriendsList?[index].email ?? ""),
+                              CustomText(
+                                userFriendsList?[index].email ?? "",
+                                color: MColors.primaryGrayColor50,
+                              ),
                             ],
                           ),
                           trailing: SimpleTooltip(
+                            backgroundColor: MColors.primaryGrayColor80,
                             tooltipTap: () {},
-                            content: Text(
+                            content: CustomText(
                               "Invite a Friend to come Online",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                fontSize: 10,
-                                decoration: TextDecoration.none,
-                              ),
+                              fontSize: 10,
                             ),
                             animationDuration:
                                 const Duration(milliseconds: 700),
@@ -128,10 +127,13 @@ class _ChatBodyState extends State<ChatBody> {
                             arrowLength: 10,
                             arrowBaseWidth: 8,
                             borderWidth: 1,
-                            borderColor: Colors.grey,
+                            borderColor: MColors.primaryGrayColor80,
                             tooltipDirection: TooltipDirection.left,
                             child: IconButton(
-                              icon: const Icon(Icons.online_prediction),
+                              icon: const Icon(
+                                Icons.online_prediction,
+                                color: MColors.primaryGrayColor50,
+                              ),
                               onPressed: () async {
                                 var notification = OSCreateNotification(
                                   playerIds: List<String>.from(
@@ -185,8 +187,8 @@ class _ChatBodyState extends State<ChatBody> {
                   ),
                 ),
               )
-            : const Center(
-                child: Text("No chat. Start a new..."),
+            : Center(
+                child: CustomText("No chat. Start a new..."),
               );
       },
     );

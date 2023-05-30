@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:moment/app/colors.dart';
 
 import '../../../app/dimension/dimension.dart';
 import '../../../bloc/auth_bloc/auth_bloc.dart';
@@ -39,7 +40,8 @@ class ProfileHeaderBody extends StatelessWidget {
                   } else if (state is AuthLoaded) {
                     var ownerUser = state.ownerUser;
                     return Center(
-                      child: ownerUser?.data?.image?.imageUrl != "" && ownerUser?.data?.image?.imageUrl != null
+                      child: ownerUser?.data?.image?.imageUrl != "" &&
+                              ownerUser?.data?.image?.imageUrl != null
                           ? CircleAvatar(
                               radius: 35.0,
                               backgroundImage: NetworkImage(
@@ -47,7 +49,7 @@ class ProfileHeaderBody extends StatelessWidget {
                               ),
                               onBackgroundImageError: (object, stackTrace) {
                                 Center(
-                                  child: PoppinsText(
+                                  child: CustomText(
                                     "Error",
                                     color: Colors.red,
                                   ),
@@ -81,7 +83,7 @@ class ProfileHeaderBody extends StatelessWidget {
                   },
                   icon: const FaIcon(
                     FontAwesomeIcons.camera,
-                    color: Colors.blue,
+                    color: MColors.primaryColor,
                     size: 20.0,
                     // color: Colors.white,
                   ),
@@ -98,13 +100,17 @@ class ProfileHeaderBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              PoppinsText(
-                StorageServices.authStorageValues["name"] != null ? StorageServices.authStorageValues["name"]?.toUpperCase() ?? "" : "",
+              CustomText(
+                StorageServices.authStorageValues["name"] != null
+                    ? StorageServices.authStorageValues["name"]
+                            ?.toUpperCase() ??
+                        ""
+                    : "",
                 fontWeight: FontWeight.w500,
                 fontSize: 20.0,
               ),
               vSizedBox1,
-              PoppinsText(
+              CustomText(
                 StorageServices.authStorageValues["email"] ?? "",
                 fontWeight: FontWeight.w400,
                 fontSize: 18.0,
@@ -115,34 +121,40 @@ class ProfileHeaderBody extends StatelessWidget {
                   BlocBuilder<ProfilePostsBloc, ProfilePostsState>(
                     builder: (context, state) {
                       if (state is ProfilePostsSuccess) {
-                        return PoppinsText(
-                          state.postModel != null ? state.postModel?.length.toString() ?? "0" : userPostsLength.toString(),
+                        return CustomText(
+                          state.postModel != null
+                              ? state.postModel?.length.toString() ?? "0"
+                              : userPostsLength.toString(),
                           fontWeight: FontWeight.w400,
                           fontSize: 15.0,
                         );
                       }
-                      return PoppinsText(
+                      return CustomText(
                         userPostsLength.toString(),
                         fontWeight: FontWeight.w400,
                         fontSize: 15.0,
                       );
                     },
                   ),
-                  PoppinsText(
+                  CustomText(
                     "  posts",
                     fontWeight: FontWeight.w400,
                     fontSize: 15.0,
                   ),
                   hSizedBox1,
                   hSizedBox1,
-                  PoppinsText(
+                  CustomText(
                     StorageServices.authStorageValues["friends"] != null
-                        ? StorageServices.authStorageValues["friends"]?.split(",").length.toString() ?? "0"
+                        ? StorageServices.authStorageValues["friends"]
+                                ?.split(",")
+                                .length
+                                .toString() ??
+                            "0"
                         : "0",
                     fontWeight: FontWeight.w400,
                     fontSize: 15.0,
                   ),
-                  PoppinsText(
+                  CustomText(
                     "  friends",
                     fontWeight: FontWeight.w400,
                     fontSize: 15.0,

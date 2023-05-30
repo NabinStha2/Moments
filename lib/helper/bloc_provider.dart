@@ -8,10 +8,7 @@ import '../bloc/posts_bloc/posts_bloc.dart';
 List blocProvider = [
   BlocProvider<PostsBloc>(
     lazy: false,
-    create: (context) => PostsBloc()
-      ..add(GetPostsEvent(
-        context: context,
-      )),
+    create: (context) => PostsBloc(),
   ),
   BlocProvider<ActivityBloc>(
     // lazy: false,

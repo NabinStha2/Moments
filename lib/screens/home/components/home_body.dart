@@ -34,10 +34,10 @@ class HomeBody extends StatelessWidget {
           }
         }),
         BlocListener<PostsBloc, PostsState>(listener: (context, state) {
-          if (state is PostPageChangedLoadedState) {
-            postBloc.add(
-                GetPostsEvent(context: context, page: postBloc.currentPage));
-          }
+          // if (state is PostPageChangedLoadedState) {
+          //   postBloc.add(
+          //       GetPostsEvent(context: context, page: postBloc.currentPage));
+          // }
           if (state is PostDeleted) {
             BlocProvider.of<ProfilePostsBloc>(context).add(
               GetProfilePostsEvent(
@@ -68,6 +68,7 @@ class HomeBody extends StatelessWidget {
                 postBloc.add(RefreshPostsEvent());
                 postBloc
                     .add(PostPageChangeEvent(context: context, pageNumber: 1));
+                postBloc.add(GetPostsEvent(context: context, page: 1));
               },
             );
           }
@@ -81,6 +82,8 @@ class HomeBody extends StatelessWidget {
                       postBloc.add(PostPageChangeEvent(
                           pageNumber: postBloc.currentPage + 1,
                           context: context));
+                      postBloc.add(GetPostsEvent(
+                          context: context, page: postBloc.currentPage + 1));
                     }
                     return true;
                   },
@@ -89,12 +92,15 @@ class HomeBody extends StatelessWidget {
                     children: [
                       Expanded(
                         child: RefreshIndicator(
+                          color: Colors.white,
                           onRefresh: () async {
-                            await Future.delayed(
-                                const Duration(milliseconds: 1000), () {});
+                            // await Future.delayed(
+                            //     const Duration(milliseconds: 1000), () {});
                             postBloc.add(RefreshPostsEvent());
                             postBloc.add(PostPageChangeEvent(
                                 context: context, pageNumber: 1));
+                            postBloc
+                                .add(GetPostsEvent(context: context, page: 1));
                           },
                           child: SingleChildScrollView(
                             physics: const BouncingScrollPhysics(),
@@ -134,6 +140,7 @@ class HomeBody extends StatelessWidget {
                     postBloc.add(RefreshPostsEvent());
                     postBloc.add(
                         PostPageChangeEvent(context: context, pageNumber: 1));
+                    postBloc.add(GetPostsEvent(context: context, page: 1));
                   },
                 );
         },

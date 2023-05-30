@@ -1,6 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/colors.dart';
 
 import 'package:moment/screens/main/components/main_body.dart';
 import 'package:moment/utils/double_tap_back.dart';
@@ -18,12 +19,11 @@ class MainScreen extends StatelessWidget {
         return onWillPop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
         bottomNavigationBar: CurvedNavigationBar(
-          backgroundColor: Colors.white,
-          color: const Color.fromARGB(255, 26, 168, 228),
+          backgroundColor: MColors.primaryGrayColor80,
+          color: MColors.primaryGrayColor90,
           // key: homeBloc.bottomNavigationKey,
-          buttonBackgroundColor: Colors.white,
+          buttonBackgroundColor: MColors.primaryGrayColor90,
           height: 60.0,
           animationCurve: Curves.easeInOut,
           animationDuration: const Duration(milliseconds: 600),

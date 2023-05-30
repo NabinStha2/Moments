@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/app/dimension/dimension.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/models/post_model/post_model.dart';
@@ -47,7 +48,8 @@ class _ProfileBodyState extends State<ProfileBody> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // consolelog(StorageServices.authStorageValues);
 
-      if (StorageServices.authStorageValues.isNotEmpty && StorageServices.authStorageValues["rememberMe"] == "true") {
+      if (StorageServices.authStorageValues.isNotEmpty &&
+          StorageServices.authStorageValues["rememberMe"] == "true") {
         timer = Timer(Duration(seconds: expiredToken!), () {
           setState(() {
             decodedToken();
@@ -92,9 +94,12 @@ class _ProfileBodyState extends State<ProfileBody> {
     return StorageServices.authStorageValues.isNotEmpty == true
         ? Scaffold(
             appBar: AppBar(
-              title: AppBarCookieText(StorageServices.authStorageValues["name"] ?? ""),
+              title: AppBarCookieText(
+                  StorageServices.authStorageValues["name"] ?? ""),
+              automaticallyImplyLeading: false,
               actions: [
                 IconButton(
+                  color: Colors.white,
                   onPressed: () {
                     customModalBottomSheetWidget(
                       initialChildSize: 0.15,
@@ -107,14 +112,14 @@ class _ProfileBodyState extends State<ProfileBody> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ListTile(
-                              title: PoppinsText(
+                              title: CustomText(
                                 'Logout',
                                 fontSize: 16.0,
                               ),
                               leading: CustomIconButtonWidget(
+                                padding: EdgeInsets.zero,
                                 icon: const Icon(Icons.logout),
                                 iconSize: 20.0,
-                                color: Colors.black,
                                 onPressed: () {
                                   _logout();
                                   RouteNavigation.back(context);
@@ -133,7 +138,6 @@ class _ProfileBodyState extends State<ProfileBody> {
                   icon: const Icon(
                     Icons.menu_rounded,
                     size: 26,
-                    color: Colors.white,
                   ),
                 )
               ],
@@ -150,16 +154,19 @@ class _ProfileBodyState extends State<ProfileBody> {
                     vSizedBox0,
                     vSizedBox1,
                     const Divider(
-                      color: Colors.grey,
-                      thickness: 2.0,
+                      color: MColors.primaryGrayColor50,
+                      thickness: 1.0,
                     ),
                     vSizedBox0,
                     vSizedBox1,
                     Flexible(
                       child: BlocBuilder<ProfilePostsBloc, ProfilePostsState>(
                         builder: (context, state) {
-                          if (state is ProfilePostsLoading || state is PostDeleteLoading) {
-                            return CustomAllShimmerWidget.creatorPostsShimmerWidget(userPostsLength: userPostsLength);
+                          if (state is ProfilePostsLoading ||
+                              state is PostDeleteLoading) {
+                            return CustomAllShimmerWidget
+                                .creatorPostsShimmerWidget(
+                                    userPostsLength: userPostsLength);
                           } else if (state is ProfilePostsFailure) {
                             return CustomErrorWidget(
                               message: state.error,
@@ -167,7 +174,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 profilePostsBloc.add(
                                   GetProfilePostsEvent(
                                     context: context,
-                                    creator: StorageServices.authStorageValues["id"] ?? "",
+                                    creator: StorageServices
+                                            .authStorageValues["id"] ??
+                                        "",
                                   ),
                                 );
                               },
@@ -183,18 +192,24 @@ class _ProfileBodyState extends State<ProfileBody> {
                           }
                           return posts?.isNotEmpty == true
                               ? RefreshIndicator(
+                                  color: Colors.white,
                                   onRefresh: () async {
                                     profilePostsBloc.add(
                                       GetProfilePostsEvent(
                                         context: context,
-                                        creator: StorageServices.authStorageValues["id"] ?? "",
+                                        creator: StorageServices
+                                                .authStorageValues["id"] ??
+                                            "",
                                       ),
                                     );
                                   },
                                   child: GridView.builder(
-                                    physics: const AlwaysScrollableScrollPhysics(),
-                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: (posts?.length ?? 0) > 10 ? 3 : 2,
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount:
+                                          (posts?.length ?? 0) > 10 ? 3 : 2,
                                       crossAxisSpacing: 5.0,
                                       mainAxisSpacing: 5.0,
                                       childAspectRatio: 0.8,
@@ -205,10 +220,14 @@ class _ProfileBodyState extends State<ProfileBody> {
                                         onTap: () {
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
-                                              builder: (context) => BlocProvider.value(
-                                                value: BlocProvider.of<PostsBloc>(context),
+                                              builder: (context) =>
+                                                  BlocProvider.value(
+                                                value:
+                                                    BlocProvider.of<PostsBloc>(
+                                                        context),
                                                 child: PostDetailsScreen(
-                                                  postId: posts?[index].id ?? "",
+                                                  postId:
+                                                      posts?[index].id ?? "",
                                                   isFromComment: false,
                                                 ),
                                               ),
@@ -217,12 +236,16 @@ class _ProfileBodyState extends State<ProfileBody> {
                                         },
                                         child: posts?[index].fileType == "video"
                                             ? ProfileVideoCard(
-                                                fileUrlThumbnail: posts?[index].file?.thumbnail,
+                                                fileUrlThumbnail: posts?[index]
+                                                    .file
+                                                    ?.thumbnail,
                                                 postId: posts?[index].id,
                                               )
                                             : posts?[index].file?.fileUrl != ""
                                                 ? ProfileImageCard(
-                                                    fileUrl: posts?[index].file?.fileUrl,
+                                                    fileUrl: posts?[index]
+                                                        .file
+                                                        ?.fileUrl,
                                                   )
                                                 : const ProfileImageCard(
                                                     fileUrl:
@@ -238,7 +261,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                                     profilePostsBloc.add(
                                       GetProfilePostsEvent(
                                         context: context,
-                                        creator: StorageServices.authStorageValues["id"] ?? "",
+                                        creator: StorageServices
+                                                .authStorageValues["id"] ??
+                                            "",
                                       ),
                                     );
                                   },

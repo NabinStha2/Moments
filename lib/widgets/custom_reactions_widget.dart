@@ -3,13 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_reaction_button/flutter_reaction_button.dart';
-import 'package:moment/development/console.dart';
 import 'package:moment/utils/storage_services.dart';
 import 'package:moment/utils/user_post_signal_id.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'package:moment/models/post_model/post_model.dart';
-import 'package:moment/screens/home/home_screen.dart';
 import 'package:moment/services/api_config.dart';
 import 'package:moment/utils/flutter_reaction.dart' as FlutterReactions;
 import 'package:moment/widgets/custom_snackbar_widget.dart';
@@ -183,7 +181,6 @@ class _ReactionsState extends State<CustomReactionsWidget>
                   splashRadius: 20,
                   icon: const Icon(
                     Icons.thumb_up_off_alt_rounded,
-                    color: Colors.grey,
                   )),
         ),
       ),

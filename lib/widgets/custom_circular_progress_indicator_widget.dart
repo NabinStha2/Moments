@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
+import '../app/colors.dart';
+
 class CustomCircularProgressIndicatorWidget extends StatelessWidget {
   final double? width;
   final double? height;
@@ -28,7 +30,7 @@ class CustomCircularProgressIndicatorWidget extends StatelessWidget {
             child: CircularProgressIndicator(
               value: value,
               strokeWidth: strokeWidth ?? 2,
-              color: color,
+              color: color ?? MColors.primaryGrayColor50,
             ),
           ),
         ],

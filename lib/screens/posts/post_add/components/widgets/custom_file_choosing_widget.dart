@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/app/dimension/dimension.dart';
 
 import 'package:moment/widgets/custom_button_widget.dart';
@@ -27,8 +28,10 @@ class CustomFileChoosingWidget extends StatelessWidget {
       children: [
         CustomElevatedButtonWidget(
           width: appWidth(context) / 3,
+          backgroundColor: MColors.primaryGrayColor50,
           onPressed: () async {
-            FilePickerResult? result = await customFileShowDialogWidget(ctx: context, isImageOnly: false);
+            FilePickerResult? result = await customFileShowDialogWidget(
+                ctx: context, isImageOnly: false);
             if (result != null) {
               postBloc.add(PostFileSelectedEvent(
                 selectedFile: File(result.files.single.path ?? ""),
@@ -37,7 +40,7 @@ class CustomFileChoosingWidget extends StatelessWidget {
               // mediaType = result.files.single.path?.split('.').last;
             }
           },
-          child: PoppinsText(
+          child: CustomText(
             "Choose File",
             color: Colors.white,
           ),
@@ -46,20 +49,20 @@ class CustomFileChoosingWidget extends StatelessWidget {
         BlocBuilder<PostsBloc, PostsState>(
           builder: (context, state) {
             if (state is PostFileSelectingLoadingState) {
-              return PoppinsText("Loading...");
+              return CustomText("Loading...");
             } else if (state is PostFileSelectedState) {
               return SizedBox(
                 width: MediaQuery.of(context).size.width / 2.5,
-                child: Text(
+                child: CustomText(
                   isUpdate == true
-                      ? postBloc.updatePostSelectedFile?.path.split("/").last ?? ""
+                      ? postBloc.updatePostSelectedFile?.path.split("/").last ??
+                          ""
                       : postBloc.postSelectedFile?.path.split("/").last ?? "",
-                  overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
               );
             }
-            return PoppinsText("");
+            return CustomText("");
           },
         )
       ],

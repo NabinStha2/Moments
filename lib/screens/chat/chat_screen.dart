@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moment/app/colors.dart';
 import 'package:moment/config/routes/route_navigation.dart';
 import 'package:moment/screens/chat/components/all_users_list_body.dart';
 import 'package:moment/screens/activity/activity_screen.dart';
@@ -25,7 +26,9 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MColors.primaryColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: AppBarCookieText(
           "Message",
         ),
@@ -102,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
           }
         },
         isFloatingButton: true,
-        floatingButtonContainerColor: Colors.blue,
+        floatingButtonContainerColor: MColors.primaryGrayColor80,
         icon: const Icon(Icons.chat),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
